@@ -6,6 +6,6 @@
 		"noImplicitReturns": true
 	},
 	"files": [
-		"ts/Sequencer.ts"
+		"src/Sequencer.ts"
 	]
 }
