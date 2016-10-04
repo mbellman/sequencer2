@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		"module": "amd",
+		"outFile": "js/bundle.js",
+		"noEmitOnError": true,
+		"noImplicitReturns": true
+	},
+	"files": [
+		"ts/Sequencer.ts"
+	]
+}
