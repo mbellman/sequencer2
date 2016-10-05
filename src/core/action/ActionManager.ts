@@ -1,6 +1,5 @@
 import Action from "core/action/Action";
 import * as U from "core/system/Utilities";
-
 import { ClickAction, MoveAction, DragAction } from "core/action/MouseActions";
 import { ActionT, CLICK_ACTION, MOVE_ACTION, DRAG_ACTION } from "core/Constants";
 
