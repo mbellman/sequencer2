@@ -1,5 +1,7 @@
+import { ActionT } from "core/Constants";
+
 abstract class Action {
-	public type: string;
+	public type: ActionT;
 	public timestamp: number;
 
 	constructor () {

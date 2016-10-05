@@ -1,8 +1,11 @@
 /**
- * Event type names
+ * Action type constants
  */
-export const CLICK_ACTION: string = "click";
-export const DRAG_ACTION: string = "drag";
+export type ActionT = "click" | "drag" | "move";
+
+export const CLICK_ACTION: ActionT = "click";
+export const MOVE_ACTION: ActionT = "move";
+export const DRAG_ACTION: ActionT = "drag";
 
 /**
  * Formula constants
