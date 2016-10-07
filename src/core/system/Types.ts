@@ -8,10 +8,24 @@ export interface Hash<T> {
 }
 
 /**
- * @ public interface Hash<T>
+ * @ public type Table<T>
  * 
- * A handler function type signature for Utilities.each().
+ * A type signature for generic key/value lists containing enumerable properties.
  */
-export interface EachHandler {
-    (key: string | number, value: any): any;
+export type Table<T> = Hash<T> | Object;
+
+/**
+ * @ public type Collection<T>
+ * 
+ * A type signature for either key/value lists or native Arrays.
+ */
+export type Collection<T> = Table<T> | Array<T>;
+
+/**
+ * @ public interface Iterator<T>
+ * 
+ * A type signature for functions which iterate over a native Array or key/value list.
+ */
+export interface Iterator<T> {
+    (value: any, key: string | number): T;
 }

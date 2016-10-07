@@ -7,7 +7,7 @@ import * as U from "core/system/Utilities";
  * An associative map of keys to values.
  */
 export default class HashTable<T> {
-    private table: Types.Hash<T>;
+    private table: Types.Hash<T> = {};
     private size: number = 0;
 
     /**
@@ -27,22 +27,28 @@ export default class HashTable<T> {
     /**
      * Retrieves a value from the internal table.
      */
-    public retrieve (key: string): T {
+    public retrieve (key: string): T | boolean {
         if (key === this.lastKey) {
             return this.lastValue;
         }
 
-        this.lastKey = key;
-        this.lastValue = this.table[key];
+        var value = this.table[key];
 
-        return this.lastValue;
+        if (U.isUndefined(value)) {
+            return false;
+        }
+
+        this.lastKey = key;
+        this.lastValue = value;
+
+        return value;
     }
 
     /**
      * Determines whether the internal table contains a key value.
      */
     public has (key: string): boolean {
-        return !U.isUndefined(this.retrieve(key));
+        return !(this.retrieve(key) === false);
     }
 
     /**
