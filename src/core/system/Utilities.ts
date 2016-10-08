@@ -98,8 +98,8 @@ export function isArray (value: any): boolean {
  * Determines whether a native Array contains a value.
  */
 export function isInArray(array: Array<any>, value: any): boolean {
-    return !!eachInArray(array, (i: number): any => {
-        if (array[i] === value) {
+    return !!eachInArray(array, (element: any): any => {
+        if (element === value) {
             return true;
         }
     });

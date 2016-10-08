@@ -1,3 +1,4 @@
+import Time from "core/system/Time";
 import * as U from "core/system/Utilities";
 import HashTable from "core/system/HashTable";
 
@@ -22,23 +23,27 @@ class QueryCache extends HashTable<QueryLog> {
     constructor () {
         super();
 
-        this.cleaner = window.setInterval(this.clean, 10000);
+        this.cleaner = window.setInterval(this.clean, 5000);
     }
 
     /**
      * Periodically dereference stored QueryLogs for queries which haven't been made in a while.
      */
     private clean (): void {
-
+        super.each((query: QueryLog, key: string): any => {
+            if (Time.since(query.timestamp) > 20000) {
+                super.delete(key);
+            }
+        });
     }
 
     /**
      * Retrieves a stored QueryLog by selector.
      */
     public getQuery (selector: string): Query {
-        this.retrieve(selector).timestamp = Date.now();
+        super.retrieve(selector).timestamp = Date.now();
 
-        return this.retrieve(selector).query;
+        return super.retrieve(selector).query;
     }
 }
 
@@ -48,10 +53,29 @@ class QueryCache extends HashTable<QueryLog> {
  * A DOM selector and manipulation manager.
  */
 class Query {
-    private cache: QueryCache;
+    private elements: Array<Element>;
+    public length: number;
+    public selector: string;
 
-    constructor (selector: string) {
-        document.querySelector('lol');
+    constructor (selector: string | Array<Element>) {
+        if (U.isArray(selector)) {
+            this.elements = <Array<Element>>selector;
+        } else {
+            var elements: NodeList = this.query(<string>selector);
+
+            this.elements = Array.prototype.slice.call(elements, 0);
+            this.selector = <string>selector;
+        }
+
+        this.length = this.elements.length;
+    }
+
+    private query (selector: string) {
+        return document.querySelectorAll(selector);
+    }
+
+    public parent (selector?: string): Query {
+
     }
 }
 

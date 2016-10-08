@@ -8,7 +8,7 @@ import * as U from "core/system/Utilities";
  */
 export default class HashTable<T> {
     private table: Types.Hash<T> = {};
-    private size: number = 0;
+    private items: number = 0;
 
     /**
      * Last-lookup cache
@@ -21,22 +21,18 @@ export default class HashTable<T> {
      */
     public store (key: string, value: T): void {
         this.table[key] = value;
-        this.size++;
+        this.items++;
     }
 
     /**
      * Retrieves a value from the internal table.
      */
-    public retrieve (key: string): T | boolean {
+    public retrieve (key: string): T {
         if (key === this.lastKey) {
             return this.lastValue;
         }
 
         var value = this.table[key];
-
-        if (U.isUndefined(value)) {
-            return false;
-        }
 
         this.lastKey = key;
         this.lastValue = value;
@@ -48,14 +44,14 @@ export default class HashTable<T> {
      * Determines whether the internal table contains a key value.
      */
     public has (key: string): boolean {
-        return !(this.retrieve(key) === false);
+        return !U.isUndefined(this.retrieve(key));
     }
 
     /**
      * Returns the number of elements in the internal table.
      */
-    public length (): number {
-        return this.size;
+    public size (): number {
+        return this.items;
     }
 
     /**
@@ -63,13 +59,13 @@ export default class HashTable<T> {
      */
     public delete (key: string): void {
         delete this.table[key];
-        this.size--;
+        this.items--;
     }
 
     /**
      * Iterates over the internal table, invoking a handler for each item.
      */
-    public each (handler: (key: string, value: T) => any): any {
+    public each (handler: Types.Iterator<T>): any {
         return U.each(this.table, handler);
     }
 
