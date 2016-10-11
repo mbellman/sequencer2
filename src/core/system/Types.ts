@@ -27,5 +27,5 @@ export type Collection<T> = Table<T> | Array<T>;
  * A type signature for functions which iterate over a native Array or key/value list.
  */
 export interface Iterator<T> {
-    (value: any, key: string | number): T;
+    (value: any, key: string | number): T | void;
 }
