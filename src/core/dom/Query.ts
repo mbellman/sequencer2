@@ -16,7 +16,7 @@ interface QueryLog {
 /**
  * @ private interface QueryFilter
  * 
- * A type signature for an object describing Element attributes specified by a query selector.
+ * A type signature for an object describing Element characteristics specified by a query selector.
  */
 interface QueryFilter {
     tag: string,
@@ -27,7 +27,7 @@ interface QueryFilter {
 /**
  * @ private class QueryCache
  * 
- * An periodically self-culling list of recent DOM queries.
+ * A periodically self-culling list of recent DOM queries.
  */
 class QueryCache extends HashTable<QueryLog> {
     private cleaner: number;
@@ -42,7 +42,18 @@ class QueryCache extends HashTable<QueryLog> {
     }
 
     /**
-     * Retrieves a stored Query from a QueryLog by selector.
+     * Caches a Query instance using its associated selector as a lookup key.
+     */
+    public save (selector: string, query: Query): void {
+        super.store(selector, {
+            query: query,
+            timestamp: Date.now()
+        });
+    }
+
+    /**
+     * Retrieves the Query from a cached QueryLog by selector lookup key, updating
+     * the QueryLog's timestamp value to extend its life cycle in the cache.
      */
     public getQuery (selector: string): Query {
         super.retrieve(selector).timestamp = Date.now();
@@ -157,7 +168,7 @@ class Query {
     }
 
     /**
-     * Determines whether an element possesses all attributes specified by a QueryFilter.
+     * Determines whether an element possesses all characteristics specified by a QueryFilter.
      * @private
      */
     private hasFilterMatch (element: Element, filter: QueryFilter): boolean {
@@ -191,7 +202,7 @@ class Query {
     }
 
     /**
-     * Returns the tag name within a selector, or null if none is specified.
+     * Returns the tag name from a query selector, or null if none is specified.
      * @private
      */
     private getTag (selector: string): string {
@@ -201,7 +212,7 @@ class Query {
     }
 
     /**
-     * Returns the id within a selector, or null if none is specified.
+     * Returns the id from a query selector, or null if none is specified.
      * @private
      */
     private getId (selector: string): string {
@@ -218,7 +229,7 @@ class Query {
     }
 
     /**
-     * Returns the class names within a selector as an Array of string values.
+     * Returns the classes from a query selector as an Array of string values.
      * @private
      */
     private getClasses (selector: string): Array<string> {
@@ -260,10 +271,7 @@ export default function $ (selector: string | Query): Query {
 
     var query: Query = new Query(selector);
 
-    $cache.store(selector, {
-        query: query,
-        timestamp: Date.now()
-    });
+    $cache.save(selector, query);
 
     return query;
 }
