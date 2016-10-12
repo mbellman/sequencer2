@@ -1,15 +1,27 @@
-import Time from "core/system/Time";
-import * as U from "core/system/Utilities";
 import HashTable from "core/system/HashTable";
+import Time from "core/system/Time";
+import * as u from "core/system/Utilities";
+import * as Types from "core/system/Types";
 
 /**
  * @ private interface QueryLog
  * 
- * The type signature for cached Queries.
+ * A type signature for cached/timestamped Query instances.
  */
 interface QueryLog {
     query: Query;
     timestamp: number;
+}
+
+/**
+ * @ private interface QueryFilter
+ * 
+ * A type signature for an object describing Element attributes specified by a query selector.
+ */
+interface QueryFilter {
+    tag: string,
+    id: string,
+    classes: Array<string>
 }
 
 /**
@@ -30,8 +42,7 @@ class QueryCache extends HashTable<QueryLog> {
     }
 
     /**
-     * Retrieves a stored QueryLog by selector.
-     * @private
+     * Retrieves a stored Query from a QueryLog by selector.
      */
     public getQuery (selector: string): Query {
         super.retrieve(selector).timestamp = Date.now();
@@ -66,8 +77,8 @@ class Query {
     /**
      * Constructor.
      */
-    constructor (selector: string | Array<Element>, stack?: Query) {
-        if (U.isArray(selector)) {
+    constructor (selector: string | Array<Element>, stack: Query = null) {
+        if (u.isArray(selector)) {
             this.initFromArray(<Array<Element>>selector);
         } else {
             this.initFromSelector(<string>selector);
@@ -87,22 +98,27 @@ class Query {
     /**
      * Returns the parent/ancestor element(s) of the queried element(s), optionally restricted by a selector.
      */
-    public parents (selector: string = "", levels: number = Number.POSITIVE_INFINITY): Query {
+    public parents (selector: string = '', levels: number = Number.POSITIVE_INFINITY): Query {
         var parents: Array<Element> = [];
-        var select: Object = this.parseSelector(selector);
+        var filter: QueryFilter = this.getQueryFilter(selector);
 
-        U.each(this.elements, (element: Element, index: number) => {
-            let el = <Node>element;
+        console.log(filter);
+
+        u.each(this.elements, (element: Element) => {
+            let parent = element.parentElement;
             let cycles: number = 0;
 
-            while ((el = el.parentNode) && cycles++ < levels) {
-                if (!selector) {
-                    parents.push(element);
+            while (parent && cycles++ < levels) {
+                if (selector === '') {
+                    parents.push(parent);
                     break;
                 } else {
-                    // TODO: Check select.tag, select.id, and
-                    // select.classes for parent node matches
+                    if (this.hasFilterMatch(parent, filter)) {
+                        parents.push(parent);
+                    }
                 }
+
+                parent = parent.parentElement;
             }
         });
 
@@ -117,7 +133,7 @@ class Query {
     }
 
     /**
-     * Returns the previous Query in the stack chain.
+     * Returns the previous Query in the stack chain if one exists; otherwise returns {this}.
      */
     public pop (): Query {
         return this.stack || this;
@@ -127,8 +143,8 @@ class Query {
      * Initializes the Query instance from an array of elements.
      * @private
      */
-    private initFromArray (selector: Array<Element>) {
-        this.elements = selector;
+    private initFromArray (elements: Array<Element>) {
+        this.elements = elements;
     }
 
     /**
@@ -136,56 +152,90 @@ class Query {
      * @private
      */
     private initFromSelector (selector: string) {
-        var elements: NodeList = this.query(<string>selector);
+        var elements: NodeList = document.querySelectorAll(selector);
 
-        this.elements = Array.prototype.slice.call(elements, 0);
-        this.selector = <string>selector;
+        this.elements = u.toArray(elements);
+        this.selector = selector;
     }
 
     /**
-     * Returns one or multiple elements via document.querySelectorAll().
+     * Determines whether an element possesses all attributes specified by a QueryFilter.
      * @private
      */
-    private query (selector: string) {
-        return document.querySelectorAll(selector);
+    private hasFilterMatch (element: Element, filter: QueryFilter): boolean {
+        if (filter.tag && element.tagName !== filter.tag) {
+            return false;
+        }
+
+        if (filter.id && element.id !== filter.id) {
+            return false;
+        }
+
+        if (filter.classes.length > 0) {
+            if (!u.intersects(filter.classes, u.toArray(element.classList))) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
-     * Returns an object describing the desired element attributes from a specified selector.
+     * Returns a QueryFilter object from a selector string.
      * @private
      */
-    private parseSelector (selector: string = ""): Object {
-        var tag: string;
-        var id: string;
-        var classes: Array<string>;
+    private getQueryFilter (selector: string = ''): QueryFilter {
+        return {
+            tag: this.getTag(selector),
+            id: this.getId(selector),
+            classes: this.getClasses(selector)
+        };
+    }
 
-        var startChar: string = selector.charAt(0);
-        var hashIndex: number = selector.indexOf('#');
-        var classChunks: Array<string> = selector.split('.').slice(1);
+    /**
+     * Returns the tag name within a selector, or null if none is specified.
+     * @private
+     */
+    private getTag (selector: string): string {
+        var tag = selector.split('#')[0].split('.')[0];
 
-        // Parse selector element tag
-        if (startChar !== '.' && startChar !== '#') {
-            tag = selector.split('#')[0].split('.')[0];
+        return (tag !== '' ? tag : null);
+    }
+
+    /**
+     * Returns the id within a selector, or null if none is specified.
+     * @private
+     */
+    private getId (selector: string): string {
+        var hashIndex = selector.indexOf('#');
+
+        if (hashIndex === -1) {
+            return null;
         }
 
-        // Parse selector element ID
-        if (hashIndex > -1) {
-            var idStart = hashIndex + 1;
-            var idEnd = selector.indexOf('.', hashIndex);
+        var idStart = hashIndex + 1;
+        var idEnd = selector.indexOf('.', hashIndex);
 
-            id = selector.substring(idStart, idEnd);
-        }
+        return selector.substring(idStart, idEnd);
+    }
 
-        // Parse selector element classes
-        U.each(classChunks, (chunk: string) => {
-            classes.push(chunk.split('#')[0]);
+    /**
+     * Returns the class names within a selector as an Array of string values.
+     * @private
+     */
+    private getClasses (selector: string): Array<string> {
+        var classChunks = selector.split('.').slice(1);
+        var classes = [];
+
+        u.each(classChunks, (chunk: string) => {
+            let name = chunk.split('#')[0];
+
+            if (name !== '') {
+                classes.push(name);
+            }
         });
 
-        return {
-            tag: tag,
-            id: id,
-            classes: classes
-        };
+        return classes;
     }
 }
 
@@ -201,7 +251,7 @@ var $cache: QueryCache = new QueryCache();
  * 
  * A factory function for Query instances.
  */
-export function $ (selector: string | Query): Query {
+export default function $ (selector: string | Query): Query {
     if (selector instanceof Query) {
         return selector;
     }

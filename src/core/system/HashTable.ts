@@ -1,5 +1,5 @@
 import * as Types from "core/system/Types";
-import * as U from "core/system/Utilities";
+import * as u from "core/system/Utilities";
 
 /**
  * @ public class HashTable
@@ -44,7 +44,7 @@ export default class HashTable<T> {
      * Determines whether the internal table contains a key value.
      */
     public has (key: string): boolean {
-        return !U.isUndefined(this.retrieve(key));
+        return !u.isUndefined(this.retrieve(key));
     }
 
     /**
@@ -66,7 +66,7 @@ export default class HashTable<T> {
      * Iterates over the internal table, invoking a handler for each item.
      */
     public each (handler: Types.Iterator<T>): any {
-        return U.each(this.table, handler);
+        return u.each(this.table, handler);
     }
 
     /**

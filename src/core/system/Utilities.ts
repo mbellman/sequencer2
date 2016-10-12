@@ -17,7 +17,7 @@ function eachInArray (array: Array<any>, handler: Types.Iterator<any>): any {
 /**
  * @ private function eachInTable
  * 
- * Iterates over the native properties in a generic key/value pair list, invoking a handler
+ * Iterates over the own properties in a generic key/value pair list, invoking a handler
  * function for each. The handler receives the property value and key name as arguments.
  */
 function eachInTable(table: Types.Table<any>, handler: Types.Iterator<any>): any {
@@ -120,12 +120,34 @@ export function has (target: Types.Collection<any>, value: any): boolean {
 }
 
 /**
+ * @ public function intersects
+ * 
+ * Determines whether any value in an array also exists in a second comparison array.
+ */
+export function intersects (array1: Array<any>, array2: Array<any>): boolean {
+    return !!eachInArray(array1, (element: any): boolean | void => {
+        if (isInArray(array2, element)) {
+            return true;
+        }
+    });
+}
+
+/**
  * @ public function hasOwn
  * 
  * Determines whether a key/value list contains a native property by key name.
  */
-export function hasOwn(object: Types.Table<any>, key: string): boolean {
+export function hasOwn (object: Types.Table<any>, key: string): boolean {
     return Object.prototype.hasOwnProperty.call(object, key);
+}
+
+/**
+ * @ public function toArray
+ * 
+ * Converts an array-like list structure to a standard Array and returns the Array.
+ */
+export function toArray (value: any): Array<any> {
+    return Array.prototype.slice.call(value, 0);
 }
 
 /**
@@ -133,6 +155,7 @@ export function hasOwn(object: Types.Table<any>, key: string): boolean {
  * 
  * Iterates over an iterable collection structure (a generic key/value
  * pair list or an Array), invoking a handler function for each item.
+ * Returns the value, if any, first returned within an iteration cycle.
  */
 export function each (collection: Types.Collection<any>, handler: Types.Iterator<any>): any {
     if (isArray(collection)) {

@@ -1,5 +1,5 @@
 import Action from "core/action/Action";
-import * as U from "core/system/Utilities";
+import * as u from "core/system/Utilities";
 import { ClickAction, MoveAction, DragAction } from "core/action/MouseActions";
 import { ActionT, CLICK_ACTION, MOVE_ACTION, DRAG_ACTION } from "core/Constants";
 
@@ -50,9 +50,9 @@ export default class ActionManager {
             case CLICK_ACTION:
                 return new ClickAction(target, data.clientX, data.clientY);
             case MOVE_ACTION:
-                return U.isUndefined(this.activeMove) ? new MoveAction() : this.activeMove;
+                return u.isUndefined(this.activeMove) ? new MoveAction() : this.activeMove;
             case DRAG_ACTION:
-                return U.isUndefined(this.activeDrag) ? new DragAction() : this.activeDrag;
+                return u.isUndefined(this.activeDrag) ? new DragAction() : this.activeDrag;
             default:
                 return null;
         }
