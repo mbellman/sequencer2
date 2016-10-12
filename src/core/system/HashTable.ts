@@ -25,14 +25,14 @@ export default class HashTable<T> {
     }
 
     /**
-     * Retrieves a value from the internal table.
+     * Retrieves a value from the internal table by key name.
      */
     public retrieve (key: string): T {
         if (key === this.lastKey) {
             return this.lastValue;
         }
 
-        var value = this.table[key];
+        var value: T = this.table[key];
 
         this.lastKey = key;
         this.lastValue = value;

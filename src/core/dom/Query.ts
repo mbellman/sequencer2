@@ -102,10 +102,8 @@ class Query {
         var parents: Array<Element> = [];
         var filter: QueryFilter = this.getQueryFilter(selector);
 
-        console.log(filter);
-
         u.each(this.elements, (element: Element) => {
-            let parent = element.parentElement;
+            let parent: Element = element.parentElement;
             let cycles: number = 0;
 
             while (parent && cycles++ < levels) {
@@ -197,7 +195,7 @@ class Query {
      * @private
      */
     private getTag (selector: string): string {
-        var tag = selector.split('#')[0].split('.')[0];
+        var tag: string = selector.split('#')[0].split('.')[0];
 
         return (tag !== '' ? tag : null);
     }
@@ -207,14 +205,14 @@ class Query {
      * @private
      */
     private getId (selector: string): string {
-        var hashIndex = selector.indexOf('#');
+        var hashIndex: number = selector.indexOf('#');
 
         if (hashIndex === -1) {
             return null;
         }
 
-        var idStart = hashIndex + 1;
-        var idEnd = selector.indexOf('.', hashIndex);
+        var idStart: number = hashIndex + 1;
+        var idEnd: number = selector.indexOf('.', hashIndex);
 
         return selector.substring(idStart, idEnd);
     }
@@ -224,11 +222,11 @@ class Query {
      * @private
      */
     private getClasses (selector: string): Array<string> {
-        var classChunks = selector.split('.').slice(1);
-        var classes = [];
+        var classChunks: Array<string> = selector.split('.').slice(1);
+        var classes: Array<string> = [];
 
         u.each(classChunks, (chunk: string) => {
-            let name = chunk.split('#')[0];
+            let name: string = chunk.split('#')[0];
 
             if (name !== '') {
                 classes.push(name);

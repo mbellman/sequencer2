@@ -7,6 +7,7 @@ import * as Types from "core/system/Types";
  * 
  * Iterates over the elements in a native Array, invoking a handler function
  * for each element until a non-undefined value is returned or the array ends.
+ * If a value is returned by the handler, this function will return that value.
  */
 function eachInArray (array: Array<any>, handler: Types.Iterator<any>): any {
     return loop(array.length, (i: number): any => {
@@ -23,7 +24,7 @@ function eachInArray (array: Array<any>, handler: Types.Iterator<any>): any {
 function eachInTable(table: Types.Table<any>, handler: Types.Iterator<any>): any {
     for (let key in table) {
         if (hasOwn(table, key)) {
-            let r = handler(table[key], key);
+            let r: any = handler(table[key], key);
 
             if (!isUndefined(r)) {
                 return r;
@@ -43,7 +44,7 @@ function eachInTable(table: Types.Table<any>, handler: Types.Iterator<any>): any
  */
 export function loop (times: number, handler: (i: number) => any): any {
     for (var x = 0 ; x < times ; x++) {
-        var r = handler(x);
+        var r: any = handler(x);
 
         if (!isUndefined(r)) {
             return r;
