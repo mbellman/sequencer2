@@ -54,10 +54,10 @@ export class Query {
      * Constructor.
      */
     constructor (selector: string | Array<Element>, stack: Query = null) {
-        if (u.isArray(selector)) {
-            this.initFromArray(<Array<Element>>selector);
+        if (selector instanceof Array) {
+            this.initFromArray(selector);
         } else {
-            this.initFromSelector(<string>selector);
+            this.initFromSelector(selector);
         }
 
         this.length = this.elements.length;
@@ -102,7 +102,7 @@ export class Query {
     /**
      * Binds an event handler to the queried element(s).
      */
-    public on (event: string, handler: (e: Event) => any): Query {
+    public on (event: string, handler: Types.EventHandler): Query {
         u.each(this.elements, (element: Element) => {
             element.addEventListener(event, handler);
         });

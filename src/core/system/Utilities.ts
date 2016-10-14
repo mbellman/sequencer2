@@ -85,15 +85,6 @@ export function isUndefined (value: any): boolean {
 }
 
 /**
- * @ public function isArray
- * 
- * Determines whether a value is a native Array.
- */
-export function isArray (value: any): boolean {
-    return (value instanceof Array);
-}
-
-/**
  * @ public function isInArray
  * 
  * Determines whether a native Array contains a value.
@@ -113,8 +104,8 @@ export function isInArray(array: Array<any>, value: any): boolean {
  * or whether a native Array contains a particular value.
  */
 export function has (target: Types.Collection<any>, value: any): boolean {
-    if (isArray(target)) {
-        return isInArray(<Array<any>>target, value);
+    if (target instanceof Array) {
+        return isInArray(target, value);
     }
 
     return (value in target);
@@ -159,8 +150,8 @@ export function toArray (value: any): Array<any> {
  * Returns the value, if any, first returned within an iteration cycle.
  */
 export function each (collection: Types.Collection<any>, handler: Types.Iterator<any>): any {
-    if (isArray(collection)) {
-        return eachInArray(<Array<any>>collection, handler);
+    if (collection instanceof Array) {
+        return eachInArray(collection, handler);
     }
 
     return eachInTable(collection, handler);
