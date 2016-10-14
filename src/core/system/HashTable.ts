@@ -34,8 +34,10 @@ export default class HashTable<T> {
 
         var value: T = this.table[key];
 
-        this.lastKey = key;
-        this.lastValue = value;
+        if (!u.isUndefined(value)) {
+            this.lastKey = key;
+            this.lastValue = value;
+        }
 
         return value;
     }

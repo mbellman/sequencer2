@@ -29,3 +29,12 @@ export type Collection<T> = Table<T> | Array<T>;
 export interface Iterator<T> {
     (value: any, key: string | number): T | void;
 }
+
+/**
+ * @ public interface EventHandler
+ * 
+ * A type signature for element event handler methods.
+ */
+export interface EventHandler {
+    (e: Event): void;
+}

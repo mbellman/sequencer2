@@ -1,85 +1,50 @@
-import HashTable from "core/system/HashTable";
-import Time from "core/system/Time";
+import QueryCache from "core/dom/QueryCache";
+import QueryEventManager from "core/dom/QueryEventManager";
 import * as u from "core/system/Utilities";
 import * as Types from "core/system/Types";
 
 /**
- * @ private interface QueryLog
- * 
- * A type signature for cached/timestamped Query instances.
- */
-interface QueryLog {
-    query: Query;
-    timestamp: number;
-}
-
-/**
  * @ private interface QueryFilter
  * 
- * A type signature for an object describing Element characteristics specified by a query selector.
+ * A type signature for an object describing element characteristics specified by a query selector.
  */
 interface QueryFilter {
+    /**
+     * The element tag name.
+     */
     tag: string,
+
+    /**
+     * The element ID.
+     */
     id: string,
+
+    /**
+     * The element classes.
+     */
     classes: Array<string>
 }
 
 /**
- * @ private class QueryCache
+ * @ private var $events
  * 
- * A periodically self-culling list of recent DOM queries.
+ * A single QueryEventManager instance used to store and manage all event delegation for Query instances.
  */
-class QueryCache extends HashTable<QueryLog> {
-    private cleaner: number;
-
-    /**
-     * Constructor.
-     */
-    constructor () {
-        super();
-
-        this.cleaner = window.setInterval(this.clean, 5000);
-    }
-
-    /**
-     * Caches a Query instance using its associated selector as a lookup key.
-     */
-    public save (selector: string, query: Query): void {
-        super.store(selector, {
-            query: query,
-            timestamp: Date.now()
-        });
-    }
-
-    /**
-     * Retrieves the Query from a cached QueryLog by selector lookup key, updating
-     * the QueryLog's timestamp value to extend its life cycle in the cache.
-     */
-    public getQuery (selector: string): Query {
-        super.retrieve(selector).timestamp = Date.now();
-
-        return super.retrieve(selector).query;
-    }
-
-    /**
-     * Periodically dereference stored QueryLogs for queries which haven't been made in a while.
-     * @private
-     */
-    private clean (): void {
-        super.each((query: QueryLog, key: string): any => {
-            if (Time.since(query.timestamp) > 20000) {
-                super.delete(key);
-            }
-        });
-    }
-}
+var $events: QueryEventManager = new QueryEventManager();
 
 /**
- * @ private class Query
+ * @ private var $cache
+ * 
+ * A persistent QueryCache instance used to optimize DOM lookups.
+ */
+var $cache: QueryCache = new QueryCache();
+
+/**
+ * @ public class Query
  * 
  * A DOM selector and manipulation manager.
  */
-class Query {
+export class Query {
     private stack: Query;
     private elements: Array<Element>;
     public length: number;
@@ -103,21 +68,21 @@ class Query {
      * Returns the direct parent element(s) of the queried element(s).
      */
     public parent (): Query {
-        return this.parents(undefined, 1);
+        return this.parents();
     }
 
     /**
-     * Returns the parent/ancestor element(s) of the queried element(s), optionally restricted by a selector.
+     * Returns the first parent/ancestor element(s) of the queried element(s) matching a selector,
+     * or the immediate parent element(s) when no selector is specified.
      */
-    public parents (selector: string = '', levels: number = Number.POSITIVE_INFINITY): Query {
+    public parents (selector: string = ''): Query {
         var parents: Array<Element> = [];
         var filter: QueryFilter = this.getQueryFilter(selector);
 
         u.each(this.elements, (element: Element) => {
             let parent: Element = element.parentElement;
-            let cycles: number = 0;
 
-            while (parent && cycles++ < levels) {
+            while (parent) {
                 if (selector === '') {
                     parents.push(parent);
                     break;
@@ -137,7 +102,11 @@ class Query {
     /**
      * Binds an event handler to the queried element(s).
      */
-    public on (event: string, handler: () => void): Query {
+    public on (event: string, handler: (e: Event) => any): Query {
+        u.each(this.elements, (element: Element) => {
+            element.addEventListener(event, handler);
+        });
+
         return this;
     }
 
@@ -249,13 +218,6 @@ class Query {
 }
 
 /**
- * @ private var $cache
- * 
- * A persistent QueryCache instance used to optimize DOM lookups.
- */
-var $cache: QueryCache = new QueryCache();
-
-/**
  * @ public function $
  * 
  * A factory function for Query instances.
@@ -271,7 +233,7 @@ export default function $ (selector: string | Query): Query {
 
     var query: Query = new Query(selector);
 
-    $cache.save(selector, query);
+    $cache.save(query);
 
     return query;
 }

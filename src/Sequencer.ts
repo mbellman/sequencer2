@@ -1,4 +1,4 @@
-import ActionManager from "core/action/ActionManager";
+//import ActionManager from "core/action/ActionManager";
 import $ from "core/dom/Query";
 
 /**
@@ -10,10 +10,9 @@ class Sequencer {
 	public static main (): void {
 		console.log("Initialized.");
 
-		var query = $('#goodbye');
-		var parents = query.parents('.hello');
-		console.log(query);
-		console.log(parents);
+		$('body').on('click', (e: Event) => {
+			console.log(e);
+		});
 	}
 }
 

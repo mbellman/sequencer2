@@ -8,11 +8,13 @@ do
 done
 
 echo "Compiling...";
+
 tsc
+
 if [ -f ${files[0]} ]; then
 	echo "Compressing..."
 	uglifyjs -o js/bundle.min.js js/bundle.js -c -m keep_fargs=true
 	echo "Done."
 else
-	echo "Compilation failure."
+	echo "Compilation failed."
 fi
