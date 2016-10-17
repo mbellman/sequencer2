@@ -1,5 +1,5 @@
-import * as Types from "core/system/Types";
-import * as u from "core/system/Utilities";
+import { Hash, Iterator } from "core/system/Types";
+import { isUndefined, each } from "core/system/Utilities";
 
 /**
  * @ public class HashTable
@@ -7,14 +7,10 @@ import * as u from "core/system/Utilities";
  * An associative map of keys to values.
  */
 export default class HashTable<T> {
-    private table: Types.Hash<T> = {};
-    private items: number = 0;
-
-    /**
-     * Last-lookup cache
-     */
-    private lastKey: string;
-    private lastValue: T;
+    private table: Hash<T> = {};          // An internal Object for the Hash Table data.
+    private items: number = 0;            // The number of items in the Hash Table.
+    private lastKey: string;              // The last key looked up from the Hash Table.
+    private lastValue: T;                 // The last value retrieved from the Hash Table.
 
     /**
      * Saves a value to the internal table.
@@ -34,7 +30,7 @@ export default class HashTable<T> {
 
         var value: T = this.table[key];
 
-        if (!u.isUndefined(value)) {
+        if (!isUndefined(value)) {
             this.lastKey = key;
             this.lastValue = value;
         }
@@ -46,7 +42,7 @@ export default class HashTable<T> {
      * Determines whether the internal table contains a key value.
      */
     public has (key: string): boolean {
-        return !u.isUndefined(this.retrieve(key));
+        return !isUndefined(this.retrieve(key));
     }
 
     /**
@@ -67,21 +63,21 @@ export default class HashTable<T> {
     /**
      * Iterates over the internal table, invoking a handler for each item.
      */
-    public each (handler: Types.Iterator<T>): any {
-        return u.each(this.table, handler);
+    public each (handler: Iterator): any {
+        return each(this.table, handler);
     }
 
     /**
      * Constructs a new HashTable from stored keys specified by name.
      */
-    public pick (...keys: Array<String>): HashTable<T> {
+    public pick (...keys: Array<string>): HashTable<T> {
         var picked: HashTable<T> = new HashTable<T>();
 
-        for (let key in keys) {
+        each(keys, (key: string): void => {
             if (this.has(key)) {
                 picked.store(key, this.table[key]);
             }
-        }
+        });
 
         return picked;
     }

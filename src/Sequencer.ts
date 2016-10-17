@@ -13,6 +13,10 @@ class Sequencer {
 		$('body').on('click', (e: Event) => {
 			console.log(e);
 		});
+
+		$('body').on('click', (e: Event) => {
+			console.log('Clicked!');
+		});
 	}
 }
 

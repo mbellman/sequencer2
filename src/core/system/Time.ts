@@ -4,11 +4,10 @@
  * Time and date utilities.
  */
 export default class Time {
-    public static now (): number {
-        return Date.now();
-    }
-
-    public static since (timestamp: number) {
-        return Time.now() - timestamp;
+    /**
+     * Returns the difference in milliseconds between the current time and an older timestamp.
+     */
+    public static since (timestamp: number): number {
+        return Date.now() - timestamp;
     }
 }

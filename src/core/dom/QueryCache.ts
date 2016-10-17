@@ -8,15 +8,8 @@ import { Query } from "core/dom/Query";
  * A type signature for cached/timestamped Query instances.
  */
 interface QueryLog {
-    /**
-     * The Query instance.
-     */
-    query: Query;
-
-    /**
-     * The last lookup time in Unix Epoch milliseconds.
-     */
-    time: number;
+    query: Query;    // The Query instance.
+    time: number;    // The last lookup time in Unix Epoch milliseconds.
 }
 
 /**
@@ -25,11 +18,8 @@ interface QueryLog {
  * A periodically self-culling list of recent DOM queries.
  */
 export default class QueryCache extends HashTable<QueryLog> {
-    private cleaner: number;
+    private cleaner: number;    // An interval timer for clean().
 
-    /**
-     * Constructor.
-     */
     constructor () {
         super();
 
@@ -58,10 +48,9 @@ export default class QueryCache extends HashTable<QueryLog> {
 
     /**
      * Periodically dereference stored QueryLogs for queries which haven't been made in a while.
-     * @private
      */
     private clean (): void {
-        super.each((log: QueryLog, key: string): any => {
+        super.each((log: QueryLog, key: string): void => {
             if (Time.since(log.time) > 20000) {
                 super.delete(key);
             }

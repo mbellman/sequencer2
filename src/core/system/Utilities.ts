@@ -1,7 +1,5 @@
 import * as Types from "core/system/Types";
 
-/* ~ Private ~ */
-
 /**
  * @ private function eachInArray
  * 
@@ -9,7 +7,7 @@ import * as Types from "core/system/Types";
  * for each element until a non-undefined value is returned or the array ends.
  * If a value is returned by the handler, this function will return that value.
  */
-function eachInArray (array: Array<any>, handler: Types.Iterator<any>): any {
+function eachInArray (array: Array<any>, handler: Types.Iterator): any {
     return loop(array.length, (i: number): any => {
         return handler(array[i], i);
     });
@@ -21,7 +19,7 @@ function eachInArray (array: Array<any>, handler: Types.Iterator<any>): any {
  * Iterates over the own properties in a generic key/value pair list, invoking a handler
  * function for each. The handler receives the property value and key name as arguments.
  */
-function eachInTable(table: Types.Table<any>, handler: Types.Iterator<any>): any {
+function eachInTable(table: Types.Table<any>, handler: Types.Iterator): any {
     for (let key in table) {
         if (hasOwn(table, key)) {
             let r: any = handler(table[key], key);
@@ -32,8 +30,6 @@ function eachInTable(table: Types.Table<any>, handler: Types.Iterator<any>): any
         }
     }
 }
-
-/* ~ Public ~ */
 
 /**
  * @ public function loop
@@ -149,7 +145,7 @@ export function toArray (value: any): Array<any> {
  * pair list or an Array), invoking a handler function for each item.
  * Returns the value, if any, first returned within an iteration cycle.
  */
-export function each (collection: Types.Collection<any>, handler: Types.Iterator<any>): any {
+export function each (collection: Types.Collection<any>, handler: Types.Iterator): any {
     if (collection instanceof Array) {
         return eachInArray(collection, handler);
     }

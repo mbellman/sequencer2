@@ -1,7 +1,8 @@
 import QueryCache from "core/dom/QueryCache";
-import QueryEventManager from "core/dom/QueryEventManager";
-import * as u from "core/system/Utilities";
-import * as Types from "core/system/Types";
+import Data from "core/dom/Data";
+import SyntheticEvent from "core/dom/SyntheticEvent";
+import { EventHandler } from "core/system/Types";
+import { each, toArray, intersects } from "core/system/Utilities";
 
 /**
  * @ private interface QueryFilter
@@ -9,28 +10,10 @@ import * as Types from "core/system/Types";
  * A type signature for an object describing element characteristics specified by a query selector.
  */
 interface QueryFilter {
-    /**
-     * The element tag name.
-     */
-    tag: string,
-
-    /**
-     * The element ID.
-     */
-    id: string,
-
-    /**
-     * The element classes.
-     */
-    classes: Array<string>
+    tag: string;               // The element tag name.
+    id: string;                // The element ID.
+    classes: Array<string>;    // The element classes.
 }
-
-/**
- * @ private var $events
- * 
- * A single QueryEventManager instance used to store and manage all event delegation for Query instances.
- */
-var $events: QueryEventManager = new QueryEventManager();
 
 /**
  * @ private var $cache
@@ -45,14 +28,11 @@ var $cache: QueryCache = new QueryCache();
  * A DOM selector and manipulation manager.
  */
 export class Query {
-    private stack: Query;
-    private elements: Array<Element>;
-    public length: number;
-    public selector: string;
+    public length: number;               // The length of the DOM Element collection.
+    public selector: string;             // The selector used for the Query, if applicable.
+    private stack: Query;                // The previous Query in the stack, retrievable via pop().
+    private elements: Array<Element>;    // The Query's collection of DOM Elements.
 
-    /**
-     * Constructor.
-     */
     constructor (selector: string | Array<Element>, stack: Query = null) {
         if (selector instanceof Array) {
             this.initFromArray(selector);
@@ -60,30 +40,32 @@ export class Query {
             this.initFromSelector(selector);
         }
 
+        this.registerElements();
+
         this.length = this.elements.length;
         this.stack = stack;
     }
 
     /**
-     * Returns the direct parent element(s) of the queried element(s).
+     * Returns the direct parent Element(s) of the queried Element(s).
      */
     public parent (): Query {
         return this.parents();
     }
 
     /**
-     * Returns the first parent/ancestor element(s) of the queried element(s) matching a selector,
-     * or the immediate parent element(s) when no selector is specified.
+     * Returns the first parent/ancestor Element(s) of the queried Element(s) matching a selector,
+     * or the immediate parent Element(s) when no selector is specified.
      */
-    public parents (selector: string = ''): Query {
+    public parents (selector: string = null): Query {
         var parents: Array<Element> = [];
         var filter: QueryFilter = this.getQueryFilter(selector);
 
-        u.each(this.elements, (element: Element) => {
+        each(this.elements, (element: Element) => {
             let parent: Element = element.parentElement;
 
             while (parent) {
-                if (selector === '') {
+                if (!selector) {
                     parents.push(parent);
                     break;
                 } else {
@@ -100,13 +82,20 @@ export class Query {
     }
 
     /**
-     * Binds an event handler to the queried element(s).
+     * Binds an event handler to the queried Element(s).
      */
-    public on (event: string, handler: Types.EventHandler): Query {
-        u.each(this.elements, (element: Element) => {
-            element.addEventListener(event, handler);
+    public on (event: string, handler: EventHandler): Query {
+        each(this.elements, (element: Element) => {
+            Data.addEventHandler(element, event, handler);
         });
 
+        return this;
+    }
+
+    /**
+     * Removes all event handlers from the queried Element(s).
+     */
+    public off (): Query {
         return this;
     }
 
@@ -118,27 +107,42 @@ export class Query {
     }
 
     /**
-     * Initializes the Query instance from an array of elements.
-     * @private
+     * Triggers all events of a specific type on the queried Elements.
      */
-    private initFromArray (elements: Array<Element>) {
+    public trigger (event: string): void {
+        each(this.elements, (element: Element): void => {
+            Data.triggerEvent(element, event, new SyntheticEvent(event));
+        });
+    }
+
+    /**
+     * Initializes the Query instance from an array of Elements.
+     */
+    private initFromArray (elements: Array<Element>): void {
         this.elements = elements;
     }
 
     /**
      * Initializes the Query instance from a selector string.
-     * @private
      */
-    private initFromSelector (selector: string) {
+    private initFromSelector (selector: string): void {
         var elements: NodeList = document.querySelectorAll(selector);
 
-        this.elements = u.toArray(elements);
+        this.elements = toArray(elements);
         this.selector = selector;
     }
 
     /**
-     * Determines whether an element possesses all characteristics specified by a QueryFilter.
-     * @private
+     * Creates a Data store entry for each Element in the Query.
+     */
+    private registerElements (): void {
+        each(this.elements, (element: Element): void => {
+            Data.register(element);
+        });
+    }
+
+    /**
+     * Determines whether an Element possesses all characteristics specified by a QueryFilter.
      */
     private hasFilterMatch (element: Element, filter: QueryFilter): boolean {
         if (filter.tag && element.tagName !== filter.tag) {
@@ -150,7 +154,7 @@ export class Query {
         }
 
         if (filter.classes.length > 0) {
-            if (!u.intersects(filter.classes, u.toArray(element.classList))) {
+            if (!intersects(filter.classes, toArray(element.classList))) {
                 return false;
             }
         }
@@ -160,21 +164,19 @@ export class Query {
 
     /**
      * Returns a QueryFilter object from a selector string.
-     * @private
      */
     private getQueryFilter (selector: string = ''): QueryFilter {
         return {
-            tag: this.getTag(selector),
-            id: this.getId(selector),
-            classes: this.getClasses(selector)
+            tag: this.getQueryTag(selector),
+            id: this.getQueryId(selector),
+            classes: this.getQueryClasses(selector)
         };
     }
 
     /**
      * Returns the tag name from a query selector, or null if none is specified.
-     * @private
      */
-    private getTag (selector: string): string {
+    private getQueryTag (selector: string): string {
         var tag: string = selector.split('#')[0].split('.')[0];
 
         return (tag !== '' ? tag : null);
@@ -182,9 +184,8 @@ export class Query {
 
     /**
      * Returns the id from a query selector, or null if none is specified.
-     * @private
      */
-    private getId (selector: string): string {
+    private getQueryId (selector: string): string {
         var hashIndex: number = selector.indexOf('#');
 
         if (hashIndex === -1) {
@@ -199,13 +200,12 @@ export class Query {
 
     /**
      * Returns the classes from a query selector as an Array of string values.
-     * @private
      */
-    private getClasses (selector: string): Array<string> {
+    private getQueryClasses (selector: string): Array<string> {
         var classChunks: Array<string> = selector.split('.').slice(1);
         var classes: Array<string> = [];
 
-        u.each(classChunks, (chunk: string) => {
+        each(classChunks, (chunk: string) => {
             let name: string = chunk.split('#')[0];
 
             if (name !== '') {
