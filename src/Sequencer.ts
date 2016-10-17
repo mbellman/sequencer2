@@ -14,7 +14,7 @@ class Sequencer {
 			console.log(e);
 		});
 
-		$('body').on('mousemove', (e: MouseEvent): void => {
+		$('body').on('mousemove', (e: MouseEvent) => {
 			console.log(e.clientX, e.clientX);
 		});
 

@@ -86,12 +86,12 @@ export class Query {
      * Binds an event handler to the queried Element(s).
      */
     public on (event: string, handler: EventHandler): Query {
-        each(this.elements, (element: Element): void => {
+        each(this.elements, (element: Element) => {
             if (!Listener.monitoring(element, event)) {
                 Listener.add(element, event);
             }
 
-            Data.getData(element).events.add(event, handler);
+            Data.getData(element).events.bind(event, handler);
         });
 
         return this;
@@ -101,9 +101,9 @@ export class Query {
      * Removes all event handlers from the queried Element(s).
      */
     public off (event: string = null, handler: EventHandler = null): Query {
-        each(this.elements, (element: Element): void => {
+        each(this.elements, (element: Element) => {
             Listener.remove(element, event);
-            Data.getData(element).events.remove(event, handler);
+            Data.getData(element).events.unbind(event, handler);
         });
 
         return this;
@@ -120,7 +120,7 @@ export class Query {
      * Triggers all events of a specific type on the queried Elements.
      */
     public trigger (event: string): void {
-        each(this.elements, (element: Element): void => {
+        each(this.elements, (element: Element) => {
             Data.getData(element).events.trigger(event, new SyntheticEvent(event));
         });
     }
@@ -146,7 +146,7 @@ export class Query {
      * Creates a Data store entry for each Element in the Query.
      */
     private registerElements (): void {
-        each(this.elements, (element: Element): void => {
+        each(this.elements, (element: Element) => {
             Data.register(element);
         });
     }

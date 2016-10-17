@@ -12,7 +12,7 @@ export default class EventStore {
     /**
      * Adds a new event handler to the internal store for a specific event.
      */
-    public add (event: string, handler: EventHandler): void {
+    public bind (event: string, handler: EventHandler): void {
         if (!this.events[event]) {
             this.events[event] = [];
         }
@@ -23,10 +23,10 @@ export default class EventStore {
     /**
      * Removes one or all event handlers from the internal store for a specific event.
      */
-    public remove (event: string = null, handler: EventHandler = null): void {
+    public unbind (event: string = null, handler: EventHandler = null): void {
         if (!event) {
-            each(this.events, (queue: HandlerQueue, name: string): void => {
-                this.remove(name);
+            each(this.events, (queue: HandlerQueue, name: string) => {
+                this.unbind(name);
             });
         } else {
             // TODO: Optionally splice specific handlers
@@ -41,7 +41,7 @@ export default class EventStore {
     public trigger (event: string, e: Event): void {
         var handlers: HandlerQueue = this.events[event];
 
-        each(handlers, (handler: EventHandler): void => {
+        each(handlers, (handler: EventHandler) => {
             handler(e);
         });
     }

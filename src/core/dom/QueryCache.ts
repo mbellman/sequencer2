@@ -50,7 +50,7 @@ export default class QueryCache extends HashTable<QueryLog> {
      * Periodically dereference stored QueryLogs for queries which haven't been made in a while.
      */
     private clean (): void {
-        super.each((log: QueryLog, key: string): void => {
+        super.each((log: QueryLog, key: string) => {
             if (Time.since(log.time) > 20000) {
                 super.delete(key);
             }

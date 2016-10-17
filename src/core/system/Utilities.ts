@@ -8,7 +8,7 @@ import * as Types from "core/system/Types";
  * If a value is returned by the handler, this function will return that value.
  */
 function eachInArray (array: Array<any>, handler: Types.Iterator): any {
-    return loop(array.length, (i: number): any => {
+    return loop(array.length, (i: number) => {
         return handler(array[i], i);
     });
 }
@@ -86,7 +86,7 @@ export function isUndefined (value: any): boolean {
  * Determines whether a native Array contains a value.
  */
 export function isInArray(array: Array<any>, value: any): boolean {
-    return !!eachInArray(array, (element: any): any => {
+    return !!eachInArray(array, (element: any): boolean | void => {
         if (element === value) {
             return true;
         }

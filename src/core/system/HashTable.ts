@@ -73,7 +73,7 @@ export default class HashTable<T> {
     public pick (...keys: Array<string>): HashTable<T> {
         var picked: HashTable<T> = new HashTable<T>();
 
-        each(keys, (key: string): void => {
+        each(keys, (key: string) => {
             if (this.has(key)) {
                 picked.store(key, this.table[key]);
             }

@@ -67,7 +67,7 @@ export default class Listener {
         var id: string = Data.getId(element);
         var events: Hash<boolean> = this.listeners[id];
 
-        each(events, (event: string): void => {
+        each(events, (event: string) => {
             element.removeEventListener(event, listener);
         });
 
