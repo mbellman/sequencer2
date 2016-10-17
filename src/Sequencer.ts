@@ -14,8 +14,14 @@ class Sequencer {
 			console.log(e);
 		});
 
+		$('body').on('mousemove', (e: MouseEvent): void => {
+			console.log(e.clientX, e.clientX);
+		});
+
 		$('body').on('click', (e: Event) => {
 			console.log('Clicked!');
+
+			$('body').off('click');
 		});
 	}
 }

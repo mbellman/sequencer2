@@ -1,8 +1,9 @@
 import QueryCache from "core/dom/QueryCache";
-import Data from "core/dom/Data";
+import Data from "core/dom/data/Data";
+import Listener from "core/dom/Listener";
 import SyntheticEvent from "core/dom/SyntheticEvent";
-import { EventHandler } from "core/system/Types";
 import { each, toArray, intersects } from "core/system/Utilities";
+import { EventHandler } from "core/system/Types";
 
 /**
  * @ private interface QueryFilter
@@ -85,8 +86,12 @@ export class Query {
      * Binds an event handler to the queried Element(s).
      */
     public on (event: string, handler: EventHandler): Query {
-        each(this.elements, (element: Element) => {
-            Data.addEventHandler(element, event, handler);
+        each(this.elements, (element: Element): void => {
+            if (!Listener.monitoring(element, event)) {
+                Listener.add(element, event);
+            }
+
+            Data.getData(element).events.add(event, handler);
         });
 
         return this;
@@ -95,7 +100,12 @@ export class Query {
     /**
      * Removes all event handlers from the queried Element(s).
      */
-    public off (): Query {
+    public off (event: string = null, handler: EventHandler = null): Query {
+        each(this.elements, (element: Element): void => {
+            Listener.remove(element, event);
+            Data.getData(element).events.remove(event, handler);
+        });
+
         return this;
     }
 
@@ -111,7 +121,7 @@ export class Query {
      */
     public trigger (event: string): void {
         each(this.elements, (element: Element): void => {
-            Data.triggerEvent(element, event, new SyntheticEvent(event));
+            Data.getData(element).events.trigger(event, new SyntheticEvent(event));
         });
     }
 
