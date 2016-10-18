@@ -22,11 +22,11 @@ export type Table<T> = Hash<T> | Object;
 export type Collection<T> = Table<T> | Array<T>;
 
 /**
- * @ public interface Iterator<T>
+ * @ public interface IterationHandler
  * 
  * A type signature for functions which iterate over a native Array or key/value list.
  */
-export interface Iterator {
+export interface IterationHandler {
     (value: any, key: string | number): any;
 }
 

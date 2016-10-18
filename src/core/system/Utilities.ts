@@ -1,4 +1,4 @@
-import * as Types from "core/system/Types";
+import { IterationHandler, Table, Collection } from "core/system/Types";
 
 /**
  * @ private function eachInArray
@@ -7,7 +7,7 @@ import * as Types from "core/system/Types";
  * for each element until a non-undefined value is returned or the array ends.
  * If a value is returned by the handler, this function will return that value.
  */
-function eachInArray (array: Array<any>, handler: Types.Iterator): any {
+function eachInArray (array: Array<any>, handler: IterationHandler): any {
     return loop(array.length, (i: number) => {
         return handler(array[i], i);
     });
@@ -19,7 +19,7 @@ function eachInArray (array: Array<any>, handler: Types.Iterator): any {
  * Iterates over the own properties in a generic key/value pair list, invoking a handler
  * function for each. The handler receives the property value and key name as arguments.
  */
-function eachInTable(table: Types.Table<any>, handler: Types.Iterator): any {
+function eachInTable(table: Table<any>, handler: IterationHandler): any {
     for (let key in table) {
         if (hasOwn(table, key)) {
             let r: any = handler(table[key], key);
@@ -99,7 +99,7 @@ export function isInArray(array: Array<any>, value: any): boolean {
  * Determines whether a generic key/value list contains a property by key name,
  * or whether a native Array contains a particular value.
  */
-export function has (target: Types.Collection<any>, value: any): boolean {
+export function has (target: Collection<any>, value: any): boolean {
     if (target instanceof Array) {
         return isInArray(target, value);
     }
@@ -125,7 +125,7 @@ export function intersects (array1: Array<any>, array2: Array<any>): boolean {
  * 
  * Determines whether a key/value list contains a native property by key name.
  */
-export function hasOwn (object: Types.Table<any>, key: string): boolean {
+export function hasOwn (object: Table<any>, key: string): boolean {
     return Object.prototype.hasOwnProperty.call(object, key);
 }
 
@@ -145,7 +145,7 @@ export function toArray (value: any): Array<any> {
  * pair list or an Array), invoking a handler function for each item.
  * Returns the value, if any, first returned within an iteration cycle.
  */
-export function each (collection: Types.Collection<any>, handler: Types.Iterator): any {
+export function each (collection: Collection<any>, handler: IterationHandler): any {
     if (collection instanceof Array) {
         return eachInArray(collection, handler);
     }

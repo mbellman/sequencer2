@@ -1,4 +1,4 @@
-import { Hash, Iterator } from "core/system/Types";
+import { Hash, IterationHandler } from "core/system/Types";
 import { isUndefined, each } from "core/system/Utilities";
 
 /**
@@ -63,7 +63,7 @@ export default class HashTable<T> {
     /**
      * Iterates over the internal table, invoking a handler for each item.
      */
-    public each (handler: Iterator): any {
+    public each (handler: IterationHandler): any {
         return each(this.table, handler);
     }
 
