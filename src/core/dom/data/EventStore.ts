@@ -23,14 +23,14 @@ export default class EventStore {
     /**
      * Removes one or all event handlers from the internal store for a specific event.
      */
-    public unbind (event: string = null, handler: EventHandler = null): void {
+    public unbind (event: string = null): void {
         if (!event) {
             each(this.events, (queue: HandlerQueue, name: string) => {
                 this.unbind(name);
             });
         } else {
-            // TODO: Optionally splice specific handlers
             this.events[event].length = 0;
+
             delete this.events[event];
         }
     }

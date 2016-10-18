@@ -82,6 +82,7 @@ export default class Listener {
         var id: string = Data.getId(element);
 
         element.removeEventListener(event, listener);
+
         delete this.listeners[id][event];
     }
 }

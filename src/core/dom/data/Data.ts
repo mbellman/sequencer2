@@ -1,6 +1,5 @@
 import HashTable from "core/system/HashTable";
 import EventStore from "core/dom/data/EventStore";
-import Listener from "core/dom/Listener";
 import { hasOwn, each } from "core/system/Utilities";
 import { Hash, EventHandler, HandlerQueue } from "core/system/Types";
 

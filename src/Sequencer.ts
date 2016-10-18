@@ -10,8 +10,16 @@ class Sequencer {
 	public static main (): void {
 		console.log("Initialized.");
 
-		$('.hello').on('click -> #goodbye', (e: Event) => {
+		$('body').on('mousedown -> #goodbye', function (e: Event) {
 			console.log('Boom!');
+
+			$(this).on('mousemove -> #goodbye', function (e: Event) {
+				console.log('Draaag...');
+			});
+
+			$(this).on('mouseup', function () {
+				$(this).off('mousemove').off('mouseup');
+			});
 		});
 	}
 }

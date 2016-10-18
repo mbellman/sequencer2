@@ -1,7 +1,7 @@
-import QueryCache from "core/dom/QueryCache";
 import Data from "core/dom/data/Data";
 import Listener from "core/dom/Listener";
 import SyntheticEvent from "core/dom/SyntheticEvent";
+import QueryCache from "core/dom/QueryCache";
 import { each, toArray, intersects } from "core/system/Utilities";
 import { EventHandler } from "core/system/Types";
 
@@ -86,31 +86,33 @@ export class Query {
      */
     public on (event: string, handler: EventHandler): Query {
         var delegates: Array<string> = event.split(' -> ');
-        var target: string = delegates[1];
-        event = delegates[0];
+        var eventName: string = delegates[0];
+        var selector: string = delegates[1];
 
-        if (target) {
-            handler = this.getTargetedHandler(handler, target);
+        handler = handler.bind(this);
+
+        if (selector) {
+            handler = this.getTargetedHandler(handler, selector);
         }
 
         each(this.elements, (element: Element) => {
-            if (!Listener.monitoring(element, event)) {
-                Listener.add(element, event);
+            if (!Listener.monitoring(element, eventName)) {
+                Listener.add(element, eventName);
             }
 
-            Data.getData(element).events.bind(event, handler);
+            Data.getData(element).events.bind(eventName, handler);
         });
 
         return this;
     }
 
     /**
-     * Removes all event handlers from the queried Element(s).
+     * Unbinds one or all events from the queried Element(s).
      */
-    public off (event: string = null, handler: EventHandler = null): Query {
+    public off (event: string = null): Query {
         each(this.elements, (element: Element) => {
             Listener.remove(element, event);
-            Data.getData(element).events.unbind(event, handler);
+            Data.getData(element).events.unbind(event);
         });
 
         return this;
@@ -144,13 +146,13 @@ export class Query {
      */
     private initFromSelector (selector: string): void {
         var elements: NodeList = document.querySelectorAll(selector);
-
         this.elements = toArray(elements);
         this.selector = selector;
     }
 
     /**
-     * Creates a Data store entry for each Element in the Query.
+     * Creates a Data store entry for each Element in the Query if
+     * one does not exist for that Element already.
      */
     private registerElements (): void {
         each(this.elements, (element: Element) => {
@@ -160,7 +162,7 @@ export class Query {
 
     /**
      * Returns a wrapper EventHandler function which only invokes the original
-     * when the event's currentTarget matches a target element selector.
+     * EventHandler when the event's target matches a specific selector.
      */
     private getTargetedHandler (handler: EventHandler, selector: string): EventHandler {
         return (e: Event) => {
