@@ -60,7 +60,6 @@ export class Query {
      */
     public parents (selector: string = null): Query {
         var parents: Array<Element> = [];
-        var filter: QueryFilter = this.getQueryFilter(selector);
 
         each(this.elements, (element: Element) => {
             let parent: Element = element.parentElement;
@@ -70,7 +69,7 @@ export class Query {
                     parents.push(parent);
                     break;
                 } else {
-                    if (this.hasFilterMatch(parent, filter)) {
+                    if (parent.matches(selector)) {
                         parents.push(parent);
                     }
                 }
@@ -86,6 +85,14 @@ export class Query {
      * Binds an event handler to the queried Element(s).
      */
     public on (event: string, handler: EventHandler): Query {
+        var delegates: Array<string> = event.split(' -> ');
+        var target: string = delegates[1];
+        event = delegates[0];
+
+        if (target) {
+            handler = this.getTargetedHandler(handler, target);
+        }
+
         each(this.elements, (element: Element) => {
             if (!Listener.monitoring(element, event)) {
                 Listener.add(element, event);
@@ -110,19 +117,19 @@ export class Query {
     }
 
     /**
-     * Returns the previous Query in the stack chain if one exists; otherwise returns {this}.
-     */
-    public pop (): Query {
-        return this.stack || this;
-    }
-
-    /**
      * Triggers all events of a specific type on the queried Elements.
      */
     public trigger (event: string): void {
         each(this.elements, (element: Element) => {
             Data.getData(element).events.trigger(event, new SyntheticEvent(event));
         });
+    }
+
+    /**
+     * Returns the previous Query in the stack chain if one exists; otherwise returns {this}.
+     */
+    public pop (): Query {
+        return this.stack || this;
     }
 
     /**
@@ -152,78 +159,17 @@ export class Query {
     }
 
     /**
-     * Determines whether an Element possesses all characteristics specified by a QueryFilter.
+     * Returns a wrapper EventHandler function which only invokes the original
+     * when the event's currentTarget matches a target element selector.
      */
-    private hasFilterMatch (element: Element, filter: QueryFilter): boolean {
-        if (filter.tag && element.tagName !== filter.tag) {
-            return false;
-        }
+    private getTargetedHandler (handler: EventHandler, selector: string): EventHandler {
+        return (e: Event) => {
+            var target: Element = <Element>e.target;
 
-        if (filter.id && element.id !== filter.id) {
-            return false;
-        }
-
-        if (filter.classes.length > 0) {
-            if (!intersects(filter.classes, toArray(element.classList))) {
-                return false;
+            if (target.matches(selector)) {
+                handler(e);
             }
-        }
-
-        return true;
-    }
-
-    /**
-     * Returns a QueryFilter object from a selector string.
-     */
-    private getQueryFilter (selector: string = ''): QueryFilter {
-        return {
-            tag: this.getQueryTag(selector),
-            id: this.getQueryId(selector),
-            classes: this.getQueryClasses(selector)
         };
-    }
-
-    /**
-     * Returns the tag name from a query selector, or null if none is specified.
-     */
-    private getQueryTag (selector: string): string {
-        var tag: string = selector.split('#')[0].split('.')[0];
-
-        return (tag !== '' ? tag : null);
-    }
-
-    /**
-     * Returns the id from a query selector, or null if none is specified.
-     */
-    private getQueryId (selector: string): string {
-        var hashIndex: number = selector.indexOf('#');
-
-        if (hashIndex === -1) {
-            return null;
-        }
-
-        var idStart: number = hashIndex + 1;
-        var idEnd: number = selector.indexOf('.', hashIndex);
-
-        return selector.substring(idStart, idEnd);
-    }
-
-    /**
-     * Returns the classes from a query selector as an Array of string values.
-     */
-    private getQueryClasses (selector: string): Array<string> {
-        var classChunks: Array<string> = selector.split('.').slice(1);
-        var classes: Array<string> = [];
-
-        each(classChunks, (chunk: string) => {
-            let name: string = chunk.split('#')[0];
-
-            if (name !== '') {
-                classes.push(name);
-            }
-        });
-
-        return classes;
     }
 }
 

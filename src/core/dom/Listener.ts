@@ -8,7 +8,7 @@ import { Hash } from "core/system/Types";
  * A single-use event listener used to dispatch all event handlers stored for an Element in its ElementData.
  */
 function listener (e: Event): void {
-    Data.getData(<Element>e.target).events.trigger(e.type, e);
+    Data.getData(<Element>e.currentTarget).events.trigger(e.type, e);
 }
 
 /**
