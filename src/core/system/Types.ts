@@ -49,7 +49,7 @@ export type HandlerQueue = Array<EventHandler>;
 /**
  * @ public interface ParsedEvent
  * 
- * A structure describing the name of an event and its namespace.
+ * A structure describing an event type/namespace pair.
  */
 export interface ParsedEvent {
     event: string;

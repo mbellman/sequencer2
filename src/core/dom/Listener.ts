@@ -98,9 +98,9 @@ export default class Listener {
     }
 
     /**
-     * Takes an event name which may or may not be namespaced and returns an object
-     * containing the base event type name and the EventHandler associated with the
-     * namespace, both of which can be passed to addEventListener/removeEventListener.
+     * Takes an event name string (which may or may not be namespaced) and returns an object
+     * containing the base event type name and the internal EventHandler listener associated
+     * with the namespace, both of which can be passed to addEventListener/removeEventListener.
      */
     private static getBindingArgs (event: string): any {
         var parsed: ParsedEvent = parseEventName(event);

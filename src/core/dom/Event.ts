@@ -1,7 +1,7 @@
 import { ParsedEvent } from "core/system/Types";
 
 /**
- * @ public function parseEvent
+ * @ public function parseEventName
  * 
  * Parses an event string and returns a Hash containing the event's name
  * and its period-delimited namespace where applicable.
