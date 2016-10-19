@@ -5,13 +5,21 @@ import { each } from "core/system/Utilities";
 import { Hash, EventHandler, ParsedEvent } from "core/system/Types";
 
 /**
+ * @ private type MonitoredEvents
+ * 
+ * A type signature for a list of event names (keys) and true
+ * boolean values representing their status as monitored.
+ */
+type MonitoredEvents = Hash<boolean>;
+
+/**
  * @ public class Listener
  * 
- * Provides an API for binding the internal listener() function to Elements for specific events.
+ * Provides an API for binding EventHandler listener methods to Elements for specific events.
  */
 export default class Listener {
     // A store of tables for each Element representing its currently monitored events.
-    private static elementEvents: Hash<Hash<boolean>> = {};
+    private static elementEvents: Hash<MonitoredEvents> = {};
 
     /**
      * A list of namespaced EventHandlers, starting with a default handler for non-namespaced events.
@@ -36,9 +44,9 @@ export default class Listener {
             this.elementEvents[id] = {};
         }
 
-        var elementEvents: Hash<boolean> = this.elementEvents[id];
+        var monitors: MonitoredEvents = this.elementEvents[id];
         var bindings: any = this.getBindingArgs(event);
-        elementEvents[event] = true;
+        monitors[event] = true;
 
         element.addEventListener(bindings.event, bindings.handler);
     }
@@ -59,13 +67,13 @@ export default class Listener {
      */
     public static monitoring (element: Element, event: string = null): boolean {
         var id: string = Data.getId(element);
-        var elementEvents: Hash<boolean> = this.elementEvents[id];
+        var monitors: MonitoredEvents = this.elementEvents[id];
 
         if (!event) {
-            return !!elementEvents;
+            return !!monitors;
         }
 
-        return (elementEvents ? !!elementEvents[event] : false);
+        return (monitors ? !!monitors[event] : false);
     }
 
     /**
@@ -73,9 +81,9 @@ export default class Listener {
      */
     private static removeAll (element: Element): void {
         var id: string = Data.getId(element);
-        var elementEvents: Hash<boolean> = this.elementEvents[id];
+        var monitors: MonitoredEvents = this.elementEvents[id];
 
-        each(elementEvents, (event: string) => {
+        each(monitors, (event: string) => {
             let bindings: any = this.getBindingArgs(event);
 
             element.removeEventListener(bindings.event, bindings.handler);
