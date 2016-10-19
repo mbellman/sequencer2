@@ -1,7 +1,7 @@
 /**
  * @ public interface Hash<T>
  * 
- * A generic key/value pair list type signature.
+ * A generic key/value pair list.
  */
 export interface Hash<T> {
     [key: string]: T;
@@ -10,21 +10,21 @@ export interface Hash<T> {
 /**
  * @ public type Table<T>
  * 
- * A type signature for generic key/value lists containing enumerable properties.
+ * A generic key/value list containing enumerable properties.
  */
 export type Table<T> = Hash<T> | Object;
 
 /**
  * @ public type Collection<T>
  * 
- * A type signature for either key/value lists or native Arrays.
+ * Either a key/value list or a native Array.
  */
 export type Collection<T> = Table<T> | Array<T>;
 
 /**
  * @ public interface IterationHandler
  * 
- * A type signature for functions which iterate over a native Array or key/value list.
+ * A function which iterates over a native Array or key/value list.
  */
 export interface IterationHandler {
     (value: any, key: string | number): any;
@@ -33,7 +33,7 @@ export interface IterationHandler {
 /**
  * @ public interface EventHandler
  * 
- * A type signature for element event handler methods.
+ * An Element event handler method.
  */
 export interface EventHandler {
     (e: Event): void;
@@ -42,6 +42,16 @@ export interface EventHandler {
 /**
  * @ public type HandlerQueue
  * 
- * A type signature for an Array of EventHandlers.
+ * An Array of EventHandlers.
  */
 export type HandlerQueue = Array<EventHandler>;
+
+/**
+ * @ public interface ParsedEvent
+ * 
+ * A structure describing the name of an event and its namespace.
+ */
+export interface ParsedEvent {
+    event: string;
+    namespace: string;
+}

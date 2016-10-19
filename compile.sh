@@ -8,7 +8,6 @@ do
 done
 
 echo "Compiling...";
-
 tsc
 
 if [ -f ${files[0]} ]; then

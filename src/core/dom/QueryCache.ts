@@ -1,5 +1,6 @@
 import HashTable from "core/system/HashTable";
 import Time from "core/system/Time";
+
 import { Query } from "core/dom/Query";
 
 /**

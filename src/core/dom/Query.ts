@@ -1,20 +1,10 @@
 import Data from "core/dom/data/Data";
 import Listener from "core/dom/Listener";
-import SyntheticEvent from "core/dom/SyntheticEvent";
 import QueryCache from "core/dom/QueryCache";
-import { each, toArray, intersects } from "core/system/Utilities";
-import { EventHandler } from "core/system/Types";
 
-/**
- * @ private interface QueryFilter
- * 
- * A type signature for an object describing element characteristics specified by a query selector.
- */
-interface QueryFilter {
-    tag: string;               // The element tag name.
-    id: string;                // The element ID.
-    classes: Array<string>;    // The element classes.
-}
+import { SyntheticEvent } from "core/dom/Event";
+import { each, toArray, intersects } from "core/system/Utilities";
+import { Hash, EventHandler } from "core/system/Types";
 
 /**
  * @ private var $cache
@@ -29,10 +19,14 @@ var $cache: QueryCache = new QueryCache();
  * A DOM selector and manipulation manager.
  */
 export class Query {
-    public length: number;               // The length of the DOM Element collection.
-    public selector: string;             // The selector used for the Query, if applicable.
-    private stack: Query;                // The previous Query in the stack, retrievable via pop().
-    private elements: Array<Element>;    // The Query's collection of DOM Elements.
+    // The length of the DOM Element collection.
+    public length: number;
+    // The selector used for the Query, if applicable.
+    public selector: string;
+    // The previous Query in the stack, retrievable via pop().
+    private stack: Query;
+    // The Query's collection of DOM Elements.
+    private elements: Array<Element>;
 
     constructor (selector: string | Array<Element>, stack: Query = null) {
         if (selector instanceof Array) {

@@ -12,8 +12,6 @@
 			<span id="goodbye"></span>
 		</div>
 
-		<div class="seeya"></div>
-
 		<script type="text/javascript" src="js/bundle.min.js"></script>
 		<script>
 			require(['Sequencer'], function (Sequencer) {
