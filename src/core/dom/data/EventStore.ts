@@ -15,7 +15,7 @@ type EventTable = Hash<HandlerQueue>;
  * An event handler store and manager for individual Elements.
  */
 export default class EventStore {
-    // An internal store of EventTables for each event bound to the Element.
+    /* @ An internal store of EventTables for each event bound to the Element. */
     private events: Hash<EventTable> = {};
 
     /**

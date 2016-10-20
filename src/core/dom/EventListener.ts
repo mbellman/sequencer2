@@ -4,7 +4,7 @@ import { each } from "core/system/Utilities";
 import { Hash, EventHandler } from "core/system/Types";
 
 /**
- * @ private type ActiveEvents
+ * @ private type ListenerTable
  * 
  * A type signature for a list of event names (keys) and true boolean
  * values indicating that a listener is bound on the event.
@@ -28,7 +28,7 @@ function globalListener (e: Event): void {
  * Provides an API for binding EventHandler listener methods to Elements for specific events.
  */
 export default class EventListener {
-    // A store of ListenerTables for each Element representing its currently bound events.
+    /* @ A store of ListenerTables for each Element representing its currently bound events. */
     private static listeners: Hash<ListenerTable> = {};
 
     /**
@@ -72,7 +72,7 @@ export default class EventListener {
     }
 
     /**
-     * Removes all event listeners from an Element and deletes its store in {activeEvents}.
+     * Removes all event listeners from an Element and deletes its store in {listeners}.
      */
     private static removeAll (element: Element): void {
         var id: string = Data.getId(element);

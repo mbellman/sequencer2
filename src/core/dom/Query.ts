@@ -20,13 +20,13 @@ var $cache: QueryCache = new QueryCache();
  * A DOM selector and manipulation manager.
  */
 export class Query {
-    // The length of the DOM Element collection.
+    /* @ The length of the DOM Element collection. */
     public length: number;
-    // The selector used for the Query, if applicable.
+    /* @ The selector used for the Query, if applicable. */
     public selector: string;
-    // The previous Query in the stack, retrievable via pop().
+    /* @ The previous Query in the stack, retrievable via pop(). */
     private stack: Query;
-    // The Query's collection of DOM Elements.
+    /* @ The Query's collection of DOM Elements. */
     private elements: Array<Element>;
 
     constructor (selector: string | Array<Element>, stack: Query = null) {

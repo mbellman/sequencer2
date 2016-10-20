@@ -7,10 +7,14 @@ import { isUndefined, each } from "core/system/Utilities";
  * An associative map of keys to values.
  */
 export default class HashTable<T> {
-    private table: Hash<T> = {};          // An internal Object for the Hash Table data.
-    private items: number = 0;            // The number of items in the Hash Table.
-    private lastKey: string;              // The last key looked up from the Hash Table.
-    private lastValue: T;                 // The last value retrieved from the Hash Table.
+    /* @ An internal Object for the Hash Table data. */
+    private table: Hash<T> = {};
+    /* @ The number of items in the Hash Table. */
+    private items: number = 0;
+    /* @ The last key looked up from the Hash Table. */
+    private lastKey: string;
+    /* @ The last value retrieved from the Hash Table. */
+    private lastValue: T;
 
     /**
      * Saves a value to the internal table.

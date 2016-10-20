@@ -9,8 +9,10 @@ import { Query } from "core/dom/Query";
  * A type signature for cached/timestamped Query instances.
  */
 interface QueryLog {
-    query: Query;    // The Query instance.
-    time: number;    // The last lookup time in Unix Epoch milliseconds.
+    /* @ The Query instance. */
+    query: Query;
+    /* @ The last lookup time in Unix Epoch milliseconds. */
+    time: number;
 }
 
 /**
@@ -19,7 +21,8 @@ interface QueryLog {
  * A periodically self-culling list of recent DOM queries.
  */
 export default class QueryCache extends HashTable<QueryLog> {
-    private cleaner: number;    // An interval timer for clean().
+    /* @ An interval timer for clean(). */
+    private cleaner: number;
 
     constructor () {
         super();

@@ -17,7 +17,8 @@ const DATA_ID: string = 'data';
  * A collection of data pertaining to individual DOM Elements.
  */
 class ElementData {
-    public events: EventStore = new EventStore();    // An event handler store for the Element.
+    /* @ An event handler store for the Element. */
+    public events: EventStore = new EventStore();
 }
 
 /**
@@ -26,7 +27,8 @@ class ElementData {
  * Provides an internal store and accompanying methods for managing data pertaining to individual DOM Elements.
  */
 export default class Data {
-    private static data: HashTable<ElementData> = new HashTable<ElementData>();    // The internal store for DOM Element data.
+    /* @ The internal store for DOM Element data. */
+    private static data: HashTable<ElementData> = new HashTable<ElementData>();
 
     /**
      * Creates a new data entry for a DOM Element using a unique pseudo-random identifier.
