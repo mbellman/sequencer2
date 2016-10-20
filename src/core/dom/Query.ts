@@ -1,8 +1,8 @@
 import Data from "core/dom/data/Data";
-import Listener from "core/dom/Listener";
+import EventListener from "core/dom/EventListener";
 import QueryCache from "core/dom/QueryCache";
+import SyntheticEvent from "core/dom/SyntheticEvent";
 
-import { SyntheticEvent } from "core/dom/Event";
 import { each, toArray, intersects } from "core/system/Utilities";
 import { Hash, EventHandler } from "core/system/Types";
 
@@ -79,19 +79,16 @@ export class Query {
      * Binds an event handler to the queried Element(s).
      */
     public on (event: string, handler: EventHandler): Query {
-        var delegates: Array<string> = event.split(' -> ');
-        var eventName: string = delegates[0];
-        var selector: string = delegates[1];
-
+        var [ eventName, targetSelector ] = event.split(' -> ');
         handler = handler.bind(this);
 
-        if (selector) {
-            handler = this.getTargetedHandler(handler, selector);
+        if (targetSelector) {
+            handler = this.createTargetedHandler(handler, targetSelector);
         }
 
         each(this.elements, (element: Element) => {
-            if (!Listener.monitoring(element, eventName)) {
-                Listener.add(element, eventName);
+            if (!EventListener.listening(element, eventName)) {
+                EventListener.add(element, eventName);
             }
 
             Data.getData(element).events.bind(eventName, handler);
@@ -105,7 +102,7 @@ export class Query {
      */
     public off (event: string = null): Query {
         each(this.elements, (element: Element) => {
-            Listener.remove(element, event);
+            EventListener.remove(element, event);
             Data.getData(element).events.unbind(event);
         });
 
@@ -116,8 +113,10 @@ export class Query {
      * Triggers all events of a specific type on the queried Elements.
      */
     public trigger (event: string): void {
+        var [ event, namespace ] = event.split('.');
+
         each(this.elements, (element: Element) => {
-            Data.getData(element).events.trigger(event, new SyntheticEvent(event));
+            Data.getData(element).events.trigger(event, namespace, new SyntheticEvent(event));
         });
     }
 
@@ -158,7 +157,7 @@ export class Query {
      * Returns a wrapper EventHandler function which only invokes the original
      * EventHandler when the event's target matches a specific selector.
      */
-    private getTargetedHandler (handler: EventHandler, selector: string): EventHandler {
+    private createTargetedHandler (handler: EventHandler, selector: string): EventHandler {
         return (e: Event) => {
             var target: Element = <Element>e.target;
 

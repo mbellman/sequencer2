@@ -45,13 +45,3 @@ export interface EventHandler {
  * An Array of EventHandlers.
  */
 export type HandlerQueue = Array<EventHandler>;
-
-/**
- * @ public interface ParsedEvent
- * 
- * A structure describing an event type/namespace pair.
- */
-export interface ParsedEvent {
-    event: string;
-    namespace: string;
-}

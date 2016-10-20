@@ -1,11 +1,12 @@
-import { parseEventName } from "core/dom/Event";
 import { each } from "core/system/Utilities";
 import { Hash, HandlerQueue, EventHandler, ParsedEvent } from "core/system/Types";
 
 /**
  * @ private type HandlerQueueTable
  * 
- * A type signature for a Hash of HandlerQueues.
+ * A type signature for a Hash table of HandlerQueues, where each key represents an event namespace
+ * and the value is a HandlerQueue of EventHandlers for that namespace. A single HandlerQueueTable
+ * type can be used to store all EventHandlers bound on an event and namespaces of that event.
  */
 type HandlerQueueTable = Hash<HandlerQueue>;
 
@@ -15,16 +16,16 @@ type HandlerQueueTable = Hash<HandlerQueue>;
  * An event handler store and manager for individual Elements.
  */
 export default class EventStore {
-    // The internal event handler store.
+    // An internal store of HandlerQueueTables for each event bound to the Element.
     private events: Hash<HandlerQueueTable> = {};
 
     /**
      * Adds a new event handler to the internal store for a specific event.
      */
     public bind (event: string, handler: EventHandler): void {
-        var parsed: ParsedEvent = parseEventName(event);
+        var [ event, namespace ] = event.split('.');
 
-        this.updateEventStore(parsed.event, parsed.namespace, handler);
+        this.updateEventStore(event, namespace, handler);
     }
 
     /**
@@ -32,25 +33,25 @@ export default class EventStore {
      */
     public unbind (event: string = null): void {
         if (!event) {
-            each(this.events, (table: HandlerQueueTable, name: string) => {
-                delete this.events[name];
+            each(this.events, (eventTable: HandlerQueueTable, event: string) => {
+                delete this.events[event];
             });
         } else {
-            var parsed: ParsedEvent = parseEventName(event);
+            var [ event, namespace ] = event.split('.');
 
-            if (!parsed.namespace) {
-                delete this.events[parsed.event];
+            if (!namespace) {
+                delete this.events[event];
             } else {
-                delete this.events[parsed.event][parsed.namespace];
+                delete this.events[event][namespace];
             }
         }
     }
 
     /**
-     * Dispatches all event handlers for a specific event type/namespace.
+     * Dispatches all event handlers for a specific event type/namespace pair.
      */
-    public trigger (event: string, e: Event, namespace: string = null): void {
-        var handlers: HandlerQueue = this.events[event][namespace || 'default'];
+    public trigger (event: string, namespace: string = 'default', e: Event): void {
+        var handlers: HandlerQueue = this.events[event][namespace];
 
         each(handlers, (handler: EventHandler) => {
             handler(e);
@@ -58,7 +59,7 @@ export default class EventStore {
     }
 
     /**
-     * Adds an EventHandler to the internal store for a particular event/namespace combination.
+     * Adds an EventHandler to the internal store for a particular event type/namespace pair.
      */
     private updateEventStore (event: string, namespace: string = 'default', handler: EventHandler): void {
         this.validateEventStore(event, namespace);
@@ -73,10 +74,10 @@ export default class EventStore {
             this.events[event] = {};
         }
 
-        var table: HandlerQueueTable = this.events[event];
+        var eventTable: HandlerQueueTable = this.events[event];
 
-        if (!table[namespace]) {
-            table[namespace] = [];
+        if (!eventTable[namespace]) {
+            eventTable[namespace] = [];
         }
     }
 }
