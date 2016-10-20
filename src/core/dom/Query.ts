@@ -103,7 +103,7 @@ export class Query {
      * Unbinds one or all events from the queried Element(s).
      */
     public off (event: string = null): Query {
-        var [ event, namespace ] = event.split('.');
+        var [ event, namespace ] = (event ? event.split('.') : [null, null]);
 
         each(this.elements, (element: Element) => {
             let eventStore: EventStore = Data.getData(element).events;
