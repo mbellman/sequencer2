@@ -1,7 +1,8 @@
-import Data from "core/dom/data/Data";
-import EventListener from "core/dom/EventListener";
 import QueryCache from "core/dom/QueryCache";
+import EventListener from "core/dom/EventListener";
+import Data from "core/dom/data/Data";
 import SyntheticEvent from "core/dom/SyntheticEvent";
+import EventStore from "core/dom/data/EventStore";
 
 import { each, toArray, intersects } from "core/system/Utilities";
 import { Hash, EventHandler } from "core/system/Types";
@@ -79,7 +80,8 @@ export class Query {
      * Binds an event handler to the queried Element(s).
      */
     public on (event: string, handler: EventHandler): Query {
-        var [ eventName, targetSelector ] = event.split(' -> ');
+        var [ event, targetSelector ] = event.split(' -> ');
+        var [ event, namespace ] = event.split('.');
         handler = handler.bind(this);
 
         if (targetSelector) {
@@ -87,11 +89,11 @@ export class Query {
         }
 
         each(this.elements, (element: Element) => {
-            if (!EventListener.listening(element, eventName)) {
-                EventListener.add(element, eventName);
+            if (!EventListener.listening(element, event)) {
+                EventListener.add(element, event);
             }
 
-            Data.getData(element).events.bind(eventName, handler);
+            Data.getData(element).events.bind(event, namespace, handler);
         });
 
         return this;
@@ -101,9 +103,16 @@ export class Query {
      * Unbinds one or all events from the queried Element(s).
      */
     public off (event: string = null): Query {
+        var [ event, namespace ] = event.split('.');
+
         each(this.elements, (element: Element) => {
-            EventListener.remove(element, event);
-            Data.getData(element).events.unbind(event);
+            let eventStore: EventStore = Data.getData(element).events;
+
+            eventStore.unbind(event, namespace);
+
+            if (!namespace || !eventStore.has(event)) {
+                EventListener.remove(element, event);
+            }
         });
 
         return this;
@@ -113,10 +122,10 @@ export class Query {
      * Triggers all events of a specific type on the queried Elements.
      */
     public trigger (event: string): void {
-        var [ event, namespace ] = event.split('.');
+        event = event.split('.')[0];
 
         each(this.elements, (element: Element) => {
-            Data.getData(element).events.trigger(event, namespace, new SyntheticEvent(event));
+            Data.getData(element).events.trigger(event, new SyntheticEvent(event));
         });
     }
 

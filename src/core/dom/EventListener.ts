@@ -1,15 +1,26 @@
 import Data from "core/dom/data/Data";
 
 import { each } from "core/system/Utilities";
-import { Hash, EventHandler, ParsedEvent } from "core/system/Types";
+import { Hash, EventHandler } from "core/system/Types";
 
 /**
- * @ private type ActiveEventTable
+ * @ private type ActiveEvents
  * 
  * A type signature for a list of event names (keys) and true boolean
  * values indicating that a listener is bound on the event.
  */
-type ActiveEventTable = Hash<boolean>;
+type ListenerTable = Hash<boolean>;
+
+/**
+ * @ private function globalListener
+ * 
+ * An event listener function bound only once per Element per event type. The
+ * {type} property of the recorded event will be used to trigger all stored
+ * EventHandlers for that event type in the Element's EventStore data.
+ */
+function globalListener (e: Event): void {
+    Data.getData(<Element>e.currentTarget).events.trigger(e.type, e);
+}
 
 /**
  * @ public class EventListener
@@ -17,19 +28,8 @@ type ActiveEventTable = Hash<boolean>;
  * Provides an API for binding EventHandler listener methods to Elements for specific events.
  */
 export default class EventListener {
-    // A store of ActiveEventTables for each Element representing its currently bound events.
-    private static activeEvents: Hash<ActiveEventTable> = {};
-
-    // A list of namespaced EventHandlers, starting with a default handler for non-namespaced events.
-    // When namespaced events are bound on Elements via Listener.add(), a namespaced handler will be
-    // automatically created (if it does not exist) as a handler.default() wrapper method and added
-    // to the list as a property with its namespace as the property key. The namespaced EventHandler
-    // can then be bound on/removed from Elements when events with that namespace are delegated.
-    private static handlers: any = {
-        default: (e: Event, namespace: string = 'default'): void => {
-            Data.getData(<Element>e.currentTarget).events.trigger(e.type, namespace, e);
-        }
-    };
+    // A store of ListenerTables for each Element representing its currently bound events.
+    private static listeners: Hash<ListenerTable> = {};
 
     /**
      * Binds a listener to an Element for a specific event.
@@ -38,14 +38,12 @@ export default class EventListener {
         var id: string = Data.getId(element);
 
         if (!this.listening(element)) {
-            this.activeEvents[id] = {};
+            this.listeners[id] = {};
         }
 
-        var elementEvents: ActiveEventTable = this.activeEvents[id];
-        var { eventName, eventHandler } = this.getListenerBindings(event);
-        elementEvents[event] = true;
+        this.listeners[id][event] = true;
 
-        element.addEventListener(eventName, eventHandler);
+        element.addEventListener(event, globalListener);
     }
 
     /**
@@ -64,13 +62,13 @@ export default class EventListener {
      */
     public static listening (element: Element, event: string = null): boolean {
         var id: string = Data.getId(element);
-        var elementEvents: ActiveEventTable = this.activeEvents[id];
+        var listeners: ListenerTable = this.listeners[id];
 
         if (!event) {
-            return !!elementEvents;
+            return !!listeners;
         }
 
-        return (elementEvents ? !!elementEvents[event] : false);
+        return (listeners ? !!listeners[event] : false);
     }
 
     /**
@@ -78,15 +76,13 @@ export default class EventListener {
      */
     private static removeAll (element: Element): void {
         var id: string = Data.getId(element);
-        var elementEvents: ActiveEventTable = this.activeEvents[id];
+        var listeners: ListenerTable = this.listeners[id];
 
-        each(elementEvents, (event: string) => {
-            let { eventName, eventHandler } = this.getListenerBindings(event);
-
-            element.removeEventListener(eventName, eventHandler);
+        each(listeners, (event: string) => {
+            element.removeEventListener(event, globalListener);
         });
 
-        delete this.activeEvents[id];
+        delete this.listeners[id];
     }
 
     /**
@@ -95,39 +91,9 @@ export default class EventListener {
      */
     private static removeOne (element: Element, event: string): void {
         var id: string = Data.getId(element);
-        var { eventName, eventHandler } = this.getListenerBindings(event);
 
-        element.removeEventListener(eventName, eventHandler);
+        element.removeEventListener(event, globalListener);
 
-        delete this.activeEvents[id][event];
-    }
-
-    /**
-     * Takes an event name string (which may or may not be namespaced) and returns an object
-     * containing the base event type name and the internal EventHandler listener associated
-     * with the namespace, both of which can be passed to addEventListener/removeEventListener.
-     */
-    private static getListenerBindings (event: string): any {
-        var [ event, namespace ] = event.split('.');
-        var handler: EventHandler = this.handlers[namespace || 'default'];
-
-        if (!handler) {
-            handler = this.createNamespacedHandler(namespace);
-        }
-
-        return {
-            eventName: event,
-            eventHandler: handler
-        };
-    }
-
-    /**
-     * Creates a namespaced EventHandler wrapper for handler.default() in the
-     * internal {handlers} list and returns the reference.
-     */
-    private static createNamespacedHandler (namespace: string = null): EventHandler {
-        return this.handlers[namespace] = (e: Event) => {
-            this.handlers.default(e, namespace);
-        };
+        delete this.listeners[id][event];
     }
 }
