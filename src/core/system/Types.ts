@@ -1,3 +1,5 @@
+import { Action } from "core/action/Action";
+
 /**
  * @ public interface Hash<T>
  * 
@@ -45,3 +47,12 @@ export interface EventHandler {
  * An Array of EventHandlers.
  */
 export type HandlerQueue = Array<EventHandler>;
+
+/**
+ * @ public interface ActionHandler
+ * 
+ * A handler method to be run on Action triggers (analagous to EventHandler methods on Events).
+ */
+export interface ActionHandler {
+    (action: Action): void;
+}

@@ -1,11 +1,13 @@
 import QueryCache from "core/dom/QueryCache";
-import EventListener from "core/dom/EventListener";
+import EventListener from "core/event/EventListener";
 import Data from "core/dom/data/Data";
-import SyntheticEvent from "core/dom/SyntheticEvent";
+import SyntheticEvent from "core/event/SyntheticEvent";
 import EventStore from "core/dom/data/EventStore";
+import ActionManager from "core/action/ActionManager";
 
 import { each, toArray, intersects } from "core/system/Utilities";
-import { Hash, EventHandler } from "core/system/Types";
+import { Hash, EventHandler, ActionHandler } from "core/system/Types";
+import { ActionType } from "core/action/Action";
 
 /**
  * @ private var $cache
@@ -121,12 +123,23 @@ export class Query {
     /**
      * Triggers all events of a specific type on the queried Elements.
      */
-    public trigger (event: string): void {
+    public trigger (event: string): Query {
         event = event.split('.')[0];
 
         each(this.elements, (element: Element) => {
             Data.getData(element).events.trigger(event, new SyntheticEvent(event));
         });
+
+        return this;
+    }
+
+    /**
+     * Delegates an ActionHandler to be fired for a particular Action on the Element(s).
+     */
+    public react (action: ActionType, handler: ActionHandler): Query {
+        ActionManager.delegate(this, action, handler);
+
+        return this;
     }
 
     /**

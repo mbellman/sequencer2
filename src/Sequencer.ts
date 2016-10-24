@@ -1,4 +1,3 @@
-//import ActionManager from "core/action/ActionManager";
 import $ from "core/dom/Query";
 
 /**
