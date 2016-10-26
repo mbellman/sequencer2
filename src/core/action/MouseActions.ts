@@ -14,12 +14,12 @@ abstract class MouseAction extends Action {
     /* @ The y coordinate of the mouse action. */
 	public mouseY: number;
 
-	constructor (type: ActionType, target: Element, mouseX: number, mouseY: number) {
+	constructor (type: ActionType, e: MouseEvent) {
 		super(type);
 
-		this.target = target;
-		this.mouseX = mouseX;
-		this.mouseY = mouseY;
+		this.target = <Element>e.target;
+		this.mouseX = e.clientX;
+		this.mouseY = e.clientY;
 	}
 }
 
@@ -29,8 +29,8 @@ abstract class MouseAction extends Action {
  * A single-click action.
  */
 export class ClickAction extends MouseAction {
-	constructor (target: Element, mouseX: number, mouseY: number) {
-		super(ActionType.CLICK, target, mouseX, mouseY);
+	constructor (e: MouseEvent) {
+		super(ActionType.CLICK, e);
 	}
 }
 
@@ -39,13 +39,13 @@ export class ClickAction extends MouseAction {
  * 
  * A double-click action.
  */
-export class DoubleClickAction extends ClickAction {
+export class DoubleClickAction extends MouseAction {
+    /* @ The delay in milliseconds between clicks. */
     public delay: number;
 
-    constructor(target: Element, mouseX: number, mouseY: number, delay: number) {
-        super(target, mouseX, mouseY);
+    constructor(e: MouseEvent, delay: number) {
+        super(ActionType.DOUBLE_CLICK, e);
 
-        this.type = ActionType.DOUBLE_CLICK;
         this.delay = delay;
     }
 }
@@ -65,11 +65,11 @@ export class MoveAction extends MouseAction {
     /* @ The total y displacement of the move action. */
     public deltaY: number;
 
-    constructor (target: Element, mouseX: number, mouseY: number) {
-        super(ActionType.MOVE, target, mouseX, mouseY);
+    constructor (e: MouseEvent) {
+        super(ActionType.MOVE, e);
 
-        this.startX = mouseX;
-        this.startY = mouseY;
+        this.startX = e.clientX;
+        this.startY = e.clientY;
     }
 
     /**
@@ -103,8 +103,8 @@ export class DragAction extends MoveAction {
     /* @ The time progression, in milliseconds, over the last tick. */
     private dt: number;
 
-    constructor (target: Element, x: number, y: number) {
-        super(target, x, y);
+    constructor (e: MouseEvent) {
+        super(e);
 
         this.type = ActionType.DRAG;
         this.dt = this.timestamp;

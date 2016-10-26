@@ -1,7 +1,7 @@
 import $ from "core/dom/Query";
 
 import { ActionType } from "core/action/Action";
-import { DoubleClickAction } from "core/action/MouseActions";
+import { ClickAction } from "core/action/MouseActions";
 
 /**
  * @ class Sequencer
@@ -12,7 +12,7 @@ class Sequencer {
 	public static main (): void {
 		console.log("Initialized.");
 
-		$('.hello').react(ActionType.DOUBLE_CLICK, (d: DoubleClickAction) => {
+		$('.hello').react(ActionType.RIGHT_CLICK, (d: ClickAction) => {
 			console.log(d);
 		});
 	}

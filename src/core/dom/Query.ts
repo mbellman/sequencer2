@@ -126,8 +126,6 @@ export class Query {
      * Triggers all events of a specific type on the queried Elements.
      */
     public trigger (event: string): Query {
-        event = event.split('.')[0];
-
         each(this.elements, (element: Element) => {
             Data.getData(element).events.trigger(event, new SyntheticEvent(event));
         });

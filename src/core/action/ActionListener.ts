@@ -5,7 +5,6 @@ import ActionStore from "core/dom/data/ActionStore";
 import { Query } from "core/dom/Query";
 import { ActionType, Action } from "core/action/Action";
 import { ClickAction, DoubleClickAction, MoveAction, DragAction } from "core/action/MouseActions";
-import { Hash, ActionHandler } from "core/system/Types";
 
 /**
  * @ public class ActionListener
@@ -32,7 +31,7 @@ export default class ActionListener {
                 var delay: number = Time.since(actions.last.timestamp);
 
                 if (actions.last.type === ActionType.CLICK && delay < 250) {
-                    var doubleClick: Action = new DoubleClickAction(<Element>e.target, e.clientX, e.clientY, delay);
+                    var doubleClick: Action = new DoubleClickAction(e, delay);
 
                     actions.trigger(ActionType.DOUBLE_CLICK, doubleClick);
 
@@ -40,14 +39,20 @@ export default class ActionListener {
                 }
             }
 
-            var click: Action = new ClickAction(<Element>e.target, e.clientX, e.clientY);
+            var click: Action = new ClickAction(e);
 
             actions.trigger(ActionType.CLICK, click);
         });
     }
 
     private static delegateRightClick (query: Query): void {
+        query.on('contextmenu', (e: MouseEvent) => {
+            var click: Action = new ClickAction(e);
 
+            Data.getData(<Element>e.currentTarget).actions.trigger(ActionType.RIGHT_CLICK, click);
+
+            e.preventDefault();
+        });
     }
 
     private static delegateMove (query: Query): void {
