@@ -1,5 +1,6 @@
 import HashTable from "core/system/HashTable";
 import EventStore from "core/dom/data/EventStore";
+import ActionStore from "core/dom/data/ActionStore";
 
 import { hasOwn, each } from "core/system/Utilities";
 import { Hash, EventHandler, HandlerQueue } from "core/system/Types";
@@ -19,6 +20,8 @@ const DATA_ID: string = 'data';
 class ElementData {
     /* @ An event handler store for the Element. */
     public events: EventStore = new EventStore();
+    /* @ An action handler store for the Element. */
+    public actions: ActionStore = new ActionStore();
 }
 
 /**

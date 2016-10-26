@@ -3,7 +3,7 @@ import EventListener from "core/event/EventListener";
 import Data from "core/dom/data/Data";
 import SyntheticEvent from "core/event/SyntheticEvent";
 import EventStore from "core/dom/data/EventStore";
-import ActionManager from "core/action/ActionManager";
+import ActionListener from "core/action/ActionListener";
 
 import { each, toArray, intersects } from "core/system/Utilities";
 import { Hash, EventHandler, ActionHandler } from "core/system/Types";
@@ -30,6 +30,8 @@ export class Query {
     private stack: Query;
     /* @ The Query's collection of DOM Elements. */
     private elements: Array<Element>;
+    /* @ A boolean state representing whether or not the Query has been bound with action handlers via react(). */
+    private reacting: boolean = false;
 
     constructor (selector: string | Array<Element>, stack: Query = null) {
         if (selector instanceof Array) {
@@ -137,7 +139,13 @@ export class Query {
      * Delegates an ActionHandler to be fired for a particular Action on the Element(s).
      */
     public react (action: ActionType, handler: ActionHandler): Query {
-        ActionManager.delegate(this, action, handler);
+        if (!this.reacting) {
+            ActionListener.register(this);
+        }
+
+        each(this.elements, (element: Element) => {
+            Data.getData(element).actions.bind(action, handler);
+        });
 
         return this;
     }

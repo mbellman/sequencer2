@@ -35,6 +35,22 @@ export class ClickAction extends MouseAction {
 }
 
 /**
+ * @ public class DoubleClickAction
+ * 
+ * A double-click action.
+ */
+export class DoubleClickAction extends ClickAction {
+    public delay: number;
+
+    constructor(target: Element, mouseX: number, mouseY: number, delay: number) {
+        super(target, mouseX, mouseY);
+
+        this.type = ActionType.DOUBLE_CLICK;
+        this.delay = delay;
+    }
+}
+
+/**
  * @ public class MoveAction
  * 
  * A continuous mouse movement action.
@@ -100,14 +116,14 @@ export class DragAction extends MoveAction {
      */
     public update (mouseX: number, mouseY: number): void {
         this.updateDeltaTime();
-        this.trackVelocity(mouseX, mouseY);
+        this.updateVelocity(mouseX, mouseY);
         super.update(mouseX, mouseY);
 
         this.duration += this.dt;
     }
 
     /**
-     * Keeps track of the time between tick updates.
+     * Keeps track of the time between mouse updates.
      */
     private updateDeltaTime (): void {
         var time: number = Date.now();
@@ -119,7 +135,7 @@ export class DragAction extends MoveAction {
     /**
      * Keeps track of the drag action velocity.
      */
-    private trackVelocity (x: number, y: number): void {
+    private updateVelocity (x: number, y: number): void {
         var dx: number = x - this.mouseX;
         var dy: number = y - this.mouseY;
 

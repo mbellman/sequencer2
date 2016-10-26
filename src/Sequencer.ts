@@ -1,5 +1,8 @@
 import $ from "core/dom/Query";
 
+import { ActionType } from "core/action/Action";
+import { DoubleClickAction } from "core/action/MouseActions";
+
 /**
  * @ class Sequencer
  * 
@@ -9,20 +12,8 @@ class Sequencer {
 	public static main (): void {
 		console.log("Initialized.");
 
-		var test = 0;
-
-		$('.hello').on('click -> #goodbye', function (e) {
-			console.log('Click!');
-
-			if (++test > 5) {
-				$(this).off('click');
-			}
-		});
-
-		$('.hello').on('click.space -> #goodbye', function (e) {
-			console.log('Clicky!');
-
-			$(this).off('click.space');
+		$('.hello').react(ActionType.DOUBLE_CLICK, (d: DoubleClickAction) => {
+			console.log(d);
 		});
 	}
 }

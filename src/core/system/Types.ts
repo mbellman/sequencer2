@@ -38,15 +38,8 @@ export interface IterationHandler {
  * An Element event handler method.
  */
 export interface EventHandler {
-    (e: Event): void;
+    (e: Event): any;
 }
-
-/**
- * @ public type HandlerQueue
- * 
- * An Array of EventHandlers.
- */
-export type HandlerQueue = Array<EventHandler>;
 
 /**
  * @ public interface ActionHandler
@@ -54,5 +47,12 @@ export type HandlerQueue = Array<EventHandler>;
  * A handler method to be run on Action triggers (analagous to EventHandler methods on Events).
  */
 export interface ActionHandler {
-    (action: Action): void;
+    (action: Action): any;
 }
+
+/**
+ * @ public type HandlerQueue
+ * 
+ * An Array of EventHandlers.
+ */
+export type HandlerQueue = Array<EventHandler | ActionHandler>;
