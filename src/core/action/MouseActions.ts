@@ -61,9 +61,9 @@ export class MoveAction extends MouseAction {
     /* @ The starting y coordinate of the move action. */
     public startY: number;
     /* @ The total x displacement of the move action. */
-    public deltaX: number;
+    public deltaX: number = 0;
     /* @ The total y displacement of the move action. */
-    public deltaY: number;
+    public deltaY: number = 0;
 
     constructor (e: MouseEvent) {
         super(ActionType.MOVE, e);
@@ -91,7 +91,7 @@ export class MoveAction extends MouseAction {
  */
 export class DragAction extends MoveAction {
     /* @ The running duration in milliseconds of the drag action, starting from the mouse down being held down. */
-    public duration: number;
+    public duration: number = 0;
     /* @ The velocity of the drag action over the last tick. */
     public velocity: number;
     /* @ The x component of the last-tick-velocity vector. */
@@ -107,7 +107,7 @@ export class DragAction extends MoveAction {
         super(e);
 
         this.type = ActionType.DRAG;
-        this.dt = this.timestamp;
+        this.dt = this.lastTime = this.timestamp;
     }
 
     /**

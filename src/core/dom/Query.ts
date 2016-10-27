@@ -30,8 +30,9 @@ export class Query {
     private stack: Query;
     /* @ The Query's collection of DOM Elements. */
     private elements: Array<Element>;
-    /* @ A boolean state representing whether or not the Query has been bound with action handlers via react(). */
-    private reacting: boolean = false;
+    /* @ A table of boolean states for each ActionType representing whether or not
+     * @ the Query has been bound with that particular action via react(). */
+    private reacting: Hash<boolean> = {};
 
     constructor (selector: string | Array<Element>, stack: Query = null) {
         if (selector instanceof Array) {
@@ -107,6 +108,16 @@ export class Query {
      * Unbinds one or all events from the queried Element(s).
      */
     public off (event: string = null): Query {
+        var events: Array<String> = event.split(' ');
+
+        if (events.length > 1) {
+            each(events, (event: string) => {
+                this.off(event);
+            });
+
+            return this;
+        }
+
         var [ event, namespace ] = (event ? event.split('.') : [null, null]);
 
         each(this.elements, (element: Element) => {
@@ -137,8 +148,10 @@ export class Query {
      * Delegates an ActionHandler to be fired for a particular Action on the Element(s).
      */
     public react (action: ActionType, handler: ActionHandler): Query {
-        if (!this.reacting) {
-            ActionListener.register(this);
+        if (!this.reacting[action]) {
+            ActionListener.add(this, action);
+
+            this.reacting[action] = true;
         }
 
         each(this.elements, (element: Element) => {

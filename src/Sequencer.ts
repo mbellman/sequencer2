@@ -1,7 +1,7 @@
 import $ from "core/dom/Query";
 
 import { ActionType } from "core/action/Action";
-import { ClickAction } from "core/action/MouseActions";
+import { DoubleClickAction, DragAction } from "core/action/MouseActions";
 
 /**
  * @ class Sequencer
@@ -12,8 +12,14 @@ class Sequencer {
 	public static main (): void {
 		console.log("Initialized.");
 
-		$('.hello').react(ActionType.RIGHT_CLICK, (d: ClickAction) => {
-			console.log(d);
+		$('.hello').react(ActionType.DRAG, (a: DragAction) => {
+			if (a.duration < 500 && a.velocity > 6) {
+				console.log('Swipe!');
+			}
+		});
+
+		$('.hello').react(ActionType.DOUBLE_CLICK, (a: DoubleClickAction) => {
+			console.log(a.delay);
 		});
 	}
 }

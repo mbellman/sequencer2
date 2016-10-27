@@ -2,7 +2,7 @@ import Data from "core/dom/data/Data";
 import Time from "core/system/Time";
 import ActionStore from "core/dom/data/ActionStore";
 
-import { Query } from "core/dom/Query";
+import $, { Query } from "core/dom/Query";
 import { ActionType, Action } from "core/action/Action";
 import { ClickAction, DoubleClickAction, MoveAction, DragAction } from "core/action/MouseActions";
 
@@ -11,12 +11,26 @@ import { ClickAction, DoubleClickAction, MoveAction, DragAction } from "core/act
  */
 export default class ActionListener {
     /**
-     * Delegates all Action bindings on an Element.
+     * Delegates a particular Action binding on an Element.
      */
-    public static register (query: Query): void {
-        this.delegateClick(query);
-        this.delegateRightClick(query);
-        this.delegateMove(query);
+    public static add (query: Query, action: ActionType): void {
+        switch (action) {
+            case ActionType.CLICK:
+            case ActionType.DOUBLE_CLICK:
+                this.delegateClick(query);
+                break;
+            case ActionType.RIGHT_CLICK:
+                this.delegateRightClick(query);
+                break;
+            case ActionType.MOVE:
+                this.delegateMove(query);
+                break;
+            case ActionType.DRAG:
+                this.delegateDrag(query);
+                break;
+            default:
+                break;
+        }
     }
 
     /**
@@ -31,31 +45,62 @@ export default class ActionListener {
                 var delay: number = Time.since(actions.last.timestamp);
 
                 if (actions.last.type === ActionType.CLICK && delay < 250) {
-                    var doubleClick: Action = new DoubleClickAction(e, delay);
+                    var doubleClickAction: DoubleClickAction = new DoubleClickAction(e, delay);
 
-                    actions.trigger(ActionType.DOUBLE_CLICK, doubleClick);
+                    actions.trigger(ActionType.DOUBLE_CLICK, doubleClickAction);
 
                     return;
                 }
             }
 
-            var click: Action = new ClickAction(e);
+            var click: ClickAction = new ClickAction(e);
 
             actions.trigger(ActionType.CLICK, click);
         });
     }
 
     private static delegateRightClick (query: Query): void {
-        query.on('contextmenu', (e: MouseEvent) => {
-            var click: Action = new ClickAction(e);
+        query.on('contextmenu.ActionListener', (e: MouseEvent) => {
+            var clickAction: Action = new ClickAction(e);
+            clickAction.type = ActionType.RIGHT_CLICK;
 
-            Data.getData(<Element>e.currentTarget).actions.trigger(ActionType.RIGHT_CLICK, click);
+            Data.getData(<Element>e.currentTarget).actions.trigger(ActionType.RIGHT_CLICK, clickAction);
 
             e.preventDefault();
         });
     }
 
     private static delegateMove (query: Query): void {
+        var moveAction: MoveAction;
+        var lastUpdate: number = 0;
 
+        query.on('mousemove.ActionListener', (e: MouseEvent) => {
+            if (Time.since(lastUpdate) > 1000) {
+                moveAction = new MoveAction(e);
+            } else {
+                moveAction.update(e.clientX, e.clientY);
+            }
+
+            lastUpdate = Date.now();
+
+            Data.getData(<Element>e.currentTarget).actions.trigger(ActionType.MOVE, moveAction);
+        });
+    }
+
+    private static delegateDrag (query: Query): void {
+        query.on('mousedown.ActionListener', (e: MouseEvent) => {
+            var actions: ActionStore = Data.getData(<Element>e.currentTarget).actions;
+            var dragAction: DragAction = new DragAction(e);
+
+            $('body').on('mousemove.ActionListener', (e: MouseEvent) => {
+                dragAction.update(e.clientX, e.clientY);
+
+                actions.trigger(ActionType.DRAG, dragAction);
+            });
+
+            $('body').on('mouseup.ActionListener', function (e: MouseEvent) {
+                $(this).off('mousemove.ActionListener mouseup.ActionListener');
+            });
+        });
     }
 }

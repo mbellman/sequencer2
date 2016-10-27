@@ -27,7 +27,7 @@ export default class QueryCache extends HashTable<QueryLog> {
     constructor () {
         super();
 
-        this.cleaner = window.setInterval(this.clean, 5000);
+        this.cleaner = window.setInterval(this.clean, 10000);
     }
 
     /**
@@ -55,7 +55,7 @@ export default class QueryCache extends HashTable<QueryLog> {
      */
     private clean (): void {
         super.each((log: QueryLog, key: string) => {
-            if (Time.since(log.time) > 20000) {
+            if (Time.since(log.time) > 60000) {
                 super.delete(key);
             }
         });
