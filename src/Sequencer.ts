@@ -1,8 +1,6 @@
-import $ from "core/dom/Query";
+import Application from "core/application/Application";
+import MenuBarView from "views/MenuBarView";
 import ChannelView from "views/ChannelView";
-
-import { ActionType } from "core/action/Action";
-import { DoubleClickAction, DragAction } from "core/action/MouseActions";
 
 /**
  * @ class Sequencer
@@ -12,16 +10,13 @@ import { DoubleClickAction, DragAction } from "core/action/MouseActions";
 class Sequencer {
 	public static main (): void {
 		console.log("Initialized.");
+		
+		var app: Application = new Application('sequencer');
 
-		var channelView: ChannelView = new ChannelView();
-		var channelView2: ChannelView = new ChannelView();
-
-		channelView.attach('main.sequencer');
-		channelView2.attach('main.sequencer');
-
-		$('body').on('click', () => {
-			channelView2.detach();
-		});
+		app.attach('main.sequencer');
+		app.addView(new MenuBarView());
+		app.addView(new ChannelView());
+		app.start();
 	}
 }
 
