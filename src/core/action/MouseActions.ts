@@ -92,6 +92,8 @@ export class MoveAction extends MouseAction {
 export class DragAction extends MoveAction {
     /* @ The running duration in milliseconds of the drag action, starting from the mouse down being held down. */
     public duration: number = 0;
+    /* @ A string representing the approximate direction of the drag action over the last tick ('up' | 'right' | 'left' | 'down'). */
+    public direction: string;
     /* @ The velocity of the drag action over the last tick. */
     public velocity: number;
     /* @ The x component of the last-tick-velocity vector. */
@@ -117,6 +119,7 @@ export class DragAction extends MoveAction {
     public update (mouseX: number, mouseY: number): void {
         this.updateDeltaTime();
         this.updateVelocity(mouseX, mouseY);
+        this.updateDirection();
         super.update(mouseX, mouseY);
 
         this.duration += this.dt;
@@ -142,5 +145,19 @@ export class DragAction extends MoveAction {
         this.velocityX = dx / this.dt;
         this.velocityY = dy / this.dt;
         this.velocity = magnitude(this.velocityX, this.velocityY);
+    }
+
+    /**
+     * Keeps track of the drag action direction.
+     */
+    private updateDirection (): void {
+        var absoluteVX: number = Math.abs(this.velocityX);
+        var absoluteVY: number = Math.abs(this.velocityY);
+
+        if (absoluteVX > absoluteVY) {
+            this.direction = (this.velocityX < 0 ? 'left' : 'right');
+        } else {
+            this.direction = (this.velocityY < 0 ? 'up' : 'down');
+        }
     }
 }

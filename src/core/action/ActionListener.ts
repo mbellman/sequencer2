@@ -34,7 +34,7 @@ export default class ActionListener {
     }
 
     /**
-     * Binds a singular click event handler on a Query which will be used to manage
+     * Binds a singular click event handler on a Query to manage
      * both single-click and double-click Actions.
      */
     private static delegateClick (query: Query): void {
@@ -59,6 +59,9 @@ export default class ActionListener {
         });
     }
 
+    /**
+     * Binds a 'contextmenu' event handler on a Query to manage right-click Actions.
+     */
     private static delegateRightClick (query: Query): void {
         query.on('contextmenu.ActionListener', (e: MouseEvent) => {
             var clickAction: Action = new ClickAction(e);
@@ -70,6 +73,9 @@ export default class ActionListener {
         });
     }
 
+    /**
+     * Binds a 'mousemove' event handler on a Query to manage move Actions.
+     */
     private static delegateMove (query: Query): void {
         var moveAction: MoveAction;
         var lastUpdate: number = 0;
@@ -87,6 +93,10 @@ export default class ActionListener {
         });
     }
 
+    /**
+     * Binds a 'mousedown' event handler on a Query which uses additional body
+     * event handlers to monitor and manage drag Actions.
+     */
     private static delegateDrag (query: Query): void {
         query.on('mousedown.ActionListener', (e: MouseEvent) => {
             var actions: ActionStore = Data.getData(<Element>e.currentTarget).actions;

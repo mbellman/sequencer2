@@ -14,7 +14,7 @@ class Sequencer {
 
 		$('.hello').react(ActionType.DRAG, (a: DragAction) => {
 			if (a.duration < 500 && a.velocity > 6) {
-				console.log('Swipe!');
+				console.log('Swipe ' + a.direction + '!');
 			}
 		});
 
