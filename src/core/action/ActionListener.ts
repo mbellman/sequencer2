@@ -3,7 +3,7 @@ import Time from "core/system/Time";
 import ActionStore from "core/dom/data/ActionStore";
 
 import $, { Query } from "core/dom/Query";
-import { ActionType, Action } from "core/action/Action";
+import { ActionType } from "core/action/Action";
 import { ClickAction, DoubleClickAction, MoveAction, DragAction } from "core/action/MouseActions";
 
 /**
@@ -64,11 +64,10 @@ export default class ActionListener {
      */
     private static delegateRightClick (query: Query): void {
         query.on('contextmenu.ActionListener', (e: MouseEvent) => {
-            var clickAction: Action = new ClickAction(e);
+            var clickAction: ClickAction = new ClickAction(e);
             clickAction.type = ActionType.RIGHT_CLICK;
 
             Data.getData(<Element>e.currentTarget).actions.trigger(ActionType.RIGHT_CLICK, clickAction);
-
             e.preventDefault();
         });
     }
@@ -78,16 +77,16 @@ export default class ActionListener {
      */
     private static delegateMove (query: Query): void {
         var moveAction: MoveAction;
-        var lastUpdate: number = 0;
+        var lastMoveEvent: number = 0;
 
         query.on('mousemove.ActionListener', (e: MouseEvent) => {
-            if (Time.since(lastUpdate) > 1000) {
+            if (Time.since(lastMoveEvent) > 1000) {
                 moveAction = new MoveAction(e);
             } else {
                 moveAction.update(e.clientX, e.clientY);
             }
 
-            lastUpdate = Date.now();
+            lastMoveEvent = Date.now();
 
             Data.getData(<Element>e.currentTarget).actions.trigger(ActionType.MOVE, moveAction);
         });
@@ -104,7 +103,6 @@ export default class ActionListener {
 
             $('body').on('mousemove.ActionListener', (e: MouseEvent) => {
                 dragAction.update(e.clientX, e.clientY);
-
                 actions.trigger(ActionType.DRAG, dragAction);
             });
 

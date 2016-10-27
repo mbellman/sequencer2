@@ -134,7 +134,7 @@ export class Query {
     }
 
     /**
-     * Triggers all events of a specific type on the queried Elements.
+     * Triggers all events of a specific type on the queried Element(s).
      */
     public trigger (event: string): Query {
         each(this.elements, (element: Element) => {
@@ -145,7 +145,7 @@ export class Query {
     }
 
     /**
-     * Delegates an ActionHandler to be fired for a particular Action on the Element(s).
+     * Delegates an ActionHandler to be fired for a particular Action on the queried Element(s).
      */
     public react (action: ActionType, handler: ActionHandler): Query {
         if (!this.reacting[action]) {
@@ -156,6 +156,57 @@ export class Query {
 
         each(this.elements, (element: Element) => {
             Data.getData(element).actions.bind(action, handler);
+        });
+
+        return this;
+    }
+
+    /**
+     * Returns a new Query containing all Elements found within the queried Element(s)
+     * matching a particular selector string.
+     */
+    public find (selector: string): Query {
+        var found: Array<Element> = [];
+
+        each(this.elements, (element: Element) => {
+            let children: Array<Element> = toArray(element.querySelectorAll(selector));
+
+            found.concat(children);
+        });
+
+        return new Query(found, this);
+    }
+
+    /**
+     * Sets the innerHTML for the queried Element(s).
+     */
+    public html (html: string): Query {
+        each(this.elements, (element: Element) => {
+            element.innerHTML = html;
+        });
+
+        return this;
+    }
+
+    /**
+     * Appends a new document Node to the queried Element(s).
+     */
+    public append (node: Element): Query {
+        each(this.elements, (element: Element) => {
+            element.appendChild(node);
+        });
+
+        return this;
+    }
+
+    /**
+     * Removes a child Node from the queried Element(s).
+     */
+    public remove (node: Element): Query {
+        each(this.elements, (element: Element) => {
+            if (element.contains(node)) {
+                element.removeChild(node);
+            }
         });
 
         return this;
@@ -185,7 +236,7 @@ export class Query {
     }
 
     /**
-     * Creates a Data store entry for each Element in the Query if
+     * Creates a Data store entry for each of the individual queried Element(s) if
      * one does not exist for that Element already.
      */
     private registerElements (): void {

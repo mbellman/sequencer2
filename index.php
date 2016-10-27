@@ -8,9 +8,7 @@
 		</style>
 	</head>
 	<body>
-		<div class="hello">
-			<span id="goodbye"></span>
-		</div>
+		<main class="sequencer"></main>
 
 		<script type="text/javascript" src="js/bundle.min.js"></script>
 		<script>

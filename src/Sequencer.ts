@@ -1,4 +1,5 @@
 import $ from "core/dom/Query";
+import ChannelView from "views/ChannelView";
 
 import { ActionType } from "core/action/Action";
 import { DoubleClickAction, DragAction } from "core/action/MouseActions";
@@ -12,14 +13,14 @@ class Sequencer {
 	public static main (): void {
 		console.log("Initialized.");
 
-		$('.hello').react(ActionType.DRAG, (a: DragAction) => {
-			if (a.duration < 500 && a.velocity > 6) {
-				console.log('Swipe ' + a.direction + '!');
-			}
-		});
+		var channelView: ChannelView = new ChannelView();
+		var channelView2: ChannelView = new ChannelView();
 
-		$('.hello').react(ActionType.DOUBLE_CLICK, (a: DoubleClickAction) => {
-			console.log(a.delay);
+		channelView.attach('main.sequencer');
+		channelView2.attach('main.sequencer');
+
+		$('body').on('click', () => {
+			channelView2.detach();
 		});
 	}
 }

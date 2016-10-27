@@ -53,7 +53,7 @@ export class DoubleClickAction extends MouseAction {
 /**
  * @ public class MoveAction
  * 
- * A continuous mouse movement action.
+ * A mouse movement action after at least one second of inactivity.
  */
 export class MoveAction extends MouseAction {
     /* @ The starting x coordinate of the move action. */
