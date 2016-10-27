@@ -4,7 +4,7 @@
 		<meta charset="UTF-8">
 		<script type="text/javascript" src="js/almond.min.js"></script>
 		<style type="text/css">
-			@import url("style.css");
+			@import url("css/sequencer.css");
 		</style>
 	</head>
 	<body>

@@ -1,0 +1,15 @@
+/* @ Main theme @ */
+body {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+main.sequencer .menu-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 35px;
+  background: #68C;
+  box-shadow: 0 0 4px 2px #b3c3e6;
+}
