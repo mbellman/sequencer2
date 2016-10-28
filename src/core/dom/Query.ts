@@ -34,8 +34,10 @@ export class Query {
      * @ the Query has been bound with that particular action via react(). */
     private reacting: Hash<boolean> = {};
 
-    constructor (selector: string | Array<Element>, stack: Query = null) {
-        if (selector instanceof Array) {
+    constructor (selector: string | Element | Array<Element>, stack: Query = null) {
+        if (selector instanceof Element) {
+            this.initFromArray([selector]);
+        } else if (selector instanceof Array) {
             this.initFromArray(selector);
         } else {
             this.initFromSelector(selector);
@@ -61,7 +63,7 @@ export class Query {
     public parents (selector: string = null): Query {
         var parents: Array<Element> = [];
 
-        each(this.elements, (element: Element) => {
+        this.eachElement((element: Element) => {
             let parent: Element = element.parentElement;
 
             while (parent) {
@@ -93,7 +95,7 @@ export class Query {
             handler = this.createTargetedHandler(handler, targetSelector);
         }
 
-        each(this.elements, (element: Element) => {
+        this.eachElement((element: Element) => {
             if (!EventListener.listening(element, event)) {
                 EventListener.add(element, event);
             }
@@ -120,7 +122,7 @@ export class Query {
 
         var [ event, namespace ] = (event ? event.split('.') : [null, null]);
 
-        each(this.elements, (element: Element) => {
+        this.eachElement((element: Element) => {
             let eventStore: EventStore = Data.getData(element).events;
 
             eventStore.unbind(event, namespace);
@@ -137,7 +139,7 @@ export class Query {
      * Triggers all events of a specific type on the queried Element(s).
      */
     public trigger (event: string): Query {
-        each(this.elements, (element: Element) => {
+        this.eachElement((element: Element) => {
             Data.getData(element).events.trigger(event, new SyntheticEvent(event));
         });
 
@@ -154,7 +156,7 @@ export class Query {
             this.reacting[action] = true;
         }
 
-        each(this.elements, (element: Element) => {
+        this.eachElement((element: Element) => {
             Data.getData(element).actions.bind(action, handler);
         });
 
@@ -168,7 +170,7 @@ export class Query {
     public find (selector: string): Query {
         var found: Array<Element> = [];
 
-        each(this.elements, (element: Element) => {
+        this.eachElement((element: Element) => {
             let children: Array<Element> = toArray(element.querySelectorAll(selector));
 
             found.concat(children);
@@ -181,7 +183,7 @@ export class Query {
      * Sets the innerHTML for the queried Element(s).
      */
     public html (html: string): Query {
-        each(this.elements, (element: Element) => {
+        this.eachElement((element: Element) => {
             element.innerHTML = html;
         });
 
@@ -192,7 +194,7 @@ export class Query {
      * Appends a new document Node to the queried Element(s).
      */
     public append (node: Element): Query {
-        each(this.elements, (element: Element) => {
+        this.eachElement((element: Element) => {
             element.appendChild(node);
         });
 
@@ -203,10 +205,34 @@ export class Query {
      * Removes a child Node from the queried Element(s).
      */
     public remove (node: Element): Query {
-        each(this.elements, (element: Element) => {
+        this.eachElement((element: Element) => {
             if (element.contains(node)) {
                 element.removeChild(node);
             }
+        });
+
+        return this;
+    }
+
+    /**
+     * Sets an attribute on the queried Element(s).
+     */
+    public attr (attribute: string, value: string): Query {
+        this.eachElement((element: Element) => {
+            element.setAttribute(attribute, value);
+        });
+
+        return this;
+    }
+
+    /**
+     * Sets a css property on the queried Element(s).
+     */
+    public css (property: string, value: string): Query {
+        this.eachElement((element: Element) => {
+            let el: HTMLElement = <HTMLElement>element;
+
+            el.style[property] = value;
         });
 
         return this;
@@ -240,9 +266,16 @@ export class Query {
      * one does not exist for that Element already.
      */
     private registerElements (): void {
-        each(this.elements, (element: Element) => {
+        this.eachElement((element: Element) => {
             Data.register(element);
         });
+    }
+
+    /**
+     * Calls a handler function for each Element in the Query.
+     */
+    private eachElement (handler: (element: Element) => any): void {
+        each(this.elements, handler);
     }
 
     /**
@@ -265,7 +298,11 @@ export class Query {
  * 
  * A factory function for Query instances.
  */
-export default function $ (selector: string | Query): Query {
+export default function $ (selector: string | Element | Query): Query {
+    if (selector instanceof Element) {
+        return new Query(selector);
+    }
+
     if (selector instanceof Query) {
         return selector;
     }

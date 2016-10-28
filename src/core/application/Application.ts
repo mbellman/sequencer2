@@ -10,14 +10,17 @@ import { each } from "core/system/Utilities";
 export default class Application {
     /* @ The container Element for the Application. */
     private container: Element;
+    /* @ The Query representation of the Application container. */
+    private $container: Query;
     /* @ The Views loaded in the Application. */
     private views: Array<View> = [];
 
     constructor (id: string = null) {
         this.container = DOM.create('div');
+        this.$container = $(this.container);
 
         if (id) {
-            DOM.$(this.container).attr('id', id);
+            this.$container.attr('id', id);
         }
     }
 
@@ -25,10 +28,8 @@ export default class Application {
      * Attaches all Views to the Application container.
      */
     public start (): void {
-        var $container: Query = new Query([this.container]);
-
         each(this.views, (view: View) => {
-            view.attach($container);
+            view.attach(this.$container);
         });
     }
 

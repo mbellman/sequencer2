@@ -36,14 +36,14 @@ export default class View {
         }
 
         this.element = DOM.create('div', this.template);
-        this.$element = new Query([this.element]);
+        this.$element = $(this.element);
 
         if (this.classes) {
-            DOM.$(this.element).attr('class', this.classes);
+            this.$element.attr('class', this.classes);
         }
 
         if (this.id) {
-            DOM.$(this.element).attr('id', this.id);
+            this.$element.attr('id', this.id);
         }
 
         this.rendered = true;
@@ -52,7 +52,7 @@ export default class View {
     /**
      * Attaches the View to the Element(s) designated by a Query selector.
      */
-    public attach (selector: string | Query): void {
+    public attach (selector: string | Element | Query): void {
         this.render();
 
         this.$target = $(selector).append(this.element);
