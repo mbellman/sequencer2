@@ -1,9 +1,11 @@
 @import "variables.less";
+@import "mixins.less";
 
 body {
     position: absolute;
     width: 100%;
     height: 100%;
+    margin: 0;
 }
 
 main.sequencer {
@@ -12,8 +14,30 @@ main.sequencer {
         top: 0;
         left: 0;
         right: 0;
-        height: 35px;
+        height: @menu-height;
         background: @main-blue;
         box-shadow: 0 0 4px 2px lighten(@main-blue, 20%);
+
+        .row {
+            .fill();
+
+            .option {
+                position: relative;
+                display: inline-block;
+                height: @menu-height;
+                margin: 0 5px;
+                padding: 0 10px;
+                background-color: @main-blue;
+                cursor: pointer;
+                line-height: @menu-height;
+                .font(Arial, 15px, bold, #FFF);
+                .transition(background-color, 0.075s);
+
+                &:hover {
+                    background-color: lighten(@main-blue, 10%);
+                    text-shadow: 0 0 2px @main-blue;
+                }
+            }
+        }
     }
 }

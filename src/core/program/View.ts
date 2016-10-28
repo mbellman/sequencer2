@@ -1,25 +1,26 @@
 import $, { Query } from "core/dom/Query";
 
 /**
- * @ public class View
+ * @ public abstract class View
  * 
- * A basic shell for application Views.
+ * A basic shell for application Views. Each View represents a reusable block of HTML content
+ * and associated functionality which can be freely attached to the document.
  */
-export default class View {
+abstract class View {
     /* @ The View innerHTML content. */
     public template: string;
     /* @ The Element rendered from the View template. */
     public element: Element;
     /* @ The Query representation of the rendered Element. */
     public $element: Query;
+    /* @ A boolean representing whether the Element has been rendered. */
+    protected rendered: boolean = false;
     /* @ Space-separated classes to set on the rendered Element. */
     private classes: string;
     /* @ An ID to set on the rendered Element. */
     private id: string;
-    /* @ The attach() selector target for the View. */
+    /* @ The Query the View was appended to via attach(). */
     private $target: Query;
-    /* @ A boolean representing whether the Element has been rendered. */
-    private rendered: boolean = false;
 
     constructor (classes: string = null, id: string = null) {
         this.classes = classes;
@@ -35,7 +36,7 @@ export default class View {
         }
 
         this.element = document.createElement('div');
-        this.element.innerHTML = this.template;
+        this.element.innerHTML = this.template || '';
         this.$element = $(this.element);
 
         if (this.classes) {
@@ -72,3 +73,5 @@ export default class View {
         return this.$element.find(selector);
     }
 }
+
+export default View;

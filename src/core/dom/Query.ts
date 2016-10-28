@@ -173,7 +173,7 @@ export class Query {
         this.eachElement((element: Element) => {
             let children: Array<Element> = toArray(element.querySelectorAll(selector));
 
-            found.concat(children);
+            found = found.concat(children);
         });
 
         return new Query(found, this);
