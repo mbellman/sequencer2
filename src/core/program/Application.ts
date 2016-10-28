@@ -1,6 +1,5 @@
 import $, { Query } from "core/dom/Query";
-import DOM from "core/dom/DOM";
-import View from "core/application/View";
+import View from "core/program/View";
 
 import { each } from "core/system/Utilities";
 
@@ -15,9 +14,13 @@ export default class Application {
     /* @ The Views loaded in the Application. */
     private views: Array<View> = [];
 
-    constructor (id: string = null) {
-        this.container = DOM.create('div');
+    constructor (classes: string = null, id: string = null) {
+        this.container = document.createElement('div');
         this.$container = $(this.container);
+
+        if (classes) {
+            this.$container.attr('class', classes);
+        }
 
         if (id) {
             this.$container.attr('id', id);
@@ -27,17 +30,10 @@ export default class Application {
     /**
      * Attaches all Views to the Application container.
      */
-    public start (): void {
+    public boot (): void {
         each(this.views, (view: View) => {
             view.attach(this.$container);
         });
-    }
-
-    /**
-     * Adds a new View to the Application Views list.
-     */
-    public addView (view: View): void {
-        this.views.push(view);
     }
 
     /**
@@ -45,5 +41,12 @@ export default class Application {
      */
     public attach (selector: string | Query): void {
         $(selector).html('').append(this.container);
+    }
+
+    /**
+     * Adds a new View to the Application Views list.
+     */
+    public addView (view: View): void {
+        this.views.push(view);
     }
 }

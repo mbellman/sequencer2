@@ -1,6 +1,4 @@
-import Application from "core/application/Application";
-import MenuBarView from "views/MenuBarView";
-import ChannelView from "views/ChannelView";
+import SequencerApplication from "SequencerApplication";
 
 /**
  * @ class Sequencer
@@ -9,13 +7,8 @@ import ChannelView from "views/ChannelView";
  */
 class Sequencer {
 	public static main (): void {
-		console.log("Initialized.");
-		
-		var app: Application = new Application('sequencer');
+		var app = new SequencerApplication();
 
-		app.attach('main.sequencer');
-		app.addView(new MenuBarView());
-		app.addView(new ChannelView());
 		app.start();
 	}
 }

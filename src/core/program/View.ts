@@ -1,5 +1,4 @@
 import $, { Query } from "core/dom/Query";
-import DOM from "core/dom/DOM";
 
 /**
  * @ public class View
@@ -35,7 +34,8 @@ export default class View {
             return;
         }
 
-        this.element = DOM.create('div', this.template);
+        this.element = document.createElement('div');
+        this.element.innerHTML = this.template;
         this.$element = $(this.element);
 
         if (this.classes) {

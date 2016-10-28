@@ -1,4 +1,4 @@
-import View from "core/application/View";
+import View from "core/program/View";
 
 import { ChannelTemplate } from "templates/ChannelTemplate";
 
