@@ -1,6 +1,6 @@
 import $ from "core/dom/Query";
-import SequencerApplication from "SequencerApplication";
 import View from "core/program/View";
+import SequencerApplication from "applications/SequencerApplication";
 import DropdownMenuView from "views/DropdownMenuView";
 
 /**
@@ -11,8 +11,6 @@ import DropdownMenuView from "views/DropdownMenuView";
 export default class SequencerMenuView extends View {
     /* @ The SequencerApplication instance the SequencerMenuView is added to. */
     private application: SequencerApplication;
-    /* @ The total number of options added to the menu. */
-    private options: number = 0;
 
     constructor (application: SequencerApplication) {
         super('menu-bar');
@@ -71,8 +69,7 @@ export default class SequencerMenuView extends View {
     private makeOptionElement (text: string): Element {
         var option: Element = document.createElement('div');
 
-        $(option)
-            .html(text)
+        $(option).html(text)
             .attr('class', 'menu-option');
 
         return option;
@@ -115,6 +112,9 @@ export default class SequencerMenuView extends View {
             });
     }
 
+    /**
+     * Creates the DropdownMenuView for "Theme".
+     */
     private makeThemeDropdownMenu (): DropdownMenuView {
         return new DropdownMenuView()
             .configure({

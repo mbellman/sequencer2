@@ -9,7 +9,7 @@ import DropdownMenuView from "views/DropdownMenuView";
  */
 export default class SequencerApplication extends Application {
     /* @ A space-separated list of all style themes for the sequencer. */
-    private themes: string = 'main';
+    private themes: string = 'main dark';
 
     constructor () {
         super('sequencer');

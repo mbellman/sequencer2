@@ -1,5 +1,5 @@
 import Viewport from "core/dom/Viewport";
-import SequencerApplication from "SequencerApplication";
+import SequencerApplication from "applications/SequencerApplication";
 
 /**
  * @ class Sequencer

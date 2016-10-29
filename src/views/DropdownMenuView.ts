@@ -37,8 +37,7 @@ export default class DropdownMenuView extends View {
      * @override
      */
     public onAttach (): void {
-        this.$target
-            .addClass('dropdown-menu-target')
+        this.$target.addClass('dropdown-menu-target')
             .on('click', (e: Event) => {
                 this.toggleMenu();
                 e.stopPropagation();
@@ -78,8 +77,7 @@ export default class DropdownMenuView extends View {
     public setAsSubMenu (): void {
         this.$element.addClass('sub-dropdown');
 
-        this.$target
-            .removeClass('dropdown-menu-target')
+        this.$target.removeClass('dropdown-menu-target')
             .off('click dropdown:hide dropdown:show')
             .on('mouseenter', () => {
                 this.align();
@@ -111,8 +109,7 @@ export default class DropdownMenuView extends View {
             return option;
         }
         
-        $(option)
-            .html(text)
+        $(option).html(text)
             .addClass('dropdown-option');
 
         if (handler instanceof DropdownMenuView) {
@@ -129,8 +126,7 @@ export default class DropdownMenuView extends View {
      * Aligns a sub-dropdown menu to its parent dropdown menu option.
      */
     private align (): void {
-        this.$element
-            .addClass('align')
+        this.$element.addClass('align')
             .removeClass('sub-dropdown-left');
 
         var bounds: any = this.$element.bounds();
