@@ -1,5 +1,7 @@
+@import "classes/classes.less";
+@import "mixins/mixins.less";
 @import "variables.less";
-@import "mixins.less";
+@import "themes.less";
 
 body {
     position: absolute;
@@ -8,34 +10,43 @@ body {
     margin: 0;
 }
 
-main.sequencer {
-    .menu-bar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: @menu-height;
-        background: @main-blue;
-        box-shadow: 0 0 4px 2px lighten(@main-blue, 20%);
+main {
+    .fill();
 
-        .row {
-            .fill();
+    .sequencer {
+        .fill();
 
-            .option {
+        .menu-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: @menu-height;
+            opacity: 1;
+            .transition(opacity, 0.25s);
+
+            .menu-option {
                 position: relative;
                 display: inline-block;
                 height: @menu-height;
                 margin: 0 5px;
                 padding: 0 10px;
-                background-color: @main-blue;
                 cursor: pointer;
                 line-height: @menu-height;
-                .font(Arial, 15px, bold, #FFF);
-                .transition(background-color, 0.075s);
+                .font(Arial, 15px, bold);
+                .transition(background-color, 0.05s);
 
-                &:hover {
-                    background-color: lighten(@main-blue, 10%);
-                    text-shadow: 0 0 2px @main-blue;
+                &.expanded {
+                    z-index: 2;
+                }
+
+                ul.dropdown-menu {
+                    min-width: 200px;
+
+                    li.dropdown-option {
+                        height: 25px;
+                        line-height: 25px;
+                    }
                 }
             }
         }

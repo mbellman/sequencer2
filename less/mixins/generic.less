@@ -1,0 +1,22 @@
+/* @ Fill a certain percentage of the parent container (100% x 100% by default). */
+.fill(@width: 100%, @height: 100%) {
+    position: absolute;
+    width: @width;
+    height: @height;
+}
+
+/* @ Set a font style. */
+.font(@family, @size: 12px, @weight: normal, @color: #000) {
+    font-family: @family;
+    font-size: @size;
+    font-weight: @weight;
+    color: @color;
+}
+
+/* @ Set each corner border radius. */
+.border-radius(@top-left, @top-right, @bottom-right, @bottom-left) {
+    border-top-left-radius: @top-left;
+    border-top-right-radius: @top-right;
+    border-bottom-right-radius: @bottom-right;
+    border-bottom-left-radius: @bottom-left;
+}

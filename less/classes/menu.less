@@ -1,0 +1,64 @@
+@import "../mixins/mixins.less";
+
+@corner-radius: 2px;
+
+ul.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    opacity: 0;
+    .border-radius(0, 0, @corner-radius, @corner-radius);
+    .origin(0, 0);
+    .transform(scale(0));
+    .transition(all, 0.075s, cubic-bezier(1.000, 0.015, 0.000, 0.995));
+
+    &.sub-dropdown {
+        top: 0;
+        left: 100%;
+        border-radius: @corner-radius;
+
+        &.align {
+            .transform(scale(1));
+            .transition(none, 0s);
+        }
+
+        &-left {
+            left: -100%;
+            .origin(100%, 0);
+        }
+
+        li.dropdown-option:first-child {
+            .border-radius(@corner-radius, @corner-radius, 0, 0);
+        }
+    }
+
+    &:not(.hidden) {
+        opacity: 1;
+        .transform(scale(1));
+    }
+
+    li {
+        position: relative;
+        padding: 4px 5px 4px 10px;
+    }
+
+    li.line {
+        height: 0;
+        margin: 5px;
+        padding: 0;
+        border: 0;
+        border-top: 1px solid #000;
+    }
+
+    li.dropdown-option {
+        .font(Arial, 15px, bold);
+        .transition(background-color, 0.05s);
+
+        &:last-child {
+            .border-radius(0, 0, @corner-radius, @corner-radius);
+        }
+    }
+}

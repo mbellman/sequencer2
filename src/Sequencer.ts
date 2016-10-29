@@ -1,3 +1,4 @@
+import Viewport from "core/dom/Viewport";
 import SequencerApplication from "SequencerApplication";
 
 /**
@@ -7,6 +8,8 @@ import SequencerApplication from "SequencerApplication";
  */
 class Sequencer {
 	public static main (): void {
+		Viewport.initialize();
+
 		var app = new SequencerApplication();
 
 		app.start();

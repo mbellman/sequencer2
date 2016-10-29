@@ -41,7 +41,7 @@ export default class Data {
             return;
         }
 
-        var id: string = String(Date.now() + Math.random());
+        var id: string = this.generateElementId();
         element[DATA_ID] = id;
 
         this.data.store(id, new ElementData());
@@ -61,5 +61,12 @@ export default class Data {
         var id: string = this.getId(element);
 
         return this.data.retrieve(id);
+    }
+
+    /**
+     * Returns a pseudo-random, unique Element ID.
+     */
+    private static generateElementId(): string {
+        return String(Date.now() + '' + Math.random());
     }
 }

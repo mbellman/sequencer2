@@ -7,20 +7,20 @@ import $, { Query } from "core/dom/Query";
  * and associated functionality which can be freely attached to the document.
  */
 abstract class View {
-    /* @ The View innerHTML content. */
-    public template: string;
     /* @ The Element rendered from the View template. */
     public element: Element;
     /* @ The Query representation of the rendered Element. */
     public $element: Query;
+    /* @ The View element's innerHTML content. */
+    protected template: string;
+    /* @ The Query the View was appended to via attach(). */
+    protected $target: Query;
     /* @ A boolean representing whether the Element has been rendered. */
     protected rendered: boolean = false;
     /* @ Space-separated classes to set on the rendered Element. */
     private classes: string;
     /* @ An ID to set on the rendered Element. */
     private id: string;
-    /* @ The Query the View was appended to via attach(). */
-    private $target: Query;
 
     constructor (classes: string = null, id: string = null) {
         this.classes = classes;
@@ -28,16 +28,30 @@ abstract class View {
     }
 
     /**
+     * Overridable render event handler.
+     */
+    public onRender (): void {}
+
+    /**
+     * Overridable attach event handler.
+     */
+    public onAttach (): void {}
+
+    /**
+     * Overridable detach event handler.
+     */
+    public onDetach (): void {}
+
+    /**
      * Renders the View Element.
      */
-    public render (): void {
+    public render (elementType: string = 'div'): void {
         if (this.rendered) {
             return;
         }
 
-        this.element = document.createElement('div');
-        this.element.innerHTML = this.template || '';
-        this.$element = $(this.element);
+        this.element = document.createElement(elementType);
+        this.$element = $(this.element).html(this.template || '');
 
         if (this.classes) {
             this.$element.attr('class', this.classes);
@@ -48,15 +62,19 @@ abstract class View {
         }
 
         this.rendered = true;
+
+        this.onRender();
     }
 
     /**
      * Attaches the View to the Element(s) designated by a Query selector.
      */
-    public attach (selector: string | Element | Query): void {
+    public attachTo (selector: string | Element | Query): void {
         this.render();
 
         this.$target = $(selector).append(this.element);
+
+        this.onAttach();
     }
 
     /**
@@ -64,6 +82,7 @@ abstract class View {
      */
     public detach (): void {
         this.$target.remove(this.element);
+        this.onDetach();
     }
 
     /**

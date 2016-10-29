@@ -1,0 +1,32 @@
+/* @ Set a property transition. */
+.transition(@prop, @duration, @ease: linear) {
+    -webkit-transition: @prop @duration @ease;
+    -moz-transition: @prop @duration @ease;
+    -o-transition: @prop @duration @ease;
+    transition: @prop @duration @ease;
+}
+
+/* @ Sets a transform transition. */
+.transition-transform(@duration, @ease: linear) {
+    -webkit-transition: -webkit-transform @duration @ease;
+    -moz-transition: -moz-transform @duration @ease;
+    -o-transition: -o-transform @duration @ease;
+    transition: transform @duration @ease;
+}
+
+/* @ Set a transform. */
+.transform(@expression) {
+    -webkit-transform: @expression;
+    -moz-transform: @expression;
+    -o-transform: @expression;
+    transform: @expression;
+}
+
+/* @ Sets a transform origin. */
+.origin(@x: 50%, @y: 50%) {
+    -webkit-transform-origin: @x @y;
+    -moz-transform-origin: @x @y;
+    -ms-transform-origin: @x @y;
+    -o-transform-origin: @x @y;
+    transform-origin: @x @y;
+}

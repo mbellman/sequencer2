@@ -1,13 +1,12 @@
 import QueryCache from "core/dom/QueryCache";
 import EventListener from "core/event/EventListener";
 import Data from "core/dom/data/Data";
-import SyntheticEvent from "core/event/SyntheticEvent";
 import EventStore from "core/dom/data/EventStore";
 import ActionListener from "core/action/ActionListener";
 
-import { each, toArray, intersects } from "core/system/Utilities";
-import { Hash, EventHandler, ActionHandler } from "core/system/Types";
+import { each, toArray, isInArray } from "core/system/Utilities";
 import { ActionType } from "core/action/Action";
+import { Hash, EventHandler, ActionHandler } from "core/system/Types";
 
 /**
  * @ private var $cache
@@ -110,14 +109,16 @@ export class Query {
      * Unbinds one or all events from the queried Element(s).
      */
     public off (event: string = null): Query {
-        var events: Array<String> = event.split(' ');
+        if (event) {
+            var events: Array<String> = event.split(' ');
 
-        if (events.length > 1) {
-            each(events, (event: string) => {
-                this.off(event);
-            });
+            if (events.length > 1) {
+                each(events, (event: string) => {
+                    this.off(event);
+                });
 
-            return this;
+                return this;
+            }
         }
 
         var [ event, namespace ] = (event ? event.split('.') : [null, null]);
@@ -138,9 +139,15 @@ export class Query {
     /**
      * Triggers all events of a specific type on the queried Element(s).
      */
-    public trigger (event: string): Query {
+    public trigger (event: string, eventData: Hash<any> = {}): Query {
+        var eventInstance: Event = new Event(event);
+
+        each(eventData, (value: any, key: string) => {
+            eventInstance[key] = value;
+        });
+
         this.eachElement((element: Element) => {
-            Data.getData(element).events.trigger(event, new SyntheticEvent(event));
+            Data.getData(element).events.trigger(event, eventInstance);
         });
 
         return this;
@@ -239,6 +246,86 @@ export class Query {
     }
 
     /**
+     * Returns a bounding ClientRect for the first element in the Query.
+     */
+    public bounds (): any {
+        if (this.length > 0) {
+            return this.elements[0].getBoundingClientRect();
+        }
+
+        return {};
+    }
+
+    /**
+     * Returns a bounding rectangle for the first element in the Query relative to its parent Element.
+     */
+    public localBounds (): any {
+        if (this.length > 0) {
+            var parentBounds: any = this.parent().bounds();
+            var bounds: any = this.bounds();
+
+            return {
+                top: bounds.top - parentBounds.left,
+                left: bounds.left - parentBounds.left,
+                bottom: bounds.bottom - parentBounds.top,
+                right: bounds.right - parentBounds.left,
+                width: bounds.width,
+                height: bounds.height
+            };
+        }
+    }
+
+    /**
+     * Adds one or multiple space-separated classes to the queried Element(s).
+     */
+    public addClass (classes: string): Query {
+        this.eachElement((element: Element) => {
+            if (element.className !== '') {
+                element.className += (' ' + classes);
+            } else {
+                element.className = classes;
+            }
+        });
+
+        return this;
+    }
+
+    /**
+     * Removes one or multiple space-separated classes from the queried Element(s).
+     */
+    public removeClass (classes: string): Query {
+        var removedClasses: Array<string> = classes.split(' ');
+
+        this.eachElement((element: Element) => {
+            let currentClasses: Array<string> = element.className.split(' ');
+            let newClasses: Array<string> = [];
+
+            each(currentClasses, (currentClass: string) => {
+                if (!isInArray(removedClasses, currentClass)) {
+                    newClasses.push(currentClass);
+                }
+            });
+
+            element.className = newClasses.join(' ');
+        });
+
+        return this;
+    }
+
+    /**
+     * Determines whether the queried Element(s) have a specific class.
+     */
+    public hasClass (className: string): boolean {
+        return !!each(this.elements, (element: Element): any => {
+            let classes: Array<string> = element.className.split(' ');
+
+            if (isInArray(classes, className)) {
+                return true;
+            }
+        });
+    }
+
+    /**
      * Returns the previous Query in the stack chain if one exists; otherwise returns {this}.
      */
     public pop (): Query {
@@ -266,7 +353,7 @@ export class Query {
      * one does not exist for that Element already.
      */
     private registerElements (): void {
-        this.eachElement((element: Element) => {
+        this.eachElement((element: Element): any => {
             Data.register(element);
         });
     }

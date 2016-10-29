@@ -78,7 +78,7 @@ export default class EventListener {
         var id: string = Data.getId(element);
         var listeners: ListenerTable = this.listeners[id];
 
-        each(listeners, (event: string) => {
+        each(listeners, (state: boolean, event: string) => {
             element.removeEventListener(event, globalListener);
         });
 
@@ -91,9 +91,12 @@ export default class EventListener {
      */
     private static removeOne (element: Element, event: string): void {
         var id: string = Data.getId(element);
+        var listeners: ListenerTable = this.listeners[id];
 
         element.removeEventListener(event, globalListener);
 
-        delete this.listeners[id][event];
+        if (listeners) {
+            delete listeners[event];
+        }
     }
 }

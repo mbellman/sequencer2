@@ -9,7 +9,7 @@ import { ChannelTemplate } from "templates/ChannelTemplate";
  */
 export default class ChannelView extends View {
     /* @ The ChannelView template. @override */
-    public template: string = ChannelTemplate;
+    protected template: string = ChannelTemplate;
 
     constructor () {
         super('channel');

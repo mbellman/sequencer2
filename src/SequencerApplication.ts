@@ -1,33 +1,36 @@
+import $, { Query } from "core/dom/Query";
 import Application from "core/program/Application";
 import View from "core/program/View";
-import MenuBarView from "views/MenuBarView";
-import ChannelView from "views/ChannelView";
+import SequencerMenuView from "views/SequencerMenuView";
+import DropdownMenuView from "views/DropdownMenuView";
 
+/**
+ * @ public class SequencerApplication
+ */
 export default class SequencerApplication extends Application {
+    /* @ A space-separated list of all style themes for the sequencer. */
+    private themes: string = 'main';
+
     constructor () {
         super('sequencer');
+        this.setTheme('main');
     }
 
     /**
      * Starts up the sequencer.
      */
     public start (): void {
-        super.attach('main.sequencer');
-        super.addView(new MenuBarView(), 'menu');
-        super.addView(new ChannelView(), 'channel');
-        this.setupMenuBar();
-        super.boot();
+        super.attachTo('main');
+        super.addView(new SequencerMenuView(this));
+        super.attachViews();
     }
 
     /**
-     * Builds the sequencer menu bar at the top of the page.
+     * Changes the style theme of the sequencer.
      */
-    private setupMenuBar (): void {
-        var menu: MenuBarView = <MenuBarView>super.getView('menu');
-
-        menu.render();
-        menu.addOption('File');
-        menu.addOption('Options');
-        menu.addOption('Edit');
+    public setTheme (theme: string): void {
+        this.$container
+            .removeClass(this.themes)
+            .addClass(theme);
     }
 }

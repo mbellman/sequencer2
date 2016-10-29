@@ -15,10 +15,8 @@ abstract class Application {
     protected container: Element;
     /* @ The Query representation of the Application container. */
     protected $container: Query;
-    /* @ The Views loaded in the Application. */
+    /* @ The Views added to the Application. */
     private views: Array<View> = [];
-    /* @ Views added with a particular name identifier. */
-    private namedViews: Hash<View> = {};
 
     constructor (classes: string = null, id: string = null) {
         this.container = document.createElement('div');
@@ -34,37 +32,26 @@ abstract class Application {
     }
 
     /**
-     * Attaches all Views to the Application container.
+     * Attaches all added Views to the Application container.
      */
-    public boot (): void {
+    public attachViews (): void {
         each(this.views, (view: View) => {
-            view.attach(this.$container);
+            view.attachTo(this.container);
         });
     }
 
     /**
      * Attaches the Application container to the document.
      */
-    public attach (selector: string | Element | Query): void {
+    public attachTo (selector: string | Element | Query): void {
         $(selector).html('').append(this.container);
     }
 
     /**
      * Adds a new View to the Application Views list.
      */
-    public addView (view: View, name: string = null): void {
+    public addView (view: View): void {
         this.views.push(view);
-
-        if (name) {
-            this.namedViews[name] = view;
-        }
-    }
-
-    /**
-     * Returns a View by its name identifier where applicable.
-     */
-    public getView (name: string): View {
-        return this.namedViews[name];
     }
 }
 

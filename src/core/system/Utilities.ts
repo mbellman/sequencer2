@@ -146,6 +146,10 @@ export function toArray (value: any): Array<any> {
  * Returns the value, if any, first returned within an iteration cycle.
  */
 export function each (collection: Collection<any>, handler: IterationHandler): any {
+    if (!collection) {
+        return;
+    }
+
     if (collection instanceof Array) {
         return eachInArray(collection, handler);
     }

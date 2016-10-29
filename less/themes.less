@@ -1,0 +1,41 @@
+@main-blue: #68C;
+
+.sequencer {
+    &.main {
+        background: lighten(@main-blue, 30%);
+
+        .menu-bar {
+            background: @main-blue;
+            box-shadow: 0 0 4px 2px lighten(@main-blue, 20%);
+
+            .menu-option {
+                background-color: @main-blue;
+                color: #FFF;
+
+                &:hover,
+                &.expanded {
+                    background-color: lighten(@main-blue, 10%);
+                    text-shadow: 0 0 2px @main-blue;
+                }
+
+                ul.dropdown-menu {
+                    background-color: lighten(@main-blue, 10%);
+                    box-shadow: 0 0 4px 0 darken(@main-blue, 20%);
+
+                    li.line {
+                        border-color: lighten(@main-blue, 15%);
+                    }
+
+                    li.dropdown-option {
+                        background-color: lighten(@main-blue, 10%);
+                        color: #FFF;
+
+                        &:hover {
+                            background-color: lighten(@main-blue, 20%);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

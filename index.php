@@ -8,7 +8,7 @@
 		</style>
 	</head>
 	<body>
-		<main class="sequencer"></main>
+		<main></main>
 
 		<script type="text/javascript" src="js/bundle.min.js"></script>
 		<script>
