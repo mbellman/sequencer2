@@ -1,7 +1,8 @@
 import Data from "core/dom/data/Data";
 
 import { each } from "core/system/Utilities";
-import { Hash, EventHandler } from "core/system/Types";
+import { Hash } from "core/system/Types";
+import { EventHandler } from "core/dom/Types";
 
 /**
  * @ private type ListenerTable

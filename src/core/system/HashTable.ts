@@ -1,13 +1,14 @@
-import { Hash, IterationHandler } from "core/system/Types";
 import { isUndefined, each } from "core/system/Utilities";
+import { Hash, IterationHandler } from "core/system/Types";
 
 /**
  * @ public class HashTable
  * 
- * An associative map of keys to values.
+ * A store containing values associated to specific keys, along
+ * with several convenient methods for data management.
  */
 export default class HashTable<T> {
-    /* @ An internal Object for the Hash Table data. */
+    /* @ An internal Hash for the HashTable data. */
     private table: Hash<T> = {};
     /* @ The number of items in the Hash Table. */
     private items: number = 0;
@@ -21,6 +22,7 @@ export default class HashTable<T> {
      */
     public store (key: string, value: T): void {
         this.table[key] = value;
+
         this.items++;
     }
 
@@ -61,6 +63,7 @@ export default class HashTable<T> {
      */
     public delete (key: string): void {
         delete this.table[key];
+
         this.items--;
     }
 

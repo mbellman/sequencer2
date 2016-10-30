@@ -3,8 +3,8 @@ import Time from "core/system/Time";
 import ActionStore from "core/dom/data/ActionStore";
 
 import $, { Query } from "core/dom/Query";
-import { ActionType } from "core/action/Action";
-import { ClickAction, DoubleClickAction, MoveAction, DragAction } from "core/action/MouseActions";
+import { ActionType } from "core/dom/action/Action";
+import { ClickAction, DoubleClickAction, MoveAction, DragAction } from "core/dom/action/MouseActions";
 
 /**
  * @ public class ActionListener

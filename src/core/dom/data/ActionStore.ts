@@ -1,6 +1,7 @@
 import { each } from "core/system/Utilities";
-import { ActionType, Action } from "core/action/Action";
-import { Hash, ActionHandler, HandlerQueue } from "core/system/Types";
+import { Hash } from "core/system/Types";
+import { ActionType, Action } from "core/dom/action/Action";
+import { ActionHandler, HandlerQueue } from "core/dom/Types";
 
 /**
  * @ public class ActionStore

@@ -3,7 +3,8 @@ import Viewport from "core/dom/Viewport";
 import View from "core/program/View";
 
 import { each } from "core/system/Utilities";
-import { Hash, EventHandler } from "core/system/Types";
+import { Hash } from "core/system/Types";
+import { EventHandler } from "core/dom/Types";
 
 /**
  * @ private type DropdownHandler
@@ -18,7 +19,7 @@ type DropdownHandler = EventHandler | DropdownMenuView;
  * @ private type DropdownConfiguration
  * 
  * A key/value list of options for a DropdownMenuView, where each key represents text for
- * the dropdown option, and each value represents the click EventHandler for that option.
+ * the dropdown option, and each value represents the DropdownHandler for that option.
  */
 type DropdownConfiguration = Hash<DropdownHandler>;
 

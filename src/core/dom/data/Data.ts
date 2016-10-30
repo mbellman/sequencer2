@@ -3,7 +3,8 @@ import EventStore from "core/dom/data/EventStore";
 import ActionStore from "core/dom/data/ActionStore";
 
 import { hasOwn, each } from "core/system/Utilities";
-import { Hash, EventHandler, HandlerQueue } from "core/system/Types";
+import { Hash } from "core/system/Types";
+import { EventHandler, HandlerQueue } from "core/dom/Types";
 
 /**
  * @ private const DATA_ID

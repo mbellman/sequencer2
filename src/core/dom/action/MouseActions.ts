@@ -1,4 +1,4 @@
-import { ActionType, Action } from "core/action/Action";
+import { ActionType, Action } from "core/dom/action/Action";
 import { magnitude } from "core/system/Math";
 
 /**

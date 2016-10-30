@@ -1,12 +1,13 @@
 import QueryCache from "core/dom/QueryCache";
-import EventListener from "core/event/EventListener";
 import Data from "core/dom/data/Data";
+import EventListener from "core/dom/event/EventListener";
+import ActionListener from "core/dom/action/ActionListener";
 import EventStore from "core/dom/data/EventStore";
-import ActionListener from "core/action/ActionListener";
 
 import { each, toArray, isInArray } from "core/system/Utilities";
-import { ActionType } from "core/action/Action";
-import { Hash, EventHandler, ActionHandler } from "core/system/Types";
+import { Hash } from "core/system/Types";
+import { ActionType } from "core/dom/action/Action";
+import { EventHandler, ActionHandler } from "core/dom/Types";
 
 /**
  * @ private var $cache

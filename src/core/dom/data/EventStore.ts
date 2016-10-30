@@ -1,5 +1,6 @@
 import { each } from "core/system/Utilities";
-import { Hash, HandlerQueue, EventHandler } from "core/system/Types";
+import { Hash } from "core/system/Types";
+import { HandlerQueue, EventHandler } from "core/dom/Types";
 
 /**
  * @ private type EventTable
