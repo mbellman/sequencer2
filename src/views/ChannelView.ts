@@ -19,7 +19,7 @@ export default class ChannelView extends View {
     private channel: Channel;
 
     constructor (sequence: Sequence) {
-        super('channel');
+        super('channel hidden');
 
         this.sequence = sequence;
         this.channel = new Channel();

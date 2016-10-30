@@ -1,10 +1,11 @@
 @main-blue: #68C;
+@main-gray: #BBB;
 
 .sequencer {
     &.main {
         background: lighten(@main-blue, 30%);
 
-        .menu-bar {
+        .sequence-menu-view {
             background: @main-blue;
             box-shadow: 0 0 4px 2px lighten(@main-blue, 20%);
 
@@ -38,11 +39,11 @@
             }
         }
 
-        .channel-list {
+        .sequence-view {
             .add-channel-panel {
                 .add-channel-button {
                     background-color: @main-blue;
-                    box-shadow: 0 0 2px 0 darken(@main-blue, 30%);
+                    box-shadow: 0 0 1px 0 darken(@main-blue, 30%);
                     border-color: desaturate(darken(@main-blue, 20%), 20%);
                     color: #FFF;
                     text-shadow: 0 -1px 0 darken(@main-blue, 20%);
@@ -51,7 +52,16 @@
 
             #channels {
                 .channel {
-                    background-color: lighten(@main-blue, 20%);
+                    box-shadow: 0 0 0 4px #FFF;
+
+                    .channel-top-bar {
+                        background-color: @main-gray;
+                        box-shadow: 0 0 5px 0px darken(@main-gray, 20%) inset;
+                    }
+
+                    .channel-content {
+                        background-color: lighten(@main-blue, 25%);
+                    }
                 }
             }
         }

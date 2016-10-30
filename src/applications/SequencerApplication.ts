@@ -10,7 +10,7 @@ import SequenceView from "views/SequenceView";
  * 
  * A space-separated list of all style themes for the sequencer.
  */
-const themes: string = 'main dark';
+const themes: string = 'main night';
 
 /**
  * @ public class SequencerApplication

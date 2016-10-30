@@ -14,10 +14,9 @@ main {
     .sequencer {
         .fill();
 
-        .menu-bar {
+        .sequence-menu-view {
             position: fixed;
-            top: 0;
-            left: 0;
+            .topleft(0, 0);
             right: 0;
             height: @menu-height;
             opacity: 1;
@@ -30,7 +29,6 @@ main {
                 .size(auto, @menu-height);
                 margin: 0 5px;
                 padding: 0 10px;
-                cursor: pointer;
                 line-height: @menu-height;
                 .font(Arial, 15px, bold);
                 .transition(background-color, 0.05s);
@@ -50,14 +48,13 @@ main {
             }
         }
 
-        .channel-list {
-            position: relative;
+        .sequence-view {
+            .fill();
 
             .add-channel-panel {
                 position: absolute;
                 .size(70%, 100px);
-                left: 15%;
-                top: 100px;
+                .topleft(100px, 15%);
                 opacity: 0.6;
                 z-index: 10;
                 .transition(opacity, 0.2s);
@@ -68,10 +65,7 @@ main {
 
                 .add-channel-button {
                     position: relative;
-                    .size(
-                        @add-channel-button-size + 100px,
-                        @add-channel-button-size
-                    );
+                    .size(@add-channel-button-size + 100px, @add-channel-button-size);
                     margin: ((100px - @add-channel-button-size) / 2) auto;
                     border-radius: 5px;
                     .border(0, 1px solid #000, 4px solid #000, 1px solid #000);
@@ -91,10 +85,34 @@ main {
             }
 
             #channels {
+                .fill();
+
                 .channel {
                     position: absolute;
-                    .size(75%, 300px);
+                    .size(75%, @channel-height);
                     left: 15%;
+                    border-radius: 5px;
+                    .origin(50%, 0);
+                    .transform(scale(0));
+                    .transition-transform(0.5s, @ease-in-out-cubic);
+
+                    &:not(.hidden) {
+                        .transform(scale(1));
+                    }
+
+                    .channel-top-bar {
+                        position: relative;
+                        .topleft(0, 0);
+                        .size(100%, @channel-top-bar-height);
+                        .border-radius(5px, 5px, 0, 0);
+                    }
+
+                    .channel-content {
+                        position: relative;
+                        .size(100%, (@channel-height - @channel-top-bar-height));
+                        .border-radius(0, 0, 5px, 5px);
+                        z-index: 2;
+                    }
                 }
             }
         }

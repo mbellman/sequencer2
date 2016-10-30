@@ -1,2 +1,3 @@
 export const ChannelTemplate: string = 
-`<div class="top-bar"></div>`;
+`<div class="channel-top-bar"></div>
+<div class="channel-content"></div>`;

@@ -1,8 +1,8 @@
-import Data from "core/dom/data/Data";
 import Time from "core/system/Time";
+import $, { Query } from "core/dom/Query";
+import Data from "core/dom/data/Data";
 import ActionStore from "core/dom/data/ActionStore";
 
-import $, { Query } from "core/dom/Query";
 import { ActionType } from "core/dom/action/Action";
 import { ClickAction, DoubleClickAction, MoveAction, DragAction } from "core/dom/action/MouseActions";
 

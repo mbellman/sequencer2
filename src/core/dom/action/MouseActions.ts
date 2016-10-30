@@ -1,5 +1,5 @@
-import { ActionType, Action } from "core/dom/action/Action";
 import { magnitude } from "core/system/Math";
+import { ActionType, Action } from "core/dom/action/Action";
 
 /**
  * @ private abstract class MouseAction

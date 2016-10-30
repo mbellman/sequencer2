@@ -13,7 +13,7 @@ export default class SequencerMenuView extends View {
     private application: SequencerApplication;
 
     constructor (application: SequencerApplication) {
-        super('menu-bar');
+        super('sequence-menu-view');
 
         this.application = application;
     }
@@ -25,7 +25,6 @@ export default class SequencerMenuView extends View {
     public onRender (): void {
         this.addOption('File', this.makeFileDropdownMenu());
         this.addOption('Options', this.makeOptionsDropdownMenu());
-        this.addOption('Channels');
         this.addOption('Theme', this.makeThemeDropdownMenu());
 
         this.$element.on('mouseover -> .menu-option', (e: MouseEvent) => {
@@ -70,7 +69,7 @@ export default class SequencerMenuView extends View {
         var option: Element = document.createElement('div');
 
         $(option).html(text)
-            .attr('class', 'menu-option');
+            .attr('class', 'menu-option pointer');
 
         return option;
     }
@@ -121,8 +120,8 @@ export default class SequencerMenuView extends View {
                 'Main': () => {
                     this.application.setTheme('main')
                 },
-                'Dark': () => {
-                    this.application.setTheme('dark')
+                'Night': () => {
+                    this.application.setTheme('night')
                 }
             });
     }

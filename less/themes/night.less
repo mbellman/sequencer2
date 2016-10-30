@@ -1,0 +1,71 @@
+@night-purple: #316;
+@night-blue: #103;
+@night-pink: #FDF;
+
+.sequencer {
+    &.night {
+        background: lighten(@night-purple, 60%);
+
+        .sequence-menu-view {
+            background: @night-purple;
+            box-shadow: 0 0 4px 2px lighten(@night-purple, 30%);
+
+            .menu-option {
+                background-color: @night-purple;
+                color: @night-pink;
+
+                &:hover,
+                &.expanded {
+                    background-color: lighten(@night-purple, 10%);
+                    text-shadow: 0 0 2px @night-purple;
+                }
+
+                ul.dropdown-menu {
+                    background-color: lighten(@night-purple, 10%);
+                    box-shadow: 0 0 4px 0 darken(@night-purple, 20%);
+
+                    li.line {
+                        border-color: lighten(@night-purple, 20%);
+                    }
+
+                    li.dropdown-option {
+                        background-color: lighten(@night-purple, 10%);
+                        color: @night-pink;
+
+                        &:hover {
+                            background-color: lighten(@night-purple, 20%);
+                            color: #FFF;
+                        }
+                    }
+                }
+            }
+        }
+
+        .sequence-view {
+            .add-channel-panel {
+                .add-channel-button {
+                    background-color: @night-purple;
+                    box-shadow: 0 0 1px 0 darken(@night-purple, 30%);
+                    border-color: desaturate(darken(@night-purple, 20%), 20%);
+                    color: @night-pink;
+                    text-shadow: 0 -1px 0 #000;
+                }
+            }
+
+            #channels {
+                .channel {
+                    box-shadow: 0 0 0 4px @night-pink;
+
+                    .channel-top-bar {
+                        background-color: @night-purple;
+                        box-shadow: 0 0 5px 0px darken(@night-purple, 20%) inset;
+                    }
+
+                    .channel-content {
+                        background-color: lighten(@night-blue, 25%);
+                    }
+                }
+            }
+        }
+    }
+}

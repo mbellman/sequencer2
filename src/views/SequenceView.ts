@@ -1,4 +1,6 @@
+import $ from "core/dom/Query";
 import Viewport from "core/dom/Viewport";
+import ScrollArea from "core/dom/ScrollArea";
 import View from "core/program/View";
 import Tween from "core/tween/Tween";
 import SequencerApplication from "applications/SequencerApplication";
@@ -23,10 +25,12 @@ export default class SequenceView extends View {
     /* @ A Query reference to the SequenceView's add channel button. */
     private $addChannelButton: Query;
     /* @ A Query reference to the ChannelView container. */
-    private $channels: Query;
+    private $channelContainer: Query;
+    /* @ A ScrollArea virtualizing scroll actions on the SequenceView. */
+    private scrollArea: ScrollArea;
 
     constructor (application: SequencerApplication) {
-        super('channel-list');
+        super('sequence-view');
 
         this.application = application;
     }
@@ -37,11 +41,21 @@ export default class SequenceView extends View {
      */
     public onRender (): void {
         this.$addChannelButton = this.$('.add-channel-button');
-        this.$channels = this.$('#channels');
+        this.$channelContainer = this.$('#channels');
 
         this.$addChannelButton.on('click', () => {
             this.addChannel();
         });
+    }
+
+    /**
+     * SequenceView attach event handler.
+     * @override
+     */
+    public onAttach (): void {
+        this.scrollArea = new ScrollArea(this.$element, this.$channelContainer);
+
+        this.scrollArea.setScrollArea(this.$element.bounds().width, 2000);
     }
 
     /**
@@ -50,22 +64,45 @@ export default class SequenceView extends View {
     public addChannel (): void {
         var channelView: ChannelView = new ChannelView(this.sequence);
 
-        channelView.attachTo(this.$channels);
-        this.updateAddChannelButton();
+        channelView.attachTo(this.$channelContainer);
+        this.positionNewChannelView(channelView);
+        this.revealNewChannelView(channelView);
+        this.slideAddChannelButton();
     }
 
     /**
-     * Slides the add channel button to a new position, out of the way
+     * Sets the top position of a newly added ChannelView.
+     */
+    private positionNewChannelView (channelView: ChannelView): void {
+        var totalChannels: number = this.sequence.getTotalChannels();
+        var topPosition: number = 75 + (totalChannels - 1) * 350;
+
+        channelView.$element.css('top', topPosition + 'px');
+    }
+
+    /**
+     * Animates a newly added ChannelView into view by removing
+     * its "hidden" class on a delay to avoid CSS transition +
+     * DOM element insertion race conditions.
+     */
+    private revealNewChannelView (channelView: ChannelView): void {
+        setTimeout(() => {
+            channelView.$element.removeClass('hidden');
+        }, 50);
+    }
+
+    /**
+     * Slides the add channel button to its new position, out of the way
      * of the added ChannelView(s).
      */
-    private updateAddChannelButton (): void {
+    private slideAddChannelButton (): void {
         var $panel = this.$addChannelButton.parent();
         var totalChannels: number = this.sequence.getTotalChannels();
-        var currentPosition: number = $panel.bounds().top;
-        var newPosition: number = currentPosition + 300;
+        var currentTopPosition: number = $panel.bounds().top;
+        var newTopPosition: number = currentTopPosition + 300;
 
-        if (newPosition > Viewport.height - 150) {
-            newPosition = Viewport.height - 150;
+        if (newTopPosition > Viewport.height - 150) {
+            newTopPosition = Viewport.height - 150;
 
             /*
             TODO:
@@ -76,10 +113,10 @@ export default class SequenceView extends View {
         }
 
         Tween.run({
-            start: currentPosition,
-            end: newPosition,
-            duration: 0.6,
-            ease: Ease.cubeInOut,
+            start: currentTopPosition,
+            end: newTopPosition,
+            duration: 0.55,
+            ease: Ease.inOutCubic,
             onUpdate: (v: number) => {
                 $panel.css('top', v + 'px');
             },

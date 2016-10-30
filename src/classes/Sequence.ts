@@ -9,7 +9,7 @@ export default class Sequence {
     private channels: HashTable<Channel> = new HashTable<Channel>();
 
     /**
-     * Returns the number of active Sequence channels.
+     * Returns the current number of active Sequence channels.
      */
     public getTotalChannels (): number {
         return this.channels.size();

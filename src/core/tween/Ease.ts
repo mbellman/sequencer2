@@ -1,11 +1,9 @@
 /**
  * @ public interface EaseFunction
  * 
- * A type signature for 
+ * A type signature for each easing function.
  */
-export interface EaseFunction {
-    (t: number): number;
-}
+export type EaseFunction = (t: number) => number;
 
 /**
  * @ public namespace Ease
@@ -13,11 +11,11 @@ export interface EaseFunction {
  * A collection of unit easing functions.
  */
 export namespace Ease {
-    export function quadOut (t: number): number {
+    export function outQuad (t: number): number {
         return t*t;
     }
 
-    export function quadInOut (t: number): number {
+    export function inOutQuad (t: number): number {
         if (t < 0.5) {
             return 2*t*t;
         } else {
@@ -25,7 +23,7 @@ export namespace Ease {
         }
     }
 
-    export function cubeInOut (t: number): number {
+    export function inOutCubic (t: number): number {
         if (t < 0.5) {
             return 4*t*t*t;
         } else {

@@ -1,4 +1,4 @@
-import { IterationHandler, Table, Collection } from "core/system/Types";
+import { Table, Collection, IterationHandler } from "core/system/Types";
 
 /**
  * @ private function eachInArray
