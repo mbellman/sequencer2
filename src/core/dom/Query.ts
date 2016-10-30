@@ -247,6 +247,20 @@ export class Query {
     }
 
     /**
+     * Sets a transform property on the queried Element(s).
+     */
+    public transform (transformation: string): Query {
+        this.eachElement((element: Element) => {
+            let el: HTMLElement = <HTMLElement>element;
+
+            el.style.transform = transformation;
+            el.style.webkitTransform = transformation;
+        });
+
+        return this;
+    }
+
+    /**
      * Returns a bounding ClientRect for the first element in the Query.
      */
     public bounds (): any {

@@ -19,6 +19,13 @@ interface TweenParameters {
 }
 
 /**
+ * @ private type EaseHandler
+ * 
+ * An update function to run each TweenAction cycle.
+ */
+type EaseHandler = (value: number) => void;
+
+/**
  * @ private class TweenAction
  */
 class TweenAction {
@@ -90,13 +97,6 @@ class TweenAction {
         this.onUpdate(newValue);
     }
 }
-
-/**
- * @ public type EaseHandler
- * 
- * An update function for a TweenAction.
- */
-type EaseHandler = (value: number) => void;
 
 /**
  * @ public class Tween

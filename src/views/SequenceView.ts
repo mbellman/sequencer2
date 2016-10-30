@@ -53,9 +53,7 @@ export default class SequenceView extends View {
      * @override
      */
     public onAttach (): void {
-        this.scrollArea = new ScrollArea(this.$element, this.$channelContainer);
-
-        this.scrollArea.setScrollArea(this.$element.bounds().width, 2000);
+        this.createScrollArea();
     }
 
     /**
@@ -68,6 +66,13 @@ export default class SequenceView extends View {
         this.positionNewChannelView(channelView);
         this.revealNewChannelView(channelView);
         this.slideAddChannelButton();
+    }
+
+    private createScrollArea (): void {
+        var width: number = this.$element.bounds().width;
+        var height: number = 2000;
+
+        this.scrollArea = new ScrollArea(this.$element, this.$channelContainer, width, height);
     }
 
     /**
