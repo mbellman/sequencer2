@@ -53,13 +53,13 @@ export default class SequencerMenuView extends View {
     /**
      * Adds a new option to the menu.
      */
-    private addOption (text: string, dropdown: DropdownMenuView = null): void {
+    private addOption (text: string, dropdownMenu: DropdownMenuView = null): void {
         var option: Element = this.makeOptionElement(text);
 
         this.$element.append(option);
 
-        if (dropdown) {
-            dropdown.attachTo(option);
+        if (dropdownMenu) {
+            dropdownMenu.attachTo(option);
         }
     }
 

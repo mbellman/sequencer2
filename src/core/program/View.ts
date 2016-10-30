@@ -11,7 +11,7 @@ abstract class View {
     public element: Element;
     /* @ The Query representation of the rendered Element. */
     public $element: Query;
-    /* @ The View element's innerHTML content. */
+    /* @ The View Element's innerHTML content. */
     protected template: string;
     /* @ The Query the View was appended to via attach(). */
     protected $target: Query;

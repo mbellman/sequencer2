@@ -7,7 +7,7 @@
 			@import url("css/sequencer.css");
 		</style>
 	</head>
-	<body>
+	<body class="noscroll">
 		<main></main>
 
 		<script type="text/javascript" src="js/bundle.min.js"></script>

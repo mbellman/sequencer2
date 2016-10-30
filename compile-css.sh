@@ -5,7 +5,7 @@ if [ -f $outfile ]; then
 fi
 
 echo "Compiling CSS...";
-lessc less/sequencer.less $outfile
+lessc --clean-css less/sequencer.less $outfile
 
 if [ -f $outfile ]; then
 	echo "Done.";

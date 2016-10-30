@@ -37,5 +37,23 @@
                 }
             }
         }
+
+        .channel-list {
+            .add-channel-panel {
+                .add-channel-button {
+                    background-color: @main-blue;
+                    box-shadow: 0 0 2px 0 darken(@main-blue, 30%);
+                    border-color: desaturate(darken(@main-blue, 20%), 20%);
+                    color: #FFF;
+                    text-shadow: 0 -1px 0 darken(@main-blue, 20%);
+                }
+            }
+
+            #channels {
+                .channel {
+                    background-color: lighten(@main-blue, 20%);
+                }
+            }
+        }
     }
 }

@@ -32,7 +32,7 @@ abstract class Application {
     }
 
     /**
-     * Attaches all added Views to the Application container.
+     * Attaches all added Views to the Application container Element.
      */
     public attachViews (): void {
         each(this.views, (view: View) => {

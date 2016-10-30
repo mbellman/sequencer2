@@ -273,6 +273,8 @@ export class Query {
                 height: bounds.height
             };
         }
+
+        return {};
     }
 
     /**

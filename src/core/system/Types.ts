@@ -24,31 +24,26 @@ export type Table<T> = Hash<T> | Object;
 export type Collection<T> = Table<T> | Array<T>;
 
 /**
- * @ public interface IterationHandler
+ * @ public type IterationHandler
  * 
  * A function which iterates over a native Array or key/value list.
  */
-export interface IterationHandler {
-    (value: any, key: string | number): any;
-}
+export type IterationHandler = (value: any, key: string | number) => any;
 
 /**
- * @ public interface EventHandler
+ * @ public type EventHandler
  * 
- * An Element event handler method.
+ * A DOM event handler method.
  */
-export interface EventHandler {
-    (e: Event): any;
-}
+export type EventHandler = (e: Event) => any;
 
 /**
- * @ public interface ActionHandler
+ * @ public type ActionHandler
  * 
- * A handler method to be run on Action triggers (analagous to EventHandler methods on Events).
+ * A handler method to be run on Action triggers (analagous
+ * to EventHandler methods on Events).
  */
-export interface ActionHandler {
-    (action: Action): any;
-}
+export type ActionHandler = (action: Action) => any;
 
 /**
  * @ public type HandlerQueue

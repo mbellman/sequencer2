@@ -7,4 +7,5 @@ Successor to an older web-based music sequencer tool.
 2. `npm install -g typescript`
 3. `npm install -g uglify-js`
 4. `npm install -g less`
-5. `./compile.sh`
+5. `npm install -g less-plugin-clean-css`
+6. `./compile.sh`

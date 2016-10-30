@@ -5,12 +5,26 @@
     height: @height;
 }
 
+/* @ Set element dimensions. */
+.size(@width, @height) {
+    width: @width;
+    height: @height;
+}
+
 /* @ Set a font style. */
 .font(@family, @size: 12px, @weight: normal, @color: #000) {
     font-family: @family;
     font-size: @size;
     font-weight: @weight;
     color: @color;
+}
+
+/* @ Set each border side style. */
+.border(@top, @right, @bottom, @left) {
+    border-top: @top;
+    border-right: @right;
+    border-bottom: @bottom;
+    border-left: @left;
 }
 
 /* @ Set each corner border radius. */
