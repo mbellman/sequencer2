@@ -1,14 +1,26 @@
+/* @ night-purple @ */
 @night-purple: #316;
-@night-blue: #103;
+
+@night-purple-L10: lighten(@night-purple, 10%);
+@night-purple-L20: lighten(@night-purple, 20%);
+@night-purple-L25: lighten(@night-purple, 25%);
+@night-purple-L30: lighten(@night-purple, 30%);
+@night-purple-L60: lighten(@night-purple, 60%);
+
+@night-purple-D10: darken(@night-purple, 10%);
+@night-purple-D20: darken(@night-purple, 20%);
+@night-purple-D30: darken(@night-purple, 30%);
+
+/* @ night-pink @ */
 @night-pink: #FDF;
 
 .sequencer {
     &.night {
-        background: lighten(@night-purple, 60%);
+        background: @night-purple-L60;
 
         .sequence-menu-view {
             background: @night-purple;
-            box-shadow: 0 0 4px 2px lighten(@night-purple, 30%);
+            box-shadow: 0 0 4px 2px @night-purple-L30;
 
             .menu-option {
                 background-color: @night-purple;
@@ -16,24 +28,24 @@
 
                 &:hover,
                 &.expanded {
-                    background-color: lighten(@night-purple, 10%);
+                    background-color: @night-purple-L10;
                     text-shadow: 0 0 2px @night-purple;
                 }
 
                 ul.dropdown-menu {
-                    background-color: lighten(@night-purple, 10%);
-                    box-shadow: 0 0 4px 0 darken(@night-purple, 20%);
+                    background-color: @night-purple-L10;
+                    box-shadow: 0 0 4px 0 @night-purple-D20;
 
                     li.line {
-                        border-color: lighten(@night-purple, 20%);
+                        border-color: @night-purple-L20;
                     }
 
                     li.dropdown-option {
-                        background-color: lighten(@night-purple, 10%);
+                        background-color: @night-purple-L10;
                         color: @night-pink;
 
                         &:hover {
-                            background-color: lighten(@night-purple, 20%);
+                            background-color: @night-purple-L10;
                             color: #FFF;
                         }
                     }
@@ -44,9 +56,9 @@
         .sequence-view {
             .add-channel-panel {
                 .add-channel-button {
-                    background-color: darken(@night-purple, 10%);
-                    box-shadow: 0 0 1px 0 darken(@night-purple, 30%);
-                    border-color: desaturate(darken(@night-purple, 20%), 20%);
+                    background-color: @night-purple-D10;
+                    box-shadow: 0 0 1px 0 @night-purple-D30;
+                    border-color: desaturate(@night-purple-D20, 20%);
                     color: @night-pink;
                     text-shadow: 0 -1px 0 #000;
                 }
@@ -58,7 +70,7 @@
 
                     .channel-top-bar {
                         background-color: @night-purple;
-                        box-shadow: 0 0 5px 0px darken(@night-purple, 20%) inset;
+                        box-shadow: 0 0 5px 0px @night-purple-D20 inset;
 
                         .channel-label {
                             color: @night-pink;
@@ -66,7 +78,13 @@
                     }
 
                     .channel-content {
-                        background-color: lighten(@night-blue, 25%);
+                        background-color: @night-purple-L25;
+
+                        canvas.channel-sequence {
+                            @canvas-border: 2px solid @night-purple-D10;
+
+                            .border(@canvas-border, 0, @canvas-border, 0);
+                        }
                     }
                 }
             }

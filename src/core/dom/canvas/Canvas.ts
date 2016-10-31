@@ -2,9 +2,9 @@
  * @ private interface Point
  */
 interface Point {
-    /* @ The point x coordinate. */
+    /* @ The Point x coordinate. */
     x: number;
-    /* @ The point y coordinate. */
+    /* @ The Point y coordinate. */
     y: number;
 }
 
@@ -12,9 +12,9 @@ interface Point {
  * @ private interface Size
  */
 interface Size {
-    /* @ The width of the size object. */
+    /* @ The width of the Size object. */
     width: number;
-    /* @ The height of the size object. */
+    /* @ The height of the Size object. */
     height: number;
 }
 
@@ -27,7 +27,7 @@ interface Rect extends Point, Size {}
  * @ private interface Colorable
  */
 interface Colorable {
-    /* @ The color of the colorable object. */
+    /* @ The color of the Colorable object. */
     color?: string;
 }
 
@@ -35,7 +35,7 @@ interface Colorable {
  * @ private interface Stroke
  */
 interface Stroke extends Colorable {
-    /* @ The thickness of the stroke object. */
+    /* @ The thickness of the Stroke object. */
     thickness?: number;
 }
 
@@ -43,7 +43,7 @@ interface Stroke extends Colorable {
  * @ private interface Strokable
  */
 interface Strokable {
-    /* @ The Stroke object defining the stroke style of the object. */
+    /* @ The Stroke object defining the stroke style of the Strokable object. */
     stroke?: Stroke;
 }
 
@@ -56,7 +56,7 @@ interface CanvasRect extends Rect, Colorable, Strokable {}
  * @ private interface CanvasCircle
  */
 interface CanvasCircle extends Point, Colorable, Strokable {
-    /* @ The radius of the circle object. */
+    /* @ The radius of the CanvasCircle object. */
     radius: number;
 }
 
@@ -64,7 +64,7 @@ interface CanvasCircle extends Point, Colorable, Strokable {
  * @ private interface CanvasArc
  */
 interface CanvasArc extends CanvasCircle {
-    /* @ The coverage angle of the arc object. */
+    /* @ The coverage angle of the CanvasArc object. */
     angle: number;
 }
 
@@ -74,18 +74,31 @@ interface CanvasArc extends CanvasCircle {
  * Provides an API for Canvas rendering operations.
  */
 export default class Canvas {
-    /* @ The Canvas pixel width. */
-    public width: number;
-    /* @ The Canvas pixel height. */
-    public height: number;
     /* @ The Canvas element. */
     private element: HTMLCanvasElement;
     /* @ The Canvas rendering context. */
     private context: CanvasRenderingContext2D;
 
+    /**
+     * @constructor
+     */
     constructor (element: HTMLElement | Element) {
         this.element = <HTMLCanvasElement>element;
         this.context = this.element.getContext('2d');
+    }
+
+    /**
+     * @getter
+     */
+    get width (): number {
+        return this.element.width;
+    }
+
+    /**
+     * @getter
+     */
+    get height (): number {
+        return this.element.height;
     }
 
     /**

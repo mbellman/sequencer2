@@ -1,3 +1,4 @@
+import { bindAll } from "core/system/Utilities";
 import { EaseFunction } from "core/tween/Ease";
 
 /**
@@ -21,7 +22,7 @@ interface TweenParameters {
 /**
  * @ private type EaseHandler
  * 
- * An update function to run each TweenAction cycle.
+ * An update function to run on each TweenAction update cycle.
  */
 type EaseHandler = (value: number) => void;
 
@@ -47,6 +48,8 @@ class TweenAction {
     private onComplete: () => void;
 
     constructor (params: TweenParameters) {
+        bindAll(this, 'update');
+
         this.startValue = params.start;
         this.endValue = params.end;
         this.range = params.end - params.start;
@@ -59,20 +62,7 @@ class TweenAction {
             this.onComplete = params.onComplete;
         }
 
-        this.start();
-    }
-
-    /**
-     * 
-     */
-    private start (): void {
-        var updateFn = () => {
-            this.update();
-
-            requestAnimationFrame(updateFn);
-        };
-
-        updateFn();
+        this.update();
     }
 
     /**
@@ -95,6 +85,8 @@ class TweenAction {
         }
 
         this.onUpdate(newValue);
+
+        requestAnimationFrame(this.update);
     }
 }
 

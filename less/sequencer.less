@@ -66,11 +66,11 @@ main {
                 .add-channel-button {
                     @button-width: @add-channel-button-size + 100px;
                     @button-height: @add-channel-button-size;
-                    @button-margin: (100px - @button-height) / 2;
+                    @button-y-margin: (100px - @button-height) / 2;
 
                     position: relative;
                     .size(@button-width, @button-height);
-                    margin: @button-margin auto;
+                    margin: @button-y-margin auto;
                     border-radius: 5px;
                     .border(0, 1px solid #000, 4px solid #000, 1px solid #000);
                     .font(Arial, 50px, bold);
@@ -132,6 +132,7 @@ main {
                             .size(70%, @canvas-height);
                             background: #FFF;
                             margin: 25px;
+                            border-radius: 5px;
                         }
                     }
                 }

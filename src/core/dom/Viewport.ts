@@ -1,3 +1,5 @@
+import { each } from "core/system/Utilities";
+
 /**
  * @ public class Viewport
  * 
@@ -8,6 +10,8 @@ export default class Viewport {
     public static width: number;
     /* @ The current viewport height. */
     public static height: number;
+    /* @ An internal list of page resize handlers. */
+    private static resizeHandlers: Array<Function> = [];
 
     /**
      * Adds the necessary event listeners to keep the Viewport information up-to-date.
@@ -17,7 +21,18 @@ export default class Viewport {
 
         window.addEventListener('resize', (e: Event) => {
             this.updateDimensions();
+
+            each(this.resizeHandlers, (handler: Function) => {
+                handler();
+            });
         });
+    }
+
+    /**
+     * Adds a new page resize handler to the internal list.
+     */
+    public static onResize (handler: Function): void {
+        this.resizeHandlers.push(handler);
     }
 
     /**

@@ -1,13 +1,29 @@
+@import "../mixins/generic.less";
+
+/* @ main-blue @ */
 @main-blue: #68C;
+
+@main-blue-L10: lighten(@main-blue, 10%);
+@main-blue-L15: lighten(@main-blue, 15%);
+@main-blue-L20: lighten(@main-blue, 20%);
+@main-blue-L25: lighten(@main-blue, 25%);
+@main-blue-L30: lighten(@main-blue, 30%);
+
+@main-blue-D20: darken(@main-blue, 20%);
+@main-blue-D30: darken(@main-blue, 30%);
+
+/* @ main-gray @ */
 @main-gray: #BBB;
+
+@main-gray-D20: darken(@main-gray, 20%);
 
 .sequencer {
     &.main {
-        background: lighten(@main-blue, 30%);
+        background: @main-blue-L30;
 
         .sequence-menu-view {
             background: @main-blue;
-            box-shadow: 0 0 4px 2px lighten(@main-blue, 20%);
+            box-shadow: 0 0 4px 2px @main-blue-L20;
 
             .menu-option {
                 background-color: @main-blue;
@@ -15,24 +31,24 @@
 
                 &:hover,
                 &.expanded {
-                    background-color: lighten(@main-blue, 10%);
+                    background-color: @main-blue-L10;
                     text-shadow: 0 0 2px @main-blue;
                 }
 
                 ul.dropdown-menu {
-                    background-color: lighten(@main-blue, 10%);
-                    box-shadow: 0 0 4px 0 darken(@main-blue, 20%);
+                    background-color: @main-blue-L10;
+                    box-shadow: 0 0 4px 0 @main-blue-D20;
 
                     li.line {
-                        border-color: lighten(@main-blue, 15%);
+                        border-color: @main-blue-L15;
                     }
 
                     li.dropdown-option {
-                        background-color: lighten(@main-blue, 10%);
+                        background-color: @main-blue-L10;
                         color: #FFF;
 
                         &:hover {
-                            background-color: lighten(@main-blue, 20%);
+                            background-color: @main-blue-L20;
                         }
                     }
                 }
@@ -43,10 +59,10 @@
             .add-channel-panel {
                 .add-channel-button {
                     background-color: @main-blue;
-                    box-shadow: 0 0 1px 0 darken(@main-blue, 30%);
-                    border-color: desaturate(darken(@main-blue, 20%), 20%);
+                    box-shadow: 0 0 1px 0 @main-blue-D30;
+                    border-color: desaturate(@main-blue-D20, 20%);
                     color: #FFF;
-                    text-shadow: 0 -1px 0 darken(@main-blue, 20%);
+                    text-shadow: 0 -1px 0 @main-blue-D20;
                 }
             }
 
@@ -56,7 +72,7 @@
 
                     .channel-top-bar {
                         background-color: @main-gray;
-                        box-shadow: 0 0 5px 0px darken(@main-gray, 20%) inset;
+                        box-shadow: 0 0 5px 0px @main-gray-D20 inset;
 
                         .channel-label {
                             color: #FFF;
@@ -64,10 +80,12 @@
                     }
 
                     .channel-content {
-                        background-color: lighten(@main-blue, 25%);
+                        background-color: @main-blue-L25;
 
                         canvas.channel-sequence {
-                            border: 1px solid @main-blue;
+                            @canvas-border: 3px solid @main-blue-L15;
+
+                            .border(@canvas-border, 0, @canvas-border, 0);
                         }
                     }
                 }

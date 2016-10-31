@@ -156,3 +156,14 @@ export function each (collection: Collection<any>, handler: IterationHandler): a
 
     return eachInTable(collection, handler);
 }
+
+/**
+ * @ public function bindAll
+ * 
+ * Creates context-bound functions on an instance using the targeted method names.
+ */
+export function bindAll (instance: any, ...methodNames: Array<string>) {
+    each(methodNames, (methodName: string) => {
+        instance[methodName] = instance[methodName].bind(instance);
+    });
+}
