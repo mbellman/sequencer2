@@ -1,7 +1,9 @@
 import View from "core/program/View";
+import Canvas from "core/dom/canvas/Canvas";
 import Sequence from "classes/Sequence";
 import Channel from "classes/Channel";
 
+import { Query } from "core/dom/Query";
 import { ChannelTemplate } from "templates/ChannelTemplate";
 
 /**
@@ -17,6 +19,8 @@ export default class ChannelView extends View {
     private sequence: Sequence;
     /* @ The Channel managed by this ChannelView. */
     private channel: Channel;
+    /* @ A Canvas instance visualizing the Channel notes. */
+    private channelCanvas: Canvas;
 
     constructor (sequence: Sequence) {
         super('channel hidden');
@@ -32,7 +36,20 @@ export default class ChannelView extends View {
      * @override
      */
     public onRender (): void {
-        this.$element.attr('id', this.channel.getName());
+        var channelName: string = this.channel.getName();
+
+        this.$element.attr('id', channelName)
+            .find('.channel-label').html(channelName);
+    }
+
+    /**
+     * ChannelView attach event handler.
+     * @override
+     */
+    public onAttach (): void {
+        setTimeout(() => {
+            this.setupChannelCanvas();
+        }, 600);
     }
 
     /**
@@ -41,5 +58,16 @@ export default class ChannelView extends View {
      */
     public onDetach (): void {
         this.sequence.removeChannel(this.channel);
+    }
+
+    /**
+     * Instantiates and configures the channelCanvas.
+     */
+    private setupChannelCanvas (): void {
+        var $canvas: Query = this.$('canvas.channel-sequence');
+        this.channelCanvas = new Canvas($canvas.element(0));
+
+        this.channelCanvas.setSize($canvas.width(), $canvas.height())
+            .setBackground('#FFF');
     }
 }

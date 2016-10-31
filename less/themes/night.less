@@ -44,7 +44,7 @@
         .sequence-view {
             .add-channel-panel {
                 .add-channel-button {
-                    background-color: @night-purple;
+                    background-color: darken(@night-purple, 10%);
                     box-shadow: 0 0 1px 0 darken(@night-purple, 30%);
                     border-color: desaturate(darken(@night-purple, 20%), 20%);
                     color: @night-pink;
@@ -59,6 +59,10 @@
                     .channel-top-bar {
                         background-color: @night-purple;
                         box-shadow: 0 0 5px 0px darken(@night-purple, 20%) inset;
+
+                        .channel-label {
+                            color: @night-pink;
+                        }
                     }
 
                     .channel-content {

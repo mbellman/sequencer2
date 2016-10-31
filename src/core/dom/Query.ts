@@ -50,6 +50,13 @@ export class Query {
     }
 
     /**
+     * Returns the nth Element in the Query.
+     */
+    public element (index: number): Element {
+        return this.elements[index];
+    }
+
+    /**
      * Returns the direct parent Element(s) of the queried Element(s).
      */
     public parent (): Query {
@@ -258,6 +265,20 @@ export class Query {
         });
 
         return this;
+    }
+
+    /**
+     * Returns the width of the first Element in the Query.
+     */
+    public width (): number {
+        return Math.round(this.bounds().width);
+    }
+
+    /**
+     * Returns the height of the first Element in the Query.
+     */
+    public height (): number {
+        return Math.round(this.bounds().height);
     }
 
     /**

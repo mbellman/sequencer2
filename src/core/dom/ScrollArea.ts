@@ -1,10 +1,18 @@
 import Time from "core/system/Time";
 import Tween from "core/tween/Tween";
 
-import { normalizeWheel } from "external/normalizeWheel";
+import { normalizeWheel, NormalizedWheelDelta } from "external/normalizeWheel";
 import { clamp, hasSameSign } from "core/system/Math";
 import { Query } from "core/dom/Query";
 import { Ease } from "core/tween/Ease";
+
+/**
+ * @ private type MomentumComponent
+ * 
+ * A property string representing one of two momentum component
+ * properties on a ScrollArea instance.
+ */
+type MomentumComponent = 'momentumX' | 'momentumY';
 
 /**
  * @ private interface WheelDelta
@@ -29,8 +37,10 @@ export default class ScrollArea {
     public scrollTop: number = 0;
     /* @ The current scroll left value. */
     public scrollLeft: number = 0;
+    /* @ A Query reference to the Element(s) to bind the wheel event on. */
+    private $listenerTarget: Query;
     /* @ A Query reference to the Element(s) to scroll. */
-    private $scrollable: Query;
+    private $scrollTarget: Query;
     /* @ The width of the ScrollArea container. */
     private containerWidth: number;
     /* @ The height of the ScrollArea container. */
@@ -50,20 +60,21 @@ export default class ScrollArea {
     /* @ Determines whether the onScrollUpdate cycle is active. */
     private isScrolling: boolean = false;
 
-    constructor ($listener: Query, $scrollable: Query, width: number, height: number) {
-        var scrollBounds: any = $listener.bounds();
-        this.$scrollable = $scrollable;
+    constructor ($listenerTarget: Query, $scrollTarget: Query, width: number, height: number) {
+        var scrollBounds: any = $listenerTarget.bounds();
+        this.$listenerTarget = $listenerTarget;
+        this.$scrollTarget = $scrollTarget;
         this.containerWidth = scrollBounds.width;
         this.containerHeight = scrollBounds.height;
-
-        this.setScrollArea(width, height);
-        this.saveMaximumScrollOffsets();
 
         // Prevent context loss for onScrollUpdate when
         // it gets passed into requestAnimationFrame
         this.onScrollUpdate = this.onScrollUpdate.bind(this);
 
-        $listener.on('wheel', (e: WheelEvent) => {
+        this.setScrollArea(width, height);
+        this.saveMaximumScrollOffsets();
+
+        this.$listenerTarget.on('wheel', (e: WheelEvent) => {
             this.captureScrollEvent(e);
             e.stopPropagation();
         });
@@ -83,7 +94,7 @@ export default class ScrollArea {
     public scrollTo (top: number, left: number): void {
         var translation: string = 'translate(' + -left + 'px, ' + -top + 'px)';
 
-        this.$scrollable.transform(translation);
+        this.$scrollTarget.transform(translation);
     }
 
     /**
@@ -105,7 +116,7 @@ export default class ScrollArea {
      * Captures a new WheelEvent to control scroll behavior.
      */
     private captureScrollEvent (e: WheelEvent): void {
-        var delta: WheelDelta = this.normalizeWheelEvent(e);
+        var delta: WheelDelta = this.getNormalizedWheelDelta(e);
 
         this.stopIfScrollDirectionChanged(delta);
         this.updateMomentumFromDelta(delta);
@@ -149,7 +160,7 @@ export default class ScrollArea {
         this.isScrolling = true;
 
         this.updateScrollOffsetsFromMomentum();
-        this.boundScrollOffsets();
+        this.clampScrollOffsets();
         this.scrollTo(this.scrollTop, this.scrollLeft);
         this.loseMomentum();
 
@@ -165,9 +176,9 @@ export default class ScrollArea {
     }
 
     /**
-     * Bounds the current scroll top/left values to within the maximum ranges.
+     * Clamps the current scroll top/left values to within the maximum ranges.
      */
-    private boundScrollOffsets (): void {
+    private clampScrollOffsets (): void {
         this.scrollTop = clamp(this.scrollTop, 0, this.maxScrollTop);
         this.scrollLeft = clamp(this.scrollLeft, 0, this.maxScrollLeft);
     }
@@ -176,7 +187,7 @@ export default class ScrollArea {
      * Gradually decreases the scroll momentum for either the x or y momentum
      * component; if the component is omitted, both are decreased.
      */
-    private loseMomentum (momentum: string = null): void {
+    private loseMomentum (momentum: MomentumComponent = null): void {
         if (!momentum) {
             this.loseMomentum('momentumX');
             this.loseMomentum('momentumY');
@@ -199,8 +210,8 @@ export default class ScrollArea {
     /**
      * Returns a normalized WheelDelta from a WheelEvent instance.
      */
-    private normalizeWheelEvent (e: WheelEvent): WheelDelta {
-        var normalized: any = normalizeWheel(e);
+    private getNormalizedWheelDelta (e: WheelEvent): WheelDelta {
+        var normalized: NormalizedWheelDelta = normalizeWheel(e);
 
         return {
             x: normalized.pixelX / 50,

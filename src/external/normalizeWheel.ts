@@ -1,62 +1,112 @@
 /**
+ * BSD license
+ * 
  * Copyright (c) 2015, Facebook, Inc.
  * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- * @providesModule normalizeWheel
- * @typechecks
- */
-
-/**
+ * 
  * https://github.com/facebook/fixed-data-table/blob/master/src/vendor_upstream/dom/normalizeWheel.js
  */
 
-// Reasonable defaults
-const PIXEL_STEP  = 10;
-const LINE_HEIGHT = 40;
-const PAGE_HEIGHT = 800;
+/**
+ * MIT license
+ * 
+ * Copyright (c) 2016 Malcolm Bellman
+ */
 
-export function normalizeWheel (event) {
-  var sX = 0, sY = 0,       // spinX, spinY
-      pX = 0, pY = 0;       // pixelX, pixelY
+/**
+ * @ private const PIXEL_STEP
+ */
+const PIXEL_STEP: number = 10;
 
-  // Legacy
-  if ('detail'      in event) { sY = event.detail; }
-  if ('wheelDelta'  in event) { sY = -event.wheelDelta / 120; }
-  if ('wheelDeltaY' in event) { sY = -event.wheelDeltaY / 120; }
-  if ('wheelDeltaX' in event) { sX = -event.wheelDeltaX / 120; }
+/**
+ * @ private const LINE_HEIGHT
+ */
+const LINE_HEIGHT: number = 40;
 
-  // side scrolling on FF with DOMMouseScroll
-  if ( 'axis' in event && event.axis === event.HORIZONTAL_AXIS ) {
-    sX = sY;
-    sY = 0;
-  }
+/**
+ * @ private const PAGE_HEIGHT
+ */
+const PAGE_HEIGHT: number = 800;
 
-  pX = sX * PIXEL_STEP;
-  pY = sY * PIXEL_STEP;
+/**
+ * @ private interface GenericWheelEvent
+ * 
+ * An interface which combines properties of multiple mouse wheel event interfaces,
+ * without enforcing any particular property requirements. While useless for type
+ * checking, it provides context for the design of the normalizeWheel function
+ * and permits compilation without unnecessary instance/type checking.
+ */
+interface GenericWheelEvent {
+    readonly detail?: number;
+    readonly wheelDelta?: number;
+    readonly wheelDeltaX?: number;
+    readonly wheelDeltaY?: number;
+    readonly axis?: number;
+    readonly HORIZONTAL_AXIS?: number;
+    readonly VERTICAL_AXIS?: number;
+    readonly deltaX?: number;
+    readonly deltaY?: number;
+    readonly deltaMode?: number;
+}
 
-  if ('deltaY' in event) { pY = event.deltaY; }
-  if ('deltaX' in event) { pX = event.deltaX; }
+/**
+ * @ public interface NormalizedWheelDelta
+ * 
+ * An object containing normalized values from a GenericWheelEvent.
+ */
+export interface NormalizedWheelDelta {
+    spinX: number;
+    spinY: number;
+    pixelX: number;
+    pixelY: number;
+}
 
-  if ((pX || pY) && event.deltaMode) {
-    if (event.deltaMode == 1) {          // delta in LINE units
-      pX *= LINE_HEIGHT;
-      pY *= LINE_HEIGHT;
-    } else {                             // delta in PAGE units
-      pX *= PAGE_HEIGHT;
-      pY *= PAGE_HEIGHT;
+/**
+ * @ public function normalizeWheel
+ * 
+ * Receives a mouse wheel event of unknown implementation and attempts to
+ * yield normalized values for the spin delta and pixel displacement.
+ */
+export function normalizeWheel (event: GenericWheelEvent): NormalizedWheelDelta {
+    var sX = 0, sY = 0;    // spinX, spinY
+    var pX = 0, pY = 0;    // pixelX, pixelY
+
+    // Legacy
+    if ('detail' in event) { sY = event.detail; }
+    if ('wheelDelta' in event) { sY = -event.wheelDelta / 120; }
+    if ('wheelDeltaY' in event) { sY = -event.wheelDeltaY / 120; }
+    if ('wheelDeltaX' in event) { sX = -event.wheelDeltaX / 120; }
+
+    // side scrolling on FF with DOMMouseScroll
+    if ( 'axis' in event && event.axis === event.HORIZONTAL_AXIS ) {
+        sX = sY;
+        sY = 0;
     }
-  }
 
-  // Fall-back if spin cannot be determined
-  if (pX && !sX) { sX = (pX < 1) ? -1 : 1; }
-  if (pY && !sY) { sY = (pY < 1) ? -1 : 1; }
+    pX = sX * PIXEL_STEP;
+    pY = sY * PIXEL_STEP;
 
-  return { spinX  : sX,
-           spinY  : sY,
-           pixelX : pX,
-           pixelY : pY };
+    if ('deltaY' in event) { pY = event.deltaY; }
+    if ('deltaX' in event) { pX = event.deltaX; }
+
+    if ((pX || pY) && event.deltaMode) {
+        if (event.deltaMode === 1) {         // delta in LINE units
+            pX *= LINE_HEIGHT;
+            pY *= LINE_HEIGHT;
+        } else {                             // delta in PAGE units
+            pX *= PAGE_HEIGHT;
+            pY *= PAGE_HEIGHT;
+        }
+    }
+
+    // Fall-back if spin cannot be determined
+    if (pX && !sX) { sX = (pX < 1) ? -1 : 1; }
+    if (pY && !sY) { sY = (pY < 1) ? -1 : 1; }
+
+    return {
+        spinX : sX,
+        spinY : sY,
+        pixelX : pX,
+        pixelY : pY
+    };
 }

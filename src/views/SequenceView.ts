@@ -44,7 +44,7 @@ export default class SequenceView extends View {
         this.$channelContainer = this.$('#channels');
 
         this.$addChannelButton.on('click', () => {
-            this.addChannel();
+            this.addChannelView();
         });
     }
 
@@ -59,15 +59,18 @@ export default class SequenceView extends View {
     /**
      * Adds a new ChannelView to the SequenceView.
      */
-    public addChannel (): void {
+    public addChannelView (): void {
         var channelView: ChannelView = new ChannelView(this.sequence);
 
         channelView.attachTo(this.$channelContainer);
-        this.positionNewChannelView(channelView);
+        this.positionChannelView(channelView);
         this.revealNewChannelView(channelView);
         this.slideAddChannelButton();
     }
 
+    /**
+     * Turns the SequenceView into a virtual ScrollArea.
+     */
     private createScrollArea (): void {
         var width: number = this.$element.bounds().width;
         var height: number = 2000;
@@ -78,7 +81,7 @@ export default class SequenceView extends View {
     /**
      * Sets the top position of a newly added ChannelView.
      */
-    private positionNewChannelView (channelView: ChannelView): void {
+    private positionChannelView (channelView: ChannelView): void {
         var totalChannels: number = this.sequence.getTotalChannels();
         var topPosition: number = 75 + (totalChannels - 1) * 350;
 

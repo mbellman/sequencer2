@@ -57,10 +57,18 @@
                     .channel-top-bar {
                         background-color: @main-gray;
                         box-shadow: 0 0 5px 0px darken(@main-gray, 20%) inset;
+
+                        .channel-label {
+                            color: #FFF;
+                        }
                     }
 
                     .channel-content {
                         background-color: lighten(@main-blue, 25%);
+
+                        canvas.channel-sequence {
+                            border: 1px solid @main-blue;
+                        }
                     }
                 }
             }

@@ -64,13 +64,17 @@ main {
                 }
 
                 .add-channel-button {
+                    @button-width: @add-channel-button-size + 100px;
+                    @button-height: @add-channel-button-size;
+                    @button-margin: (100px - @button-height) / 2;
+
                     position: relative;
-                    .size(@add-channel-button-size + 100px, @add-channel-button-size);
-                    margin: ((100px - @add-channel-button-size) / 2) auto;
+                    .size(@button-width, @button-height);
+                    margin: @button-margin auto;
                     border-radius: 5px;
                     .border(0, 1px solid #000, 4px solid #000, 1px solid #000);
                     .font(Arial, 50px, bold);
-                    line-height: @add-channel-button-size;
+                    line-height: @button-height;
                     .transform(scale(0.9));
                     .transition-transform(0.2s, @ease-out-quart);
 
@@ -105,13 +109,30 @@ main {
                         .topleft(0, 0);
                         .size(100%, @channel-top-bar-height);
                         .border-radius(5px, 5px, 0, 0);
+
+                        .channel-label {
+                            display: inline-block;
+                            margin: 4px 0 0 10px;
+                            .font(Arial, 15px, bold);
+                        }
                     }
 
                     .channel-content {
+                        @content-height: (@channel-height - @channel-top-bar-height);
+
                         position: relative;
-                        .size(100%, (@channel-height - @channel-top-bar-height));
+                        .size(100%, @content-height);
                         .border-radius(0, 0, 5px, 5px);
                         z-index: 2;
+
+                        canvas.channel-sequence {
+                            @canvas-height: (@content-height - 50px);
+
+                            position: relative;
+                            .size(70%, @canvas-height);
+                            background: #FFF;
+                            margin: 25px;
+                        }
                     }
                 }
             }
