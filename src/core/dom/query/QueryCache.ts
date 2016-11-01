@@ -1,33 +1,27 @@
-import HashTable from "core/system/HashTable";
+import HashTable from "core/system/structures/HashTable";
 import Time from "core/system/Time";
 
-import { Query } from "core/dom/Query";
+import { Query } from "core/dom/query/Query";
 
 /**
- * @ private interface QueryLog
- * 
- * A type signature for cached/timestamped Query instances.
+ * A timestamped Query reference stored in a QueryCache.
  */
 interface QueryLog {
-    /* @ The Query instance. */
     query: Query;
-    /* @ The last lookup time in Unix Epoch milliseconds. */
     time: number;
 }
 
 /**
- * @ public class QueryCache
- * 
  * A periodically self-culling list of recent DOM queries.
  */
 export default class QueryCache extends HashTable<QueryLog> {
-    /* @ An interval timer for clean(). */
-    private cleaner: number;
+    /* An interval timer for clean(). */
+    private cleanInterval: number;
 
     constructor () {
         super();
 
-        this.cleaner = window.setInterval(this.clean, 10000);
+        this.cleanInterval = window.setInterval(this.clean, 10000);
     }
 
     /**

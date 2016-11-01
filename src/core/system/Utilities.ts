@@ -1,4 +1,4 @@
-import { Table, Collection, IterationHandler } from "core/system/Types";
+import { Hash, Collection, IterationHandler } from "core/system/structures/Types";
 
 /**
  * @ private function eachInArray
@@ -14,15 +14,15 @@ function eachInArray (array: Array<any>, handler: IterationHandler): any {
 }
 
 /**
- * @ private function eachInTable
+ * @ private function eachInHash
  * 
- * Iterates over the own properties in a generic key/value pair list, invoking a handler
+ * Iterates over the native properties in a generic key/value pair list, invoking a handler
  * function for each. The handler receives the property value and key name as arguments.
  */
-function eachInTable(table: Table<any>, handler: IterationHandler): any {
-    for (let key in table) {
-        if (hasOwn(table, key)) {
-            let r: any = handler(table[key], key);
+function eachInHash(hash: Hash<any>, handler: IterationHandler): any {
+    for (let key in hash) {
+        if (hasOwn(hash, key)) {
+            let r: any = handler(hash[key], key);
 
             if (!isUndefined(r)) {
                 return r;
@@ -125,7 +125,7 @@ export function intersects (array1: Array<any>, array2: Array<any>): boolean {
  * 
  * Determines whether a key/value list contains a native property by key name.
  */
-export function hasOwn (object: Table<any>, key: string): boolean {
+export function hasOwn (object: Hash<any>, key: string): boolean {
     return Object.prototype.hasOwnProperty.call(object, key);
 }
 
@@ -154,7 +154,7 @@ export function each (collection: Collection<any>, handler: IterationHandler): a
         return eachInArray(collection, handler);
     }
 
-    return eachInTable(collection, handler);
+    return eachInHash(collection, handler);
 }
 
 /**

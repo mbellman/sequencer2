@@ -8,18 +8,11 @@ export interface Hash<T> {
 }
 
 /**
- * @ public type Table<T>
- * 
- * A generic key/value list containing enumerable properties.
- */
-export type Table<T> = Hash<T> | Object;
-
-/**
  * @ public type Collection<T>
  * 
- * Either a key/value list or a native Array.
+ * An ordered or unordered list of items.
  */
-export type Collection<T> = Table<T> | Array<T>;
+export type Collection<T> = Hash<T> | Array<T>;
 
 /**
  * @ public type IterationHandler

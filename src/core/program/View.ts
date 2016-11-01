@@ -1,25 +1,41 @@
-import $, { Query } from "core/dom/Query";
+import { $, Query } from "core/dom/query/Query";
 
 /**
- * @ public abstract class View
- * 
+ * Scrollable
+ */
+export interface Scrollable {
+    onScroll (): void;
+}
+
+/**
+ * Resizable
+ */
+export interface Resizable {
+    onResize (): void;
+}
+
+/**
  * A basic shell for application Views. Each View represents a reusable block of HTML content
  * and associated functionality which can be freely attached to the document.
  */
-abstract class View {
-    /* @ The Element rendered from the View template. */
+export abstract class View {
+    /* The rendered View Element. */
     public element: Element;
-    /* @ The Query representation of the rendered Element. */
     public $element: Query;
-    /* @ The View Element's innerHTML content. */
-    protected template: string;
-    /* @ The Query the View was appended to via attach(). */
+
+    /* A Query representation of the target Element(s) the View is attached to via attachTo(). */
     protected $target: Query;
-    /* @ A boolean representing whether the Element has been rendered. */
-    protected rendered: boolean = false;
-    /* @ Space-separated classes to set on the rendered Element. */
+
+    /* The View HTML content. */
+    protected template: string;
+
+    /* Whether the View has been rendered. */
+    protected isRendered: boolean = false;
+
+    /* Space-separated classes to set on the rendered Element. */
     private classes: string;
-    /* @ An ID to set on the rendered Element. */
+
+    /* An ID to set on the rendered Element. */
     private id: string;
 
     constructor (classes: string = null, id: string = null) {
@@ -28,17 +44,17 @@ abstract class View {
     }
 
     /**
-     * Overridable render event handler.
+     * Overridable View render event handler.
      */
     public onRender (): void {}
 
     /**
-     * Overridable attach event handler.
+     * Overridable View attach event handler.
      */
     public onAttach (): void {}
 
     /**
-     * Overridable detach event handler.
+     * Overridable View detach event handler.
      */
     public onDetach (): void {}
 
@@ -46,7 +62,7 @@ abstract class View {
      * Renders the View Element.
      */
     public render (elementType: string = 'div'): void {
-        if (this.rendered) {
+        if (this.isRendered) {
             return;
         }
 
@@ -61,7 +77,7 @@ abstract class View {
             this.$element.attr('id', this.id);
         }
 
-        this.rendered = true;
+        this.isRendered = true;
 
         this.onRender();
     }
@@ -92,5 +108,3 @@ abstract class View {
         return this.$element.find(selector);
     }
 }
-
-export default View;

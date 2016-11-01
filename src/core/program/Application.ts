@@ -1,21 +1,18 @@
-import $, { Query } from "core/dom/Query";
-import View from "core/program/View";
-
 import { each } from "core/system/Utilities";
-import { Hash } from "core/system/Types";
+import { Hash } from "core/system/structures/Types";
+import { $, Query } from "core/dom/query/Query";
+import { View } from "core/program/View";
 
 /**
- * @ public abstract class Application
- * 
  * A basic shell for program Application instances. An Application is essentially a controller
  * and View manager used to mediate high-level program state changes and operations.
  */
 abstract class Application {
-    /* @ The container Element for the Application. */
+    /* A container Element for the Application. */
     protected container: Element;
-    /* @ The Query representation of the Application container. */
     protected $container: Query;
-    /* @ The Views added to the Application. */
+
+    /* An array of Views added to the Application. */
     private views: Array<View> = [];
 
     constructor (classes: string = null, id: string = null) {
@@ -32,13 +29,9 @@ abstract class Application {
     }
 
     /**
-     * Attaches all added Views to the Application container Element.
+     * A required-override method for starting up the Application.
      */
-    public attachViews (): void {
-        each(this.views, (view: View) => {
-            view.attachTo(this.container);
-        });
-    }
+    public abstract initialize (): void;
 
     /**
      * Attaches the Application container to the document.
@@ -52,6 +45,15 @@ abstract class Application {
      */
     public addView (view: View): void {
         this.views.push(view);
+    }
+
+    /**
+     * Attaches all added Views to the Application container Element.
+     */
+    public attachViews (): void {
+        each(this.views, (view: View) => {
+            view.attachTo(this.container);
+        });
     }
 }
 

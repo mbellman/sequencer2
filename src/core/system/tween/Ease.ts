@@ -1,13 +1,9 @@
 /**
- * @ public interface EaseFunction
- * 
- * A type signature for each easing function.
+ * A type signature for easing functions.
  */
-export type EaseFunction = (t: number) => number;
+export type EasingFunction = (t: number) => number;
 
 /**
- * @ public namespace Ease
- * 
  * A collection of unit easing functions.
  */
 export namespace Ease {

@@ -1,41 +1,35 @@
-import HashTable from "core/system/HashTable";
+import HashTable from "core/system/structures/HashTable";
 import EventStore from "core/dom/data/EventStore";
 import ActionStore from "core/dom/data/ActionStore";
 
 import { hasOwn, each } from "core/system/Utilities";
-import { Hash } from "core/system/Types";
-import { EventHandler, HandlerQueue } from "core/dom/Types";
+import { Hash } from "core/system/structures/Types";
 
 /**
- * @ private const DATA_ID
- * 
  * The property to apply to each Element to which its unique identifier is assigned.
  */
 const DATA_ID: string = 'data';
 
 /**
- * @ private class ElementData
- * 
- * A collection of data pertaining to individual DOM Elements.
+ * Data pertaining to individual document elements.
  */
 class ElementData {
-    /* @ An event handler store for the Element. */
+    /* An event handler store for the Element. */
     public events: EventStore = new EventStore();
-    /* @ An action handler store for the Element. */
+
+    /* An action handler store for the Element. */
     public actions: ActionStore = new ActionStore();
 }
 
 /**
- * @ public class Data
- * 
- * Provides an internal store and accompanying methods for managing data pertaining to individual DOM Elements.
+ * An internal store and accompanying methods for managing ElementData on individual document elements.
  */
 export default class Data {
-    /* @ The internal store for DOM Element data. */
+    /* The internal store for element data. */
     private static data: HashTable<ElementData> = new HashTable<ElementData>();
 
     /**
-     * Creates a new data entry for a DOM Element using a unique pseudo-random identifier.
+     * Creates a new data entry for an element using a unique pseudo-random identifier.
      */
     public static register (element: Element): void {
         if (hasOwn(element, DATA_ID)) {
@@ -49,14 +43,14 @@ export default class Data {
     }
 
     /**
-     * Returns the unique identifier bound to a particular Element.
+     * Returns the unique identifier bound to a particular element.
      */
     public static getId (element: Element): string {
         return element[DATA_ID];
     }
 
     /**
-     * Returns the data bound to a particular Element.
+     * Returns the data bound to a particular element.
      */
     public static getData (element: Element): ElementData {
         var id: string = this.getId(element);
@@ -65,7 +59,7 @@ export default class Data {
     }
 
     /**
-     * Returns a pseudo-random, unique Element ID.
+     * Returns a pseudo-random, unique identifier string.
      */
     private static generateElementId(): string {
         return String(Date.now() + '' + Math.random());

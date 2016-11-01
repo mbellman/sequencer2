@@ -1,25 +1,25 @@
-import View from "core/program/View";
 import Canvas from "core/dom/canvas/Canvas";
 import Sequence from "classes/Sequence";
 import Channel from "classes/Channel";
+import ChannelTemplate from "templates/ChannelTemplate";
 
-import { Query } from "core/dom/Query";
-import { ChannelTemplate } from "templates/ChannelTemplate";
+import { Query } from "core/dom/query/Query";
+import { View } from "core/program/View";
 
 /**
- * @ public class ChannelView
- * 
  * The user interface for individual sequencer channels.
  */
 export default class ChannelView extends View {
-    /* @ The ChannelView template. @override */
+    /* The ChannelView template. @override */
     protected template: string = ChannelTemplate;
 
-    /* @ The Sequence passed in from the parent SequenceView. */
+    /* The Sequence passed in from the parent SequenceView. */
     private sequence: Sequence;
-    /* @ The Channel managed by this ChannelView. */
+
+    /* The Channel managed by this ChannelView. */
     private channel: Channel;
-    /* @ A Canvas instance visualizing the Channel notes. */
+
+    /* A Canvas instance visualizing the Channel notes. */
     private channelCanvas: Canvas;
 
     constructor (sequence: Sequence) {

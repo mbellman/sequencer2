@@ -1,23 +1,23 @@
 import { each } from "core/system/Utilities";
-import { Hash } from "core/system/Types";
+import { EventDelegator } from "core/system/Event";
+import { Hash } from "core/system/structures/Types";
+import { DOMActionHandler, DOMHandlerQueue } from "core/dom/Types";
 import { ActionType, Action } from "core/dom/action/Action";
-import { ActionHandler, HandlerQueue } from "core/dom/Types";
 
 /**
- * @ public class ActionStore
- * 
- * An action handler store and manager for individual Elements.
+ * An action handler store and manager for individual document Elements.
  */
-export default class ActionStore {
-    /* @ A reference to the last Action triggered on the Element. */
+export default class ActionStore implements EventDelegator {
+    /* A reference to the last Action triggered on the Element. */
     public last: Action;
-    /* @ A list of ActionHandlers for each Action type bound on the Element. */
-    private actions: Hash<HandlerQueue> = {};
+
+    /* A list of DOMActionHandlers for each Action type bound on the Element. */
+    private actions: Hash<DOMHandlerQueue> = {};
 
     /**
-     * Adds a new ActionHandler to the HandlerQueue for a particular action.
+     * Adds a new DOMActionHandler to the DOMHandlerQueue for a particular action.
      */
-    public bind (action: ActionType, handler: ActionHandler): void {
+    public on (action: ActionType, handler: DOMActionHandler): void {
         if (!this.actions[action]) {
             this.actions[action] = [];
         }
@@ -26,25 +26,25 @@ export default class ActionStore {
     }
 
     /**
-     * Dereferences all queued ActionHandlers for the Element, effectively clearing its action bindings.
+     * Dereferences all queued DOMActionHandlers for the Element, effectively clearing its action bindings.
      */
-    public release (): void {
-        each(this.actions, (handlers: HandlerQueue, action: string) => {
+    public off (): void {
+        each(this.actions, (handlers: DOMHandlerQueue, action: string) => {
             delete this.actions[action];
         });
     }
 
     /**
-     * Dispatches each ActionHandler method for a particular action, working backward so that
-     * later-bound handlers can return false, stopping the ActionHandler dispatch sequence.
+     * Dispatches each DOMActionHandler method for a particular action, working backward so that
+     * later-bound handlers can return false, stopping the DOMActionHandler dispatch sequence.
      */
     public trigger (action: ActionType, a: Action): void {
         this.last = a;
 
-        var handlers: HandlerQueue = this.actions[action] || [];
+        var handlers: DOMHandlerQueue = this.actions[action] || [];
 
         for (let i = handlers.length - 1 ; i >= 0 ; --i) {
-            let handler: ActionHandler = <ActionHandler>handlers[i];
+            let handler: DOMActionHandler = <DOMActionHandler>handlers[i];
 
             if (handler(a) === false) {
                 break;

@@ -1,13 +1,14 @@
 import Time from "core/system/Time";
-import $, { Query } from "core/dom/Query";
 import Data from "core/dom/data/Data";
 import ActionStore from "core/dom/data/ActionStore";
 
-import { ActionType } from "core/dom/action/Action";
+import { ActionType, Action } from "core/dom/action/Action";
 import { ClickAction, DoubleClickAction, MoveAction, DragAction } from "core/dom/action/MouseActions";
+import { $, Query } from "core/dom/query/Query";
 
 /**
- * @ public class ActionListener
+ * An API for binding "Action" listeners to DOM Elements. Actions are like Events, but can
+ * occur over time, and have a richer description than regular Events.
  */
 export default class ActionListener {
     /**

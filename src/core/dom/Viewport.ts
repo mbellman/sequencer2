@@ -1,45 +1,52 @@
 import { each } from "core/system/Utilities";
+import { Area } from "core/system/math/Geometry";
+import { EventManager } from "core/system/Event";
 
 /**
- * @ public class Viewport
- * 
- * Provides information about the browser viewport.
+ * A static singleton providing information about the browser page viewport.
  */
 export default class Viewport {
-    /* @ The current viewport width. */
-    public static width: number;
-    /* @ The current viewport height. */
-    public static height: number;
-    /* @ An internal list of page resize handlers. */
-    private static resizeHandlers: Array<Function> = [];
+    private static size: Area = { width: 0, height: 0 };
+    private static isInitialized: boolean = false;
 
-    /**
-     * Adds the necessary event listeners to keep the Viewport information up-to-date.
-     */
+    /* An EventManager instance to manage viewport resize event handlers. */
+    private static events: EventManager = new EventManager();
+
     public static initialize (): void {
-        this.updateDimensions();
+        if (!this.isInitialized) {
+            this.readWindowSize();
 
-        window.addEventListener('resize', (e: Event) => {
-            this.updateDimensions();
-
-            each(this.resizeHandlers, (handler: Function) => {
-                handler();
+            window.addEventListener('resize', () => {
+                this.readWindowSize();
+                this.events.trigger('resize');
             });
-        });
+
+            this.isInitialized = true;
+        }
+    }
+
+    public static get width (): number {
+        return this.size.width;
+    }
+
+    public static get height (): number {
+        return this.size.height;
     }
 
     /**
-     * Adds a new page resize handler to the internal list.
+     * Saves viewport resize event handlers to the internal {events} EventManager.
+     * The on() syntax is for pattern consistency, but only 'resize' is allowed
+     * as the event argument.
      */
-    public static onResize (handler: Function): void {
-        this.resizeHandlers.push(handler);
+    public static on (event: 'resize', handler: Function): void {
+        this.events.on(event, handler);
     }
 
     /**
-     * Updates the saved viewport dimensions.
+     * Checks and saves the current viewport dimensions.
      */
-    private static updateDimensions (): void {
-        this.width = window.innerWidth;
-        this.height = window.innerHeight;
+    private static readWindowSize (): void {
+        this.size.width = window.innerWidth;
+        this.size.height = window.innerHeight;
     }
 }

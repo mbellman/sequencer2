@@ -1,20 +1,15 @@
 import Data from "core/dom/data/Data";
 
 import { each } from "core/system/Utilities";
-import { Hash } from "core/system/Types";
-import { EventHandler } from "core/dom/Types";
+import { Hash } from "core/system/structures/Types";
 
 /**
- * @ private type ListenerTable
- * 
  * A type signature for a list of event names (keys) and true boolean
  * values indicating that a listener is bound on the event.
  */
 type ListenerTable = Hash<boolean>;
 
 /**
- * @ private function globalListener
- * 
  * An event listener function bound only once per Element per event type. The
  * {type} property of the recorded event will be used to trigger all stored
  * EventHandlers for that event type in the Element's EventStore data.
@@ -24,12 +19,10 @@ function globalListener (e: Event): void {
 }
 
 /**
- * @ public class EventListener
- * 
- * Provides an API for binding EventHandler listener methods to Elements for specific events.
+ * An API for binding event listeners to document Elements.
  */
 export default class EventListener {
-    /* @ A store of ListenerTables for each Element representing its currently bound events. */
+    /* A store of ListenerTables for each Element representing its currently bound events. */
     private static listeners: Hash<ListenerTable> = {};
 
     /**

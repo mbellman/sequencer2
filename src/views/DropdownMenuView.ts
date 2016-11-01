@@ -1,31 +1,25 @@
-import $, { Query } from "core/dom/Query";
 import Viewport from "core/dom/Viewport";
-import View from "core/program/View";
 
 import { each } from "core/system/Utilities";
-import { Hash } from "core/system/Types";
-import { EventHandler } from "core/dom/Types";
+import { Hash } from "core/system/structures/Types";
+import { $, Query } from "core/dom/query/Query";
+import { DOMEventHandler } from "core/dom/Types";
+import { View } from "core/program/View";
 
 /**
- * @ private type DropdownHandler
- * 
- * Represents a union of the EventHandler type and a DropdownMenuView instance,
+ * Represents a union of the DOMEventHandler type and a DropdownMenuView instance,
  * used as a handler operation bound to each DropdownMenuView option. Options
  * bound with another DropdownMenuView will open a sub-dropdown on mouseover.
  */
-type DropdownHandler = EventHandler | DropdownMenuView;
+type DropdownHandler = DOMEventHandler | DropdownMenuView;
 
 /**
- * @ private type DropdownConfiguration
- * 
- * A key/value list of options for a DropdownMenuView, where each key represents text for
+ * A Hash of options for a DropdownMenuView, where each key represents text for
  * the dropdown option, and each value represents the DropdownHandler for that option.
  */
 type DropdownConfiguration = Hash<DropdownHandler>;
 
 /**
- * @ public class DropdownMenuView
- * 
  * A reusable dropdown menu interface.
  */
 export default class DropdownMenuView extends View {

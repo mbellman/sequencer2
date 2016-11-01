@@ -1,19 +1,16 @@
-import $, { Query } from "core/dom/Query";
 import Application from "core/program/Application";
-import View from "core/program/View";
 import SequencerMenuView from "views/SequencerMenuView";
 import DropdownMenuView from "views/DropdownMenuView";
 import SequenceView from "views/SequenceView";
 
-/**
- * @ private const themes
- * 
- * A space-separated list of all style themes for the sequencer.
- */
-const themes: string = 'main night';
+import { $, Query } from "core/dom/query/Query";
+import { View } from "core/program/View";
+
+/* A space-separated list of all style themes for the sequencer. */
+const STYLE_THEMES: string = 'main night';
 
 /**
- * @ public class SequencerApplication
+ * The primary Application controller for the sequencer.
  */
 export default class SequencerApplication extends Application {
     constructor () {
@@ -22,9 +19,9 @@ export default class SequencerApplication extends Application {
     }
 
     /**
-     * Starts up the sequencer.
+     * @override
      */
-    public start (): void {
+    public initialize (): void {
         super.attachTo('main');
         super.addView(new SequencerMenuView(this));
         super.addView(new SequenceView(this));
@@ -35,7 +32,7 @@ export default class SequencerApplication extends Application {
      * Changes the style theme of the sequencer.
      */
     public setTheme (theme: string): void {
-        this.$container.removeClass(themes)
+        $(this.container).removeClass(STYLE_THEMES)
             .addClass(theme);
     }
 }

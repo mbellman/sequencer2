@@ -1,15 +1,14 @@
-import $ from "core/dom/Query";
-import View from "core/program/View";
 import SequencerApplication from "applications/SequencerApplication";
 import DropdownMenuView from "views/DropdownMenuView";
 
+import { $ } from "core/dom/query/Query";
+import { View } from "core/program/View";
+
 /**
- * @ public class SequencerMenuView
- * 
  * The user interface for the sequencer's top menu bar.
  */
 export default class SequencerMenuView extends View {
-    /* @ The SequencerApplication instance the SequencerMenuView is added to. */
+    /* The SequencerApplication instance the SequencerMenuView is added to. */
     private application: SequencerApplication;
 
     constructor (application: SequencerApplication) {
@@ -52,13 +51,13 @@ export default class SequencerMenuView extends View {
     /**
      * Adds a new option to the menu.
      */
-    private addOption (text: string, dropdownMenu: DropdownMenuView = null): void {
+    private addOption (text: string, dropdownMenuView: DropdownMenuView = null): void {
         var option: Element = this.makeOptionElement(text);
 
         this.$element.append(option);
 
-        if (dropdownMenu) {
-            dropdownMenu.attachTo(option);
+        if (dropdownMenuView) {
+            dropdownMenuView.attachTo(option);
         }
     }
 

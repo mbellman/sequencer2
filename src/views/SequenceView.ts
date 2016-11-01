@@ -1,89 +1,65 @@
-import $ from "core/dom/Query";
 import Viewport from "core/dom/Viewport";
-import ScrollArea from "core/dom/ScrollArea";
-import View from "core/program/View";
-import Tween from "core/tween/Tween";
+import Tween from "core/system/tween/Tween";
+import ScrollArea from "core/dom/ui/ScrollArea";
 import SequencerApplication from "applications/SequencerApplication";
 import ChannelView from "views/ChannelView";
 import Sequence from "classes/Sequence";
+import SequenceViewTemplate from "templates/SequenceViewTemplate";
 
 import { bindAll } from "core/system/Utilities";
-import { clamp } from "core/system/Math";
-import { Query } from "core/dom/Query";
-import { Ease } from "core/tween/Ease";
-import { SequenceViewTemplate } from "templates/SequenceViewTemplate";
+import { clamp } from "core/system/math/Math";
+import { Ease } from "core/system/tween/Ease";
+import { $, Query } from "core/dom/query/Query";
+import { View, Resizable, Scrollable } from "core/program/View";
 
-/**
- * @ private const SCROLL_HEIGHT_BUFFER
- * 
- * The amount of extra scrolling distance to pad the ScrollArea with.
- */
+/* The amount of extra scrolling distance to pad the ScrollArea with. */
 const SCROLL_HEIGHT_BUFFER: number = 300;
 
-/**
- * @ private const CHANNEL_LIST_TOP_MARGIN
- * 
- * The top margin for the ChannelView pile.
- */
+/* The top margin for the ChannelView pile. */
 const CHANNEL_LIST_TOP_MARGIN: number = 75;
 
-/**
- * @ private const CHANNEL_HEIGHT
- * 
- * The height of each ChannelView.
- */
+/* The height of each ChannelView. */
 const CHANNEL_HEIGHT: number = 300;
 
-/**
- * @ private const CHANNEL_MARGIN
- * 
- * The bottom margin for each ChannelView.
- */
+/* The bottom margin for each ChannelView. */
 const CHANNEL_MARGIN: number = 50;
 
-/**
- * @ private const CHANNEL_TOTAL_HEIGHT
- * 
- * The combined height of a ChannelView and the ChannelView bottom margin.
- */
+/* The combined height of a ChannelView and the ChannelView bottom margin. */
 const CHANNEL_TOTAL_HEIGHT: number = CHANNEL_HEIGHT + CHANNEL_MARGIN;
 
-/**
- * @ private const ADD_BUTTON_BOTTOM_MARGIN
- * 
- * The bottom margin for the add channel button when pushed toward the bottom of the page.
- */
+/* The bottom margin for the add channel button when pushed toward the bottom of the page. */
 const ADD_BUTTON_BOTTOM_MARGIN: number = 150;
 
 /**
- * @ public class SequenceView
- * 
  * The primary sequencer interface.
  */
-export default class SequenceView extends View {
-    /* @ The SequenceView template. @override */
+export default class SequenceView extends View implements Scrollable, Resizable {
+    /* The Sequence coupled to the SequenceView */
+    public sequence: Sequence = new Sequence();
+
+    /* The ScrollArea instance virtualizing scroll actions on the SequenceView. */
+    public scrollArea: ScrollArea;
+
+    /**
+     * @override
+     */
     protected template: string = SequenceViewTemplate;
 
-    /* @ The Sequence instance coupled to the SequenceView. */
-    public sequence: Sequence = new Sequence();
-    /* @ The SequencerApplication instance the SequenceView is added to. */
+    /* The SequencerApplication instance the SequenceView is added to. */
     private application: SequencerApplication;
-    /* @ A Query reference to the SequenceView's add channel button. */
+
+    /* Saved Query references */
     private $addChannelButton: Query;
-    /* @ A Query reference to the ChannelView group container. */
-    private $channelContainer: Query;
-    /* @ A Query reference to the last-added ChannelView element. */
+    private $channelViews: Query;
     private $lastChannelView: Query;
-    /* @ A ScrollArea virtualizing scroll actions on the SequenceView. */
-    private scrollArea: ScrollArea;
 
     constructor (application: SequencerApplication) {
         super('sequence-view');
-        bindAll(this, 'onScroll', 'onPageResize');
+        bindAll(this, 'onScroll', 'onResize');
 
         this.application = application;
 
-        Viewport.onResize(this.onPageResize);
+        Viewport.on('resize', this.onResize);
     }
 
     /**
@@ -92,7 +68,7 @@ export default class SequenceView extends View {
      */
     public onRender (): void {
         this.$addChannelButton = this.$('.add-channel-button');
-        this.$channelContainer = this.$('#channels');
+        this.$channelViews = this.$('#channel-views');
 
         this.$addChannelButton.on('click', () => {
             this.addChannelView();
@@ -108,24 +84,10 @@ export default class SequenceView extends View {
     }
 
     /**
-     * Adds a new ChannelView to the SequenceView.
-     */
-    public addChannelView (): void {
-        var channelView: ChannelView = new ChannelView(this.sequence);
-
-        channelView.attachTo(this.$channelContainer);
-        this.positionChannelView(channelView);
-        this.animateInChannelView(channelView);
-        this.slideAddChannelButton();
-        this.updateScrollRange();
-
-        this.$lastChannelView = channelView.$element;
-    }
-
-    /**
      * A handler function to run as the ScrollArea is scrolled.
+     * @implementation
      */
-    private onScroll (): void {
+    public onScroll (): void {
         if (!this.$lastChannelView) {
             return;
         }
@@ -135,10 +97,26 @@ export default class SequenceView extends View {
 
     /**
      * A handler function to run as the page resizes.
+     * @implementation
      */
-    private onPageResize (): void {
+    public onResize (): void {
         this.updateScrollRange();
         this.keepAddChannelButtonSnapped();
+    }
+
+    /**
+     * Adds a new ChannelView to the SequenceView.
+     */
+    public addChannelView (): void {
+        var channelView: ChannelView = new ChannelView(this.sequence);
+
+        channelView.attachTo(this.$channelViews);
+        this.positionChannelView(channelView);
+        this.animateInChannelView(channelView);
+        this.slideAddChannelButton();
+        this.updateScrollRange();
+
+        this.$lastChannelView = channelView.$element;
     }
 
     /**
@@ -165,7 +143,7 @@ export default class SequenceView extends View {
         var width: number = this.$element.bounds().width;
         var height: number = 0;
 
-        this.scrollArea = new ScrollArea(this.$element, this.$channelContainer, width, height);
+        this.scrollArea = new ScrollArea(this.$element, this.$channelViews, width, height);
     
         this.scrollArea.onScroll(this.onScroll);
     }

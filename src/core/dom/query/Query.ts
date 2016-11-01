@@ -1,37 +1,38 @@
-import QueryCache from "core/dom/QueryCache";
+import QueryCache from "core/dom/query/QueryCache";
 import Data from "core/dom/data/Data";
+import EventStore from "core/dom/data/EventStore";
 import EventListener from "core/dom/event/EventListener";
 import ActionListener from "core/dom/action/ActionListener";
-import EventStore from "core/dom/data/EventStore";
 
 import { each, toArray, isInArray } from "core/system/Utilities";
-import { Hash } from "core/system/Types";
+import { EventDelegator } from "core/system/Event";
+import { Hash } from "core/system/structures/Types";
+import { DOMEventHandler, DOMActionHandler } from "core/dom/Types";
 import { ActionType } from "core/dom/action/Action";
-import { EventHandler, ActionHandler } from "core/dom/Types";
 
 /**
- * @ private var $cache
- * 
- * A persistent QueryCache instance used to optimize DOM lookups.
- */
-var $cache: QueryCache = new QueryCache();
-
-/**
- * @ public class Query
- * 
  * A DOM selector and manipulation manager.
  */
-export class Query {
-    /* @ The length of the DOM Element collection. */
+export class Query implements EventDelegator {
+    /* A persistent QueryCache instance used to optimize DOM lookups. */
+    public static cache: QueryCache = new QueryCache();
+
+    /* The length of the queried Element(s) collection. */
     public length: number;
-    /* @ The selector used for the Query, if applicable. */
+
+    /* The selector used for the Query, if applicable. */
     public selector: string;
-    /* @ The previous Query in the stack, retrievable via pop(). */
+
+    /* The previous Query in the stack, retrievable via pop(). */
     private stack: Query;
-    /* @ The Query's collection of DOM Elements. */
+
+    /* The Query's collection of DOM Elements. */
     private elements: Array<Element>;
-    /* @ A table of boolean states for each ActionType representing whether or not
-     * @ the Query has been bound with that particular action via react(). */
+
+    /** 
+     * A table of boolean states for each ActionType representing whether or not
+     * the Query has been bound with that particular action via react().
+     */
     private reacting: Hash<boolean> = {};
 
     constructor (selector: string | Element | Array<Element>, stack: Query = null) {
@@ -93,7 +94,7 @@ export class Query {
     /**
      * Binds an event handler to the queried Element(s).
      */
-    public on (event: string, handler: EventHandler): Query {
+    public on (event: string, handler: DOMEventHandler): Query {
         var [ event, targetSelector ] = event.split(' -> ');
         var [ event, namespace ] = event.split('.');
         handler = handler.bind(this);
@@ -107,7 +108,7 @@ export class Query {
                 EventListener.add(element, event);
             }
 
-            Data.getData(element).events.bind(event, namespace, handler);
+            Data.getData(element).events.on(event, namespace, handler);
         });
 
         return this;
@@ -134,7 +135,7 @@ export class Query {
         this.eachElement((element: Element) => {
             let eventStore: EventStore = Data.getData(element).events;
 
-            eventStore.unbind(event, namespace);
+            eventStore.off(event, namespace);
 
             if (!namespace || !eventStore.has(event)) {
                 EventListener.remove(element, event);
@@ -162,9 +163,9 @@ export class Query {
     }
 
     /**
-     * Delegates an ActionHandler to be fired for a particular Action on the queried Element(s).
+     * Delegates an DOMActionHandler to be fired for a particular Action on the queried Element(s).
      */
-    public react (action: ActionType, handler: ActionHandler): Query {
+    public react (action: ActionType, handler: DOMActionHandler): Query {
         if (!this.reacting[action]) {
             ActionListener.add(this, action);
 
@@ -172,7 +173,7 @@ export class Query {
         }
 
         this.eachElement((element: Element) => {
-            Data.getData(element).actions.bind(action, handler);
+            Data.getData(element).actions.on(action, handler);
         });
 
         return this;
@@ -404,10 +405,10 @@ export class Query {
     }
 
     /**
-     * Returns a wrapper EventHandler function which only invokes the original
-     * EventHandler when the event's target matches a specific selector.
+     * Returns a wrapper DOMEventHandler function which only invokes the original
+     * DOMEventHandler when the event's target matches a specific selector.
      */
-    private createTargetedHandler (handler: EventHandler, selector: string): EventHandler {
+    private createTargetedHandler (handler: DOMEventHandler, selector: string): DOMEventHandler {
         return (e: Event) => {
             var target: Element = <Element>e.target;
 
@@ -419,11 +420,9 @@ export class Query {
 }
 
 /**
- * @ public function $
- * 
  * A factory function for Query instances.
  */
-export default function $ (selector: string | Element | Query): Query {
+export function $ (selector: string | Element | Query): Query {
     if (selector instanceof Element) {
         return new Query(selector);
     }
@@ -432,13 +431,13 @@ export default function $ (selector: string | Element | Query): Query {
         return selector;
     }
 
-    if ($cache.has(selector)) {
-        return $cache.getQuery(selector);
+    if (Query.cache.has(selector)) {
+        return Query.cache.getQuery(selector);
     }
 
     var query: Query = new Query(selector);
 
-    $cache.save(query);
+    Query.cache.save(query);
 
     return query;
 }

@@ -1,20 +1,21 @@
 import { isUndefined, each } from "core/system/Utilities";
-import { Hash, IterationHandler } from "core/system/Types";
+import { Hash, IterationHandler } from "core/system/structures/Types";
 
 /**
- * @ public class HashTable
- * 
  * A store containing values associated to specific keys, along
  * with several convenient methods for data management.
  */
 export default class HashTable<T> {
-    /* @ An internal Hash for the HashTable data. */
+    /* An internal Hash for the HashTable data. */
     private table: Hash<T> = {};
-    /* @ The number of items in the Hash Table. */
+
+    /* The number of items in the Hash Table. */
     private items: number = 0;
-    /* @ The last key looked up from the Hash Table. */
+
+    /* The last key looked up from the Hash Table. */
     private lastKey: string;
-    /* @ The last value retrieved from the Hash Table. */
+
+    /* The last value retrieved from the Hash Table. */
     private lastValue: T;
 
     /**

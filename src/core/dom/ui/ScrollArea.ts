@@ -1,15 +1,14 @@
 import Time from "core/system/Time";
-import Tween from "core/tween/Tween";
+import Tween from "core/system/tween/Tween";
 
-import { normalizeWheel, NormalizedWheelDelta } from "external/normalizeWheel";
-import { clamp, hasSameSign } from "core/system/Math";
+import { normalizeWheel, NormalizedWheelDelta } from "ext/NormalizeWheel";
+import { clamp, hasSameSign } from "core/system/math/Math";
+import { Point, Area } from "core/system/math/Geometry";
 import { bindAll } from "core/system/Utilities";
-import { Query } from "core/dom/Query";
-import { Ease } from "core/tween/Ease";
+import { Query } from "core/dom/query/Query";
+import { Ease } from "core/system/tween/Ease";
 
 /**
- * @ private type MomentumComponent
- * 
  * A property string representing one of two momentum component
  * properties on a ScrollArea instance.
  */
@@ -23,20 +22,11 @@ type MomentumComponent = 'momentumX' | 'momentumY';
 type ScrollHandler = (scrollTop: number, scrollLeft: number) => any;
 
 /**
- * @ private interface WheelDelta
- * 
- * An object containing normalized delta x/y values from a WheelEvent.
+ * Functionally equivalent to a Point; renamed for context.
  */
-interface WheelDelta {
-    /* @ The normalized delta x. */
-    x: number;
-    /* @ The normalized delta y. */
-    y: number;
-}
+interface WheelDelta extends Point {}
 
 /**
- * @ private function getNormalizedWheelDelta
- * 
  * Returns a normalized WheelDelta from a mouse WheelEvent instance.
  */
 function getNormalizedWheelDelta (e: WheelEvent): WheelDelta {
@@ -49,28 +39,21 @@ function getNormalizedWheelDelta (e: WheelEvent): WheelDelta {
 }
 
 /**
- * @ public class ScrollArea
- * 
  * Creates a virtual "scrollable" area on an element, overriding its DOM wheel
  * event and using a CSS translation transform to represent scroll behavior.
  */
 export default class ScrollArea {
-    /* @ The current scroll top value. */
+    /* The current scroll offsets. */
     private _scrollTop: number = 0;
-    /* @ The current scroll left value. */
     private _scrollLeft: number = 0;
-    /* @ A Query reference to the Element(s) to bind the wheel event on. */
-    private $listenerTarget: Query;
-    /* @ A Query reference to the Element(s) to scroll. */
-    private $scrollTarget: Query;
-    /* @ The width of the ScrollArea container. */
-    private containerWidth: number;
-    /* @ The height of the ScrollArea container. */
-    private containerHeight: number;
-    /* @ The total scrollable width of the ScrollArea region. */
-    private _scrollWidth: number;
-    /* @ The total scrollable height of the ScrollArea region. */
-    private _scrollHeight: number;
+
+    /* A Query reference to the Element(s) to scroll. */
+    private $container: Query;
+    private $content: Query;
+
+    private visibleArea: Area;
+    private scrollArea: Area;
+
     /* @ The current maximum acceptable scrollTop value. */
     private _maxScrollTop: number = 0;
     /* @ The current maximum acceptable scrollLeft value. */
@@ -84,77 +67,76 @@ export default class ScrollArea {
     /* @ A single scroll handler to run when during the onScrollUpdate cycle. */
     private scrollHandler: ScrollHandler;
 
-    /**
-     * @constructor
-     */
-    constructor ($listenerTarget: Query, $scrollTarget: Query, width?: number, height?: number) {
+    constructor ($container: Query, $content: Query, width?: number, height?: number) {
         bindAll(this, 'onScrollUpdate');
 
-        this.$listenerTarget = $listenerTarget;
-        this.$scrollTarget = $scrollTarget;
-        this.containerWidth = $listenerTarget.width();
-        this.containerHeight = $listenerTarget.height();
+        this.$container = $container;
+        this.$content = $content;
 
-        this.setScrollRange(width || this.containerWidth, height || this.containerHeight);
+        this.visibleArea = {
+            width: $container.width(),
+            height: $container.height()
+        };
 
-        this.$listenerTarget.on('wheel', (e: WheelEvent) => {
+        this.scrollArea = {
+            width: 0,
+            height: 0
+        };
+
+        this.setScrollRange(width || this.visibleArea.width, height || this.visibleArea.height);
+
+        this.$container.on('wheel', (e: WheelEvent) => {
             this.captureScrollEvent(e);
             e.stopPropagation();
         });
     }
 
     /**
-     * @getter
+     * {scrollTop}
      */
-    get scrollTop (): number {
+    public get scrollTop (): number {
         return this._scrollTop;
     }
 
-    /**
-     * @getter
-     */
-    get scrollLeft (): number {
-        return this._scrollLeft;
-    }
-
-    /**
-     * @getter
-     */
-    get scrollWidth (): number {
-        return this._scrollWidth;
-    }
-
-    /**
-     * @getter
-     */
-    get scrollHeight (): number {
-        return this._scrollHeight;
-    }
-
-    /**
-     * @setter
-     */
-    set scrollTop (top: number) {
+    public set scrollTop (top: number) {
         this._scrollTop = top;
 
         this.scrollTo(top);
     }
 
     /**
-     * @setter
+     * {scrollLeft}
      */
-    set scrollLeft (left: number) {
+    public get scrollLeft (): number {
+        return this._scrollLeft;
+    }
+
+    public set scrollLeft (left: number) {
         this._scrollLeft = left;
 
         this.scrollTo(null, left);
     }
 
     /**
+     * {scrollWidth}
+     */
+    public get scrollWidth (): number {
+        return this.scrollArea.width;
+    }
+
+    /**
+     * {scrollHeight}
+     */
+    public get scrollHeight (): number {
+        return this.scrollArea.height;
+    }
+
+    /**
      * Configure the ScrollArea width/height ranges.
      */
     public setScrollRange (width?: number, height?: number): void {
-        this._scrollWidth = clamp(width || this._scrollWidth, 0, Number.POSITIVE_INFINITY);
-        this._scrollHeight = clamp(height || this._scrollHeight, 0, Number.POSITIVE_INFINITY);
+        this.scrollArea.width = clamp(width || this.scrollArea.width, 0, Number.POSITIVE_INFINITY);
+        this.scrollArea.height = clamp(height || this.scrollArea.height, 0, Number.POSITIVE_INFINITY);
 
         this.updateMaximumScrollOffsets();
     }
@@ -167,7 +149,7 @@ export default class ScrollArea {
         this._scrollTop = top || this._scrollTop;
         this._scrollLeft = left || this._scrollLeft;
 
-        this.$scrollTarget.transform(translation);
+        this.$content.transform(translation);
     }
 
     /**
@@ -261,6 +243,14 @@ export default class ScrollArea {
     }
 
     /**
+     * Clamps the current scroll top/left values to within the maximum ranges.
+     */
+    private clampScrollOffsets (): void {
+        this._scrollTop = clamp(this.scrollTop, 0, this._maxScrollTop);
+        this._scrollLeft = clamp(this.scrollLeft, 0, this._maxScrollLeft);
+    }
+
+    /**
      * Updates the scroll momentum from a WheelDelta.
      */
     private updateMomentumFromDelta (delta: WheelDelta): void {
@@ -277,18 +267,10 @@ export default class ScrollArea {
     }
 
     /**
-     * Clamps the current scroll top/left values to within the maximum ranges.
-     */
-    private clampScrollOffsets (): void {
-        this._scrollTop = clamp(this.scrollTop, 0, this._maxScrollTop);
-        this._scrollLeft = clamp(this.scrollLeft, 0, this._maxScrollLeft);
-    }
-
-    /**
      * Caches the maximum scroll top/left values for boundary checks.
      */
     private updateMaximumScrollOffsets (): void {
-        this._maxScrollTop = Math.max(0, this._scrollHeight - this.containerHeight);
-        this._maxScrollLeft = Math.max(0, this._scrollWidth - this.containerWidth);
+        this._maxScrollTop = Math.max(0, this.scrollArea.height - this.visibleArea.height);
+        this._maxScrollLeft = Math.max(0, this.scrollArea.height - this.visibleArea.width);
     }
 }

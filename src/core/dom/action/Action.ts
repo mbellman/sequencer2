@@ -1,6 +1,4 @@
 /**
- * @ public enum ActionType
- * 
  * A list of Action types.
  */
 export const enum ActionType {
@@ -12,8 +10,6 @@ export const enum ActionType {
 }
 
 /**
- * @ public abstract class Action
- * 
  * A base template for describing any kind of user input action.
  */
 export abstract class Action {

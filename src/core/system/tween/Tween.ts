@@ -1,51 +1,32 @@
 import { bindAll } from "core/system/Utilities";
-import { EaseFunction } from "core/tween/Ease";
+import { EasingFunction } from "core/system/tween/Ease";
 
-/**
- * @ private interface TweenParameters
- */
 interface TweenParameters {
-    /* @ */
     start: number;
-    /* @ */
     end: number;
-    /* @ */
     duration: number;
-    /* @ */
-    ease: EaseFunction;
-    /* @ */
-    onUpdate: EaseHandler;
-    /* @ */
-    onComplete?: () => void;
+    ease: EasingFunction;
+    onUpdate: TweenHandler;
+    onComplete?: Function;
 }
 
 /**
- * @ private type EaseHandler
- * 
  * An update function to run on each TweenAction update cycle.
  */
-type EaseHandler = (value: number) => void;
+type TweenHandler = (value: number) => void;
 
 /**
  * @ private class TweenAction
  */
 class TweenAction {
-    /* @ */
     private startValue: number;
-    /* @ */
     private endValue: number;
-    /* @ */
     private range: number;
-    /* @ */
     private startTime: number;
-    /* @ */
     private easeDuration: number;
-    /* @ */
-    private easeFunction: EaseFunction;
-    /* @ */
-    private onUpdate: EaseHandler;
-    /* @ */
-    private onComplete: () => void;
+    private easeFunction: EasingFunction;
+    private onUpdate: TweenHandler;
+    private onComplete: Function;
 
     constructor (params: TweenParameters) {
         bindAll(this, 'update');
@@ -91,12 +72,9 @@ class TweenAction {
 }
 
 /**
- * @ public class Tween
+ * An API for TweenAction operations.
  */
 export default class Tween {
-    /**
-     * Creates a new TweenAction using a TweenParameters object.
-     */
     public static run (params: TweenParameters): void {
         new TweenAction(params);
     }

@@ -1,28 +1,25 @@
 import { each } from "core/system/Utilities";
-import { Hash } from "core/system/Types";
-import { HandlerQueue, EventHandler } from "core/dom/Types";
+import { EventDelegator } from "core/system/Event";
+import { Hash } from "core/system/structures/Types";
+import { DOMEventHandler, DOMHandlerQueue } from "core/dom/Types";
 
 /**
- * @ private type EventTable
- * 
- * A type signature for a structure containing all EventHandlers bound on an event for an Element.
- * Each key represents an event namespace and the value is a HandlerQueue of handlers for that namespace.
+ * A Hash containing all DOMEventHandlers bound for an event for a document Element. Each key
+ * represents an event namespace and each value is a DOMHandlerQueue of handlers for that namespace.
  */
-type EventTable = Hash<HandlerQueue>;
+type DOMEventTable = Hash<DOMHandlerQueue>;
 
 /**
- * @ public class EventStore
- * 
  * An event handler store and manager for individual Elements.
  */
-export default class EventStore {
-    /* @ An internal store of EventTables for each event bound to the Element. */
-    private events: Hash<EventTable> = {};
+export default class EventStore implements EventDelegator {
+    /* An internal store of DOMEventTables for each event bound to the Element. */
+    private events: Hash<DOMEventTable> = {};
 
     /**
      * Adds a new event handler to the internal store for a specific event.
      */
-    public bind (event: string, namespace: string = 'default', handler: EventHandler): void {
+    public on (event: string, namespace: string = 'default', handler: DOMEventHandler): void {
         this.validateEventStore(event, namespace);
         this.events[event][namespace].push(handler);
     }
@@ -30,9 +27,9 @@ export default class EventStore {
     /**
      * Removes all event handlers for a particular event/namespace pair from the internal store.
      */
-    public unbind (event: string = null, namespace: string = 'default'): void {
+    public off (event: string = null, namespace: string = 'default'): void {
         if (!event) {
-            each(this.events, (table: EventTable, event: string) => {
+            each(this.events, (table: DOMEventTable, event: string) => {
                 delete this.events[event];
             });
         } else {
@@ -45,29 +42,29 @@ export default class EventStore {
     }
 
     /**
-     * Dispatches each EventHandler method in each namespace for an event.
+     * Dispatches each DOMEventHandler method in each namespace for an event.
      */
     public trigger (event: string, e: Event): void {
-        var table: EventTable = this.events[event];
+        var table: DOMEventTable = this.events[event];
 
-        each(table, (handlers: HandlerQueue) => {
-            each(handlers, (handler: EventHandler) => {
+        each(table, (handlers: DOMHandlerQueue) => {
+            each(handlers, (handler: DOMEventHandler) => {
                 handler(e);
             });
         });
     }
 
     /**
-     * Determines whether any EventHandlers are still bound on an event or its namespaces.
+     * Determines whether any DOMEventHandlers are still bound on an event or its namespaces.
      */
     public has (event: string): boolean {
-        var table: EventTable = this.events[event];
+        var table: DOMEventTable = this.events[event];
 
         if (!table) {
             return false;
         }
 
-        return !!each(table, (handlers: HandlerQueue): any => {
+        return !!each(table, (handlers: DOMHandlerQueue): any => {
             if (handlers.length > 0) {
                 return true;
             }
@@ -82,7 +79,7 @@ export default class EventStore {
             this.events[event] = {};
         }
 
-        var table: EventTable = this.events[event];
+        var table: DOMEventTable = this.events[event];
 
         if (!table[namespace]) {
             table[namespace] = [];
