@@ -11,6 +11,9 @@ export default class SequencerMenuView extends View {
     /* The SequencerApplication instance the SequencerMenuView is added to. */
     private application: SequencerApplication;
 
+    /**
+     * @constructor
+     */
     constructor (application: SequencerApplication) {
         super('sequence-menu-view');
 
@@ -22,9 +25,9 @@ export default class SequencerMenuView extends View {
      * @override
      */
     public onRender (): void {
-        this.addOption('File', this.makeFileDropdownMenu());
-        this.addOption('Options', this.makeOptionsDropdownMenu());
-        this.addOption('Theme', this.makeThemeDropdownMenu());
+        this.addMenuOption('File', this.makeFileDropdownMenu());
+        this.addMenuOption('Options', this.makeOptionsDropdownMenu());
+        this.addMenuOption('Theme', this.makeThemeDropdownMenu());
 
         this.$element.on('mouseover -> .menu-option', (e: MouseEvent) => {
             if (this.isAnyDropdownExpanded()) {
@@ -51,7 +54,7 @@ export default class SequencerMenuView extends View {
     /**
      * Adds a new option to the menu.
      */
-    private addOption (text: string, dropdownMenuView: DropdownMenuView = null): void {
+    private addMenuOption (text: string, dropdownMenuView: DropdownMenuView = null): void {
         var option: Element = this.makeOptionElement(text);
 
         this.$element.append(option);

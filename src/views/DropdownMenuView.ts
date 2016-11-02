@@ -16,7 +16,7 @@ type DropdownHandler = DOMEventHandler | DropdownMenuView;
  * A Hash of options for a DropdownMenuView, where each key represents text for
  * the dropdown option, and each value represents the DropdownHandler for that option.
  */
-type DropdownConfiguration = Hash<DropdownHandler>;
+type DropdownMenuBuildConfiguration = Hash<DropdownHandler>;
 
 /**
  * A reusable dropdown menu interface.
@@ -36,7 +36,7 @@ export default class DropdownMenuView extends View {
     public onAttach (): void {
         this.$target.addClass('dropdown-menu-target')
             .on('click', (e: Event) => {
-                this.toggleMenu();
+                this.toggleShowHideMenu();
                 e.stopPropagation();
             })
             .on('dropdown:hide', () => {
@@ -56,11 +56,11 @@ export default class DropdownMenuView extends View {
     /**
      * Sets up the text/handler for each dropdown menu option.
      */
-    public build (options: DropdownConfiguration): DropdownMenuView {
+    public build (options: DropdownMenuBuildConfiguration): DropdownMenuView {
         super.render('ul');
 
         each(options, (handler: DropdownHandler, text: string) => {
-            let option: Element = this.makeOptionElement(text, handler);
+            let option: Element = this.makeMenuOptionElement(text, handler);
 
             this.$element.append(option);
         });
@@ -77,7 +77,7 @@ export default class DropdownMenuView extends View {
         this.$target.removeClass('dropdown-menu-target')
             .off('click dropdown:hide dropdown:show')
             .on('mouseenter', () => {
-                this.align();
+                this.alignSubMenuBeforeShow();
                 setTimeout(() => {
                     this.showMenu();
                 }, 50);
@@ -97,15 +97,14 @@ export default class DropdownMenuView extends View {
     /**
      * Creates and returns an Element for a dropdown menu option.
      */
-    private makeOptionElement (text: string, handler: DropdownHandler): Element {
+    private makeMenuOptionElement (text: string, handler: DropdownHandler): Element {
         var option: Element = document.createElement('li');
 
-        if (handler === null) {
-            $(option).addClass('line');
-
-            return option;
+        if (!handler) {
+            return $(option).addClass('divider')
+                .element(0);
         }
-        
+
         $(option).html(text)
             .addClass('dropdown-option');
 
@@ -122,7 +121,7 @@ export default class DropdownMenuView extends View {
     /**
      * Aligns a sub-dropdown menu to its parent dropdown menu option.
      */
-    private align (): void {
+    private alignSubMenuBeforeShow (): void {
         this.$element.addClass('align')
             .removeClass('sub-dropdown-left');
 
@@ -138,7 +137,7 @@ export default class DropdownMenuView extends View {
     /**
      * Alternately shows and hides the dropdown menu.
      */
-    private toggleMenu (): void {
+    private toggleShowHideMenu (): void {
         if (this.isExpanded()) {
             this.hideMenu();
         } else {

@@ -119,6 +119,7 @@ export default class SequenceView extends View implements Scrollable, Resizable 
         var channelView: ChannelView = new ChannelView(this.sequence);
 
         channelView.attachTo(this.$channelViews);
+
         this.positionChannelView(channelView);
         this.animateInChannelView(channelView);
         this.slideAddChannelButton();

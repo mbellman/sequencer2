@@ -22,6 +22,9 @@ export default class ChannelView extends View {
     /* A Canvas instance visualizing the Channel notes. */
     private channelCanvas: Canvas;
 
+    /**
+     * @constructor
+     */
     constructor (sequence: Sequence) {
         super('channel hidden');
 
