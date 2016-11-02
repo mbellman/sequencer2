@@ -14,7 +14,7 @@ export class Momentum2 extends Vector2 {
 
     /**
      * Reduces the momentum vector magnitude by a factor from [0 - 1],
-     * round either component down to 0 when it drops below 0.1.
+     * rounding either component down to 0 when it drops below 0.1.
      */
     public decay (factor: number): void {
         super.scale(clamp(factor, 0, 1));

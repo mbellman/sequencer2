@@ -165,6 +165,7 @@ export default class ScrollRegion extends EventContainer {
         this.scrollOffset.left = defaultTo(left, this.scrollLeft);
 
         this.$content.transform(translation);
+        this.events.trigger('scroll', this.scrollTop, this.scrollLeft);
     }
 
     /**
@@ -195,9 +196,8 @@ export default class ScrollRegion extends EventContainer {
 
         this.updateScrollOffsetsFromMomentum();
         this.clampScrollOffsets();
-        this.scrollTo(this.scrollTop, this.scrollLeft);
         this.decayMomentum();
-        this.events.trigger('scroll', this.scrollTop, this.scrollLeft);
+        this.scrollTo(this.scrollTop, this.scrollLeft);
 
         requestAnimationFrame(this.onScrollUpdate);
     }
@@ -210,7 +210,7 @@ export default class ScrollRegion extends EventContainer {
             return;
         }
 
-        this.scrollMomentum.decay(0.92);
+        this.scrollMomentum.decay(this.settings.speed);
     }
 
     /**
@@ -227,14 +227,6 @@ export default class ScrollRegion extends EventContainer {
     }
 
     /**
-     * Clamps the current scroll top/left values to within the maximum ranges.
-     */
-    private clampScrollOffsets (): void {
-        this.scrollOffset.top = clamp(this.scrollTop, 0, this.maximumScrollOffset.top);
-        this.scrollOffset.left = clamp(this.scrollLeft, 0, this.maximumScrollOffset.left);
-    }
-
-    /**
      * Updates the scrollTop/scrollLeft values based on the current momentum.
      */
     private updateScrollOffsetsFromMomentum (): void {
@@ -248,6 +240,14 @@ export default class ScrollRegion extends EventContainer {
     private updateMaximumScrollOffset (): void {
         this.maximumScrollOffset.top = Math.max(0, this.scrollArea.height - this.$container.height());
         this.maximumScrollOffset.left = Math.max(0, this.scrollArea.height - this.$container.width());
+    }
+
+    /**
+     * Clamps the current scroll top/left values to within the maximum ranges.
+     */
+    private clampScrollOffsets (): void {
+        this.scrollOffset.top = clamp(this.scrollTop, 0, this.maximumScrollOffset.top);
+        this.scrollOffset.left = clamp(this.scrollLeft, 0, this.maximumScrollOffset.left);
     }
 
     /**
