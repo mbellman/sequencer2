@@ -1,7 +1,7 @@
 import SequencerApplication from "applications/SequencerApplication";
 import DropdownMenuView from "views/DropdownMenuView";
 
-import { $ } from "core/dom/query/Query";
+import { $ } from "core/dom/DOM";
 import { View } from "core/program/View";
 
 /**
@@ -27,7 +27,7 @@ export default class SequencerMenuView extends View {
         this.addOption('Theme', this.makeThemeDropdownMenu());
 
         this.$element.on('mouseover -> .menu-option', (e: MouseEvent) => {
-            if (this.anyDropdownExpanded()) {
+            if (this.isAnyDropdownExpanded()) {
                 this.hideAllDropdowns();
                 $(<Element>e.target).trigger('dropdown:show');
             }
@@ -37,7 +37,7 @@ export default class SequencerMenuView extends View {
     /**
      * Determines whether any dropdown menus are expanded within the SequencerMenuView.
      */
-    private anyDropdownExpanded (): boolean {
+    private isAnyDropdownExpanded (): boolean {
         return this.$('.dropdown-menu-target').hasClass('expanded');
     }
 
@@ -78,7 +78,7 @@ export default class SequencerMenuView extends View {
      */
     private makeFileDropdownMenu (): DropdownMenuView {
         return new DropdownMenuView()
-            .configure({
+            .build({
                 'New': () => {},
                 'Open': () => {},
                 'Save': () => {},
@@ -92,17 +92,17 @@ export default class SequencerMenuView extends View {
      */
     private makeOptionsDropdownMenu (): DropdownMenuView {
         return new DropdownMenuView()
-            .configure({
+            .build({
                 'Option 1': () => {},
                 'Option 2': () => {},
                 'Option 3': () => {},
                 'Option 4': () => {},
-                'Option 5': new DropdownMenuView().configure({
+                'Option 5': new DropdownMenuView().build({
                     'Test': () => {},
                     'Test 2': () => {},
                     '-1-': null,
                     'Test 3': () => {},
-                    'Test 4': new DropdownMenuView().configure({
+                    'Test 4': new DropdownMenuView().build({
                         'Whoa': () => {},
                         'Hey': () => {}
                     })
@@ -115,7 +115,7 @@ export default class SequencerMenuView extends View {
      */
     private makeThemeDropdownMenu (): DropdownMenuView {
         return new DropdownMenuView()
-            .configure({
+            .build({
                 'Main': () => {
                     this.application.setTheme('main')
                 },

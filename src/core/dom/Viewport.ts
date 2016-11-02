@@ -1,52 +1,85 @@
 import { each } from "core/system/Utilities";
 import { Area } from "core/system/math/Geometry";
-import { EventManager } from "core/system/Event";
+import { EventManager, EventContainer } from "core/system/Event";
 
 /**
- * A static singleton providing information about the browser page viewport.
+ * An API which provides information about the browser page viewport. Since this module
+ * exports a Viewport singleton as its default, methods and properties can be referenced
+ * as if static.
  */
-export default class Viewport {
-    private static size: Area = { width: 0, height: 0 };
-    private static isInitialized: boolean = false;
+class Viewport extends EventContainer {
+    /**
+     * An EventManager instance to manage viewport resize event handlers.
+     * @implementation (EventContainer)
+     */
+    protected events: EventManager = new EventManager();
 
-    /* An EventManager instance to manage viewport resize event handlers. */
-    private static events: EventManager = new EventManager();
+    /* The current viewport width/height. */
+    private area: Area = {
+        width: 0,
+        height: 0
+    };
 
-    public static initialize (): void {
-        if (!this.isInitialized) {
+    /* A static Viewport singleton. */
+    private static viewport: Viewport;
+
+    /**
+     * @constructor
+     */
+    constructor () {
+        super();
+
+        this.readWindowSize();
+
+        window.addEventListener('resize', () => {
             this.readWindowSize();
+            this.events.trigger('resize');
+        });
+    }
 
-            window.addEventListener('resize', () => {
-                this.readWindowSize();
-                this.events.trigger('resize');
-            });
-
-            this.isInitialized = true;
+    /**
+     * Retrieves the internal Viewport singleton.
+     */
+    public static getInstance (): Viewport {
+        if (!this.viewport) {
+            this.viewport = new Viewport();
         }
+
+        return this.viewport;
     }
 
-    public static get width (): number {
-        return this.size.width;
+    /**
+     * @getter {width}
+     */
+    public get width (): number {
+        return this.area.width;
     }
 
-    public static get height (): number {
-        return this.size.height;
+    /**
+     * @getter {height}
+     */
+    public get height (): number {
+        return this.area.height;
     }
 
     /**
      * Saves viewport resize event handlers to the internal {events} EventManager.
-     * The on() syntax is for pattern consistency, but only 'resize' is allowed
-     * as the event argument.
+     * @implementation (EventContainer)
      */
-    public static on (event: 'resize', handler: Function): void {
+    public on (event: 'resize', handler: Function): void {
         this.events.on(event, handler);
     }
 
     /**
-     * Checks and saves the current viewport dimensions.
+     * Checks and saves the current window width/height.
      */
-    private static readWindowSize (): void {
-        this.size.width = window.innerWidth;
-        this.size.height = window.innerHeight;
+    private readWindowSize (): void {
+        this.area.width = window.innerWidth;
+        this.area.height = window.innerHeight;
     }
 }
+
+/**
+ * The module's default export, a singleton of Viewport.
+ */
+export default Viewport.getInstance();

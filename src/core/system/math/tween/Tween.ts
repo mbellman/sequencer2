@@ -1,5 +1,5 @@
 import { bindAll } from "core/system/Utilities";
-import { EasingFunction } from "core/system/tween/Ease";
+import { EasingFunction } from "core/system/math/tween/Ease";
 
 interface TweenParameters {
     start: number;

@@ -2,8 +2,7 @@ import Viewport from "core/dom/Viewport";
 
 import { each } from "core/system/Utilities";
 import { Hash } from "core/system/structures/Types";
-import { $, Query } from "core/dom/query/Query";
-import { DOMEventHandler } from "core/dom/Types";
+import { $, Query, DOMEventHandler } from "core/dom/DOM";
 import { View } from "core/program/View";
 
 /**
@@ -23,6 +22,9 @@ type DropdownConfiguration = Hash<DropdownHandler>;
  * A reusable dropdown menu interface.
  */
 export default class DropdownMenuView extends View {
+    /**
+     * @constructor
+     */
     constructor () {
         super('dropdown-menu hidden');
     }
@@ -54,7 +56,7 @@ export default class DropdownMenuView extends View {
     /**
      * Sets up the text/handler for each dropdown menu option.
      */
-    public configure (options: DropdownConfiguration): DropdownMenuView {
+    public build (options: DropdownConfiguration): DropdownMenuView {
         super.render('ul');
 
         each(options, (handler: DropdownHandler, text: string) => {

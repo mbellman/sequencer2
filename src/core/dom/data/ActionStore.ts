@@ -1,13 +1,13 @@
 import { each } from "core/system/Utilities";
-import { EventDelegator } from "core/system/Event";
+import { IEventManager } from "core/system/Event";
 import { Hash } from "core/system/structures/Types";
-import { DOMActionHandler, DOMHandlerQueue } from "core/dom/Types";
+import { DOMActionHandler, DOMHandlerQueue } from "core/dom/DOM";
 import { ActionType, Action } from "core/dom/action/Action";
 
 /**
  * An action handler store and manager for individual document Elements.
  */
-export default class ActionStore implements EventDelegator {
+export default class ActionStore implements IEventManager {
     /* A reference to the last Action triggered on the Element. */
     public last: Action;
 
@@ -16,6 +16,7 @@ export default class ActionStore implements EventDelegator {
 
     /**
      * Adds a new DOMActionHandler to the DOMHandlerQueue for a particular action.
+     * @implementation (IEventManager)
      */
     public on (action: ActionType, handler: DOMActionHandler): void {
         if (!this.actions[action]) {
@@ -27,6 +28,7 @@ export default class ActionStore implements EventDelegator {
 
     /**
      * Dereferences all queued DOMActionHandlers for the Element, effectively clearing its action bindings.
+     * @implementation (IEventManager)
      */
     public off (): void {
         each(this.actions, (handlers: DOMHandlerQueue, action: string) => {
@@ -37,6 +39,7 @@ export default class ActionStore implements EventDelegator {
     /**
      * Dispatches each DOMActionHandler method for a particular action, working backward so that
      * later-bound handlers can return false, stopping the DOMActionHandler dispatch sequence.
+     * @implementation (IEventManager)
      */
     public trigger (action: ActionType, a: Action): void {
         this.last = a;

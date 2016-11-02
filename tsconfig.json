@@ -3,6 +3,7 @@
 		"target": "es5",
 		"module": "amd",
 		"outFile": "js/bundle.js",
+		"experimentalDecorators": true,
 		"noEmitOnError": true,
 		"noImplicitReturns": true
 	},

@@ -1,18 +1,5 @@
-import { $, Query } from "core/dom/query/Query";
-
-/**
- * Scrollable
- */
-export interface Scrollable {
-    onScroll (): void;
-}
-
-/**
- * Resizable
- */
-export interface Resizable {
-    onResize (): void;
-}
+import { defaultTo } from "core/system/Utilities";
+import { $, Query } from "core/dom/DOM";
 
 /**
  * A basic shell for application Views. Each View represents a reusable block of HTML content
@@ -21,23 +8,28 @@ export interface Resizable {
 export abstract class View {
     /* The rendered View Element. */
     public element: Element;
+
+    /* $(element). */
     public $element: Query;
 
-    /* A Query representation of the target Element(s) the View is attached to via attachTo(). */
+    /* The target $(element) the View was attached to via attachTo(). */
     protected $target: Query;
 
     /* The View HTML content. */
     protected template: string;
 
-    /* Whether the View has been rendered. */
+    /* Determines whether the View has been rendered. */
     protected isRendered: boolean = false;
 
-    /* Space-separated classes to set on the rendered Element. */
+    /* Space-separated classes to set on View Element at render time. */
     private classes: string;
 
-    /* An ID to set on the rendered Element. */
+    /* An ID to set on the View Element at render time. */
     private id: string;
 
+    /**
+     * @constructor
+     */
     constructor (classes: string = null, id: string = null) {
         this.classes = classes;
         this.id = id;
@@ -67,7 +59,7 @@ export abstract class View {
         }
 
         this.element = document.createElement(elementType);
-        this.$element = $(this.element).html(this.template || '');
+        this.$element = $(this.element).html(defaultTo(this.template, ''));
 
         if (this.classes) {
             this.$element.attr('class', this.classes);
@@ -107,4 +99,18 @@ export abstract class View {
     public $ (selector: string): Query {
         return this.$element.find(selector);
     }
+}
+
+/**
+ * A View which handles scrolling.
+ */
+export interface Scrollable extends View {
+    onScroll (): void;
+}
+
+/**
+ * A View which handles resizing.
+ */
+export interface Resizable extends View {
+    onResize (): void;
 }

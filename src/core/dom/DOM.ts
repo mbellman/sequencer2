@@ -1,21 +1,35 @@
-import QueryCache from "core/dom/query/QueryCache";
 import Data from "core/dom/data/Data";
 import EventStore from "core/dom/data/EventStore";
 import EventListener from "core/dom/event/EventListener";
 import ActionListener from "core/dom/action/ActionListener";
 
-import { each, toArray, isInArray } from "core/system/Utilities";
-import { EventDelegator } from "core/system/Event";
+import { each, isInArray, hasOwn, toArray } from "core/system/Utilities";
+import { IEventManager } from "core/system/Event";
 import { Hash } from "core/system/structures/Types";
-import { DOMEventHandler, DOMActionHandler } from "core/dom/Types";
-import { ActionType } from "core/dom/action/Action";
+import { ActionType, Action } from "core/dom/action/Action";
+
+/**
+ * A DOM event handler method fired by an event trigger.
+ */
+export type DOMEventHandler = (e: Event) => any;
+
+/**
+ * A handler method to be run on Action triggers (analagous
+ * to DOMEventHandler methods on Events).
+ */
+export type DOMActionHandler = (action: Action) => any;
+
+/**
+ * An Array of EventHandlers or ActionHandlers.
+ */
+export type DOMHandlerQueue = Array<DOMEventHandler | DOMActionHandler>;
 
 /**
  * A DOM selector and manipulation manager.
  */
-export class Query implements EventDelegator {
+export class Query implements IEventManager {
     /* A persistent QueryCache instance used to optimize DOM lookups. */
-    public static cache: QueryCache = new QueryCache();
+    public static cache: Hash<Query> = {};
 
     /* The length of the queried Element(s) collection. */
     public length: number;
@@ -93,6 +107,7 @@ export class Query implements EventDelegator {
 
     /**
      * Binds an event handler to the queried Element(s).
+     * @implementation (IEventManager)
      */
     public on (event: string, handler: DOMEventHandler): Query {
         var [ event, targetSelector ] = event.split(' -> ');
@@ -116,6 +131,7 @@ export class Query implements EventDelegator {
 
     /**
      * Unbinds one or all events from the queried Element(s).
+     * @implementation (IEventManager)
      */
     public off (event: string = null): Query {
         if (event) {
@@ -147,6 +163,7 @@ export class Query implements EventDelegator {
 
     /**
      * Triggers all events of a specific type on the queried Element(s).
+     * @implementation (IEventManager)
      */
     public trigger (event: string, eventData: Hash<any> = {}): Query {
         var eventInstance: Event = new Event(event);
@@ -431,13 +448,13 @@ export function $ (selector: string | Element | Query): Query {
         return selector;
     }
 
-    if (Query.cache.has(selector)) {
-        return Query.cache.getQuery(selector);
+    if (hasOwn(Query.cache, selector)) {
+        return Query.cache[selector];
     }
 
     var query: Query = new Query(selector);
 
-    Query.cache.save(query);
+    Query.cache[selector] = (query);
 
     return query;
 }

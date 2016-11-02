@@ -1,7 +1,7 @@
 import { each } from "core/system/Utilities";
-import { EventDelegator } from "core/system/Event";
+import { IEventManager } from "core/system/Event";
 import { Hash } from "core/system/structures/Types";
-import { DOMEventHandler, DOMHandlerQueue } from "core/dom/Types";
+import { DOMEventHandler, DOMHandlerQueue } from "core/dom/DOM";
 
 /**
  * A Hash containing all DOMEventHandlers bound for an event for a document Element. Each key
@@ -12,12 +12,13 @@ type DOMEventTable = Hash<DOMHandlerQueue>;
 /**
  * An event handler store and manager for individual Elements.
  */
-export default class EventStore implements EventDelegator {
+export default class EventStore implements IEventManager {
     /* An internal store of DOMEventTables for each event bound to the Element. */
     private events: Hash<DOMEventTable> = {};
 
     /**
      * Adds a new event handler to the internal store for a specific event.
+     * @implementation (IEventManager)
      */
     public on (event: string, namespace: string = 'default', handler: DOMEventHandler): void {
         this.validateEventStore(event, namespace);
@@ -26,6 +27,7 @@ export default class EventStore implements EventDelegator {
 
     /**
      * Removes all event handlers for a particular event/namespace pair from the internal store.
+     * @implementation (IEventManager)
      */
     public off (event: string = null, namespace: string = 'default'): void {
         if (!event) {
@@ -43,6 +45,7 @@ export default class EventStore implements EventDelegator {
 
     /**
      * Dispatches each DOMEventHandler method in each namespace for an event.
+     * @implementation (IEventManager)
      */
     public trigger (event: string, e: Event): void {
         var table: DOMEventTable = this.events[event];

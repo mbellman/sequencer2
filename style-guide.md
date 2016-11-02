@@ -40,7 +40,7 @@ export const value: string = "Hello";
 ```
 
 ## Styles
-1. All class variables, `vars`, and `consts` should be typed using the form: `var myValue: number`.
+1. All class variables, `vars`, `lets`, and `consts` should be typed using the form: `var myValue: number`.
 2. Variables in the top block scope of a class method or function should be `var`, and any variables within sub block scopes should be `let`.
 3. All class methods or functions should be typed using the form: `function myFunction (): void`.
 
@@ -64,30 +64,33 @@ export const value: string = "Hello";
 5. Standard methods which retrieve or set values should precede all remaining methods.
 6. Methods using the name pattern "on{Event}" should precede all remaining methods.
 
-### Labeling
+### Access Modifiers
 1. All public members should be labelled as `public` with the exception of the constructor method.
 2. All getter and setter methods should be labelled as `public`.
 
 ## Interfaces
-1. All interface names should use capitalized CamelCase.
-
-## Types
-1. All type names should use capitalized CamelCase.
+1. All `interface` names should use capitalized CamelCase.
+2. An `interface` name can be changed to use the form ICamelCase where a default class implementation also shares its name, but otherwise should omit the preceding "I".
 
 ## Functions
-1. All functions names should use lowercased camelCase.
+1. All `function` names should use lowercased camelCase.
+
+## Types
+1. All `type` names should use capitalized CamelCase.
+
+## Enums
+1. All `enum` names should use capitalized CamelCase.
+2. All `enum` property names should use all-capitalized SNAKE_CASE.
 
 ## Variables and Constants
 1. All variable names should use camelCase.
 2. All `const` names should use all-capitalized SNAKE_CASE.
 
 ## Comments
-1. Use comments liberally as headers for `classes`, class methods, `interfaces`, `functions`, and `types`.
-2. Use comments for `vars` and `consts` liberally when they exist outside of a class definition.
-3. Use comments somewhat conservatively for class variables, or where additional context may better explain their need.
-4. Use comments very sparingly inside `functions` or class methods.
+1. Always add a header comment for `classes`, class methods, class variables, `interfaces`, interface properties, `functions`, `types`, `enums`, and `vars`/`consts` in the module or global scope. Even if the purpose of a construct seems obvious, it's safer to avoid any ambiguity. Comments at regular intervals also impart a certain visual consistency to the look of the code.
+2. Use comments sparingly inside `functions` or class methods. If you are tempted to use a comment to describe a particular control flow within the function, see if it can be explained as part of the function's header comment. For exceedingly long functions or algorithms, comments may indeed be necessary for clarification or exposition.
 
-`class`, class member, `interface`, and `function` header comments should be of the style:
+`class`, class member, `interface`, `function`, `enum`, and `type` header comments should be of the style:
 
 ```typescript
 /**
@@ -115,6 +118,20 @@ interface MyInterface {
 function myFunction (): void {
 
 }
+
+/**
+ * ...
+ */
+enum MyEnum {
+    ONE,
+    TWO,
+    THREE
+}
+
+/**
+ * ...
+ */
+type Key = string | number;
 ```
 
 Class variable, `var`, `const`, and `type` header comments should be of the style:
@@ -130,7 +147,12 @@ var myNumber: number = 5;
 
 /* ... */
 const MY_CONSTANT: string = "Constant string";
+```
 
-/* ... */
-type Key = string | number;
+If a class variable, `var`, or `const` header comment spans multiple lines, the following comment style is fine:
+
+```typescript
+/**
+ * ...
+ */
 ```

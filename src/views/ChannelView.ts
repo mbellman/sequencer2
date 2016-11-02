@@ -3,14 +3,14 @@ import Sequence from "classes/Sequence";
 import Channel from "classes/Channel";
 import ChannelTemplate from "templates/ChannelTemplate";
 
-import { Query } from "core/dom/query/Query";
+import { Query } from "core/dom/DOM";
 import { View } from "core/program/View";
 
 /**
  * The user interface for individual sequencer channels.
  */
 export default class ChannelView extends View {
-    /* The ChannelView template. @override */
+    /* @override */
     protected template: string = ChannelTemplate;
 
     /* The Sequence passed in from the parent SequenceView. */

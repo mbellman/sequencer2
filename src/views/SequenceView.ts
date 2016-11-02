@@ -1,18 +1,18 @@
 import Viewport from "core/dom/Viewport";
-import Tween from "core/system/tween/Tween";
-import ScrollArea from "core/dom/ui/ScrollArea";
+import Tween from "core/system/math/tween/Tween";
+import ScrollRegion from "core/dom/ui/ScrollRegion";
 import SequencerApplication from "applications/SequencerApplication";
 import ChannelView from "views/ChannelView";
 import Sequence from "classes/Sequence";
 import SequenceViewTemplate from "templates/SequenceViewTemplate";
 
 import { bindAll } from "core/system/Utilities";
-import { clamp } from "core/system/math/Math";
-import { Ease } from "core/system/tween/Ease";
-import { $, Query } from "core/dom/query/Query";
+import { clamp } from "core/system/math/Utilities";
+import { Ease } from "core/system/math/tween/Ease";
+import { $, Query } from "core/dom/DOM";
 import { View, Resizable, Scrollable } from "core/program/View";
 
-/* The amount of extra scrolling distance to pad the ScrollArea with. */
+/* The amount of extra scrolling distance to pad the ScrollRegion with. */
 const SCROLL_HEIGHT_BUFFER: number = 300;
 
 /* The top margin for the ChannelView pile. */
@@ -34,25 +34,33 @@ const ADD_BUTTON_BOTTOM_MARGIN: number = 150;
  * The primary sequencer interface.
  */
 export default class SequenceView extends View implements Scrollable, Resizable {
-    /* The Sequence coupled to the SequenceView */
+    /* The Sequence instance coupled to the SequenceView. */
     public sequence: Sequence = new Sequence();
 
-    /* The ScrollArea instance virtualizing scroll actions on the SequenceView. */
-    public scrollArea: ScrollArea;
+    /* A ScrollRegion instance virtualizing scroll actions on the SequenceView. */
+    public scrollRegion: ScrollRegion;
 
-    /**
-     * @override
-     */
+    /* @override */
     protected template: string = SequenceViewTemplate;
 
     /* The SequencerApplication instance the SequenceView is added to. */
     private application: SequencerApplication;
 
-    /* Saved Query references */
+    /* The add channel button $(element). */
     private $addChannelButton: Query;
+
+    /* The ChannelView list container $(element). */
     private $channelViews: Query;
+
+    /**
+     * The last-added ChannelView $(element), saved as a reference for add channel button
+     * snapping calculations.
+     */
     private $lastChannelView: Query;
 
+    /**
+     * @constructor
+     */
     constructor (application: SequencerApplication) {
         super('sequence-view');
         bindAll(this, 'onScroll', 'onResize');
@@ -80,12 +88,12 @@ export default class SequenceView extends View implements Scrollable, Resizable 
      * @override
      */
     public onAttach (): void {
-        this.createScrollArea();
+        this.createScrollRegion();
     }
 
     /**
      * A handler function to run as the ScrollArea is scrolled.
-     * @implementation
+     * @implementation (Scrollable)
      */
     public onScroll (): void {
         if (!this.$lastChannelView) {
@@ -97,10 +105,10 @@ export default class SequenceView extends View implements Scrollable, Resizable 
 
     /**
      * A handler function to run as the page resizes.
-     * @implementation
+     * @implementation (Resizable)
      */
     public onResize (): void {
-        this.updateScrollRange();
+        this.updateScrollRegionArea();
         this.keepAddChannelButtonSnapped();
     }
 
@@ -114,7 +122,7 @@ export default class SequenceView extends View implements Scrollable, Resizable 
         this.positionChannelView(channelView);
         this.animateInChannelView(channelView);
         this.slideAddChannelButton();
-        this.updateScrollRange();
+        this.updateScrollRegionArea();
 
         this.$lastChannelView = channelView.$element;
     }
@@ -124,38 +132,42 @@ export default class SequenceView extends View implements Scrollable, Resizable 
      * ScrollArea scrollTop is close enough to the bottom of its range.
      */
     private keepAddChannelButtonSnapped (): void {
-        if (this.scrollArea.scrollHeight < Viewport.height) {
+        if (this.scrollRegion.scrollHeight < Viewport.height) {
             return;
         }
 
         var $addPanel: Query = this.$addChannelButton.parent();
         var lastChannelTop: number = this.$lastChannelView.bounds().top;
-        var maxAddPanelTop: number = lastChannelTop + CHANNEL_TOTAL_HEIGHT - 25;
-        var newTop: number = Math.min(maxAddPanelTop, Viewport.height - ADD_BUTTON_BOTTOM_MARGIN);
+        var maximumAddPanelTop: number = lastChannelTop + CHANNEL_TOTAL_HEIGHT - 25;
+        var newTop: number = Math.min(maximumAddPanelTop, Viewport.height - ADD_BUTTON_BOTTOM_MARGIN);
 
         $addPanel.css('top', newTop + 'px');
     }
 
     /**
-     * Turns the SequenceView into a virtual ScrollArea.
+     * Turns the SequenceView into a virtual ScrollRegion.
      */
-    private createScrollArea (): void {
+    private createScrollRegion (): void {
         var width: number = this.$element.bounds().width;
         var height: number = 0;
 
-        this.scrollArea = new ScrollArea(this.$element, this.$channelViews, width, height);
+        this.scrollRegion = new ScrollRegion(this.$element, this.$channelViews, width, height);
     
-        this.scrollArea.onScroll(this.onScroll);
+        this.scrollRegion.configure({
+            speed: 0.92
+        });
+
+        this.scrollRegion.on('scroll', this.onScroll);
     }
 
     /**
      * Updates the ScrollArea scroll range based on the total number of ChannelViews.
      */
-    private updateScrollRange (): void {
+    private updateScrollRegionArea (): void {
         var totalChannels: number = this.sequence.getTotalChannels();
         var scrollHeight: number = SCROLL_HEIGHT_BUFFER + totalChannels * CHANNEL_TOTAL_HEIGHT;
 
-        this.scrollArea.setScrollRange(Viewport.width, scrollHeight);
+        this.scrollRegion.setScrollArea(Viewport.width, scrollHeight);
     }
 
     /**
@@ -185,7 +197,6 @@ export default class SequenceView extends View implements Scrollable, Resizable 
      */
     private slideAddChannelButton (): void {
         var $addPanel = this.$addChannelButton.parent();
-        var totalChannels: number = this.sequence.getTotalChannels();
         var addPanelTop: number = $addPanel.bounds().top;
         var newTop: number = clamp(addPanelTop + CHANNEL_HEIGHT, 0, Viewport.height - ADD_BUTTON_BOTTOM_MARGIN);
 

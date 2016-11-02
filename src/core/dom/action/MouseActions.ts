@@ -1,19 +1,22 @@
-import { magnitude } from "core/system/math/Math";
+import { magnitude } from "core/system/math/Utilities";
 import { ActionType, Action } from "core/dom/action/Action";
 
 /**
- * @ private abstract class MouseAction
- * 
  * The base representation of a user mouse action.
  */
 abstract class MouseAction extends Action {
-    /* @ The target Element on which the mouse action occurs. */
+    /* The target Element on which the mouse action occurs. */
 	public target: Element;
-    /* @ The x coordinate of the mouse action. */
+
+    /* The x coordinate of the mouse action. */
 	public mouseX: number;
-    /* @ The y coordinate of the mouse action. */
+
+    /* The y coordinate of the mouse action. */
 	public mouseY: number;
 
+    /**
+     * @constructor
+     */
 	constructor (type: ActionType, e: MouseEvent) {
 		super(type);
 
@@ -24,23 +27,22 @@ abstract class MouseAction extends Action {
 }
 
 /**
- * @ public class ClickAction
- * 
  * A single-click action.
  */
 export class ClickAction extends MouseAction {
+    /**
+     * @constructor
+     */
 	constructor (e: MouseEvent) {
 		super(ActionType.CLICK, e);
 	}
 }
 
 /**
- * @ public class DoubleClickAction
- * 
  * A double-click action.
  */
 export class DoubleClickAction extends MouseAction {
-    /* @ The delay in milliseconds between clicks. */
+    /* The delay in milliseconds between clicks. */
     public delay: number;
 
     constructor(e: MouseEvent, delay: number) {
@@ -51,20 +53,24 @@ export class DoubleClickAction extends MouseAction {
 }
 
 /**
- * @ public class MoveAction
- * 
  * A mouse movement action after at least one second of inactivity.
  */
 export class MoveAction extends MouseAction {
-    /* @ The starting x coordinate of the move action. */
+    /* The starting x coordinate of the move action. */
     public startX: number;
-    /* @ The starting y coordinate of the move action. */
+
+    /* The starting y coordinate of the move action. */
     public startY: number;
-    /* @ The total x displacement of the move action. */
+
+    /* The total x displacement of the move action. */
     public deltaX: number = 0;
-    /* @ The total y displacement of the move action. */
+
+    /* The total y displacement of the move action. */
     public deltaY: number = 0;
 
+    /**
+     * @constructor
+     */
     constructor (e: MouseEvent) {
         super(ActionType.MOVE, e);
 
@@ -85,26 +91,33 @@ export class MoveAction extends MouseAction {
 }
 
 /**
- * @ public class DragAction
- * 
  * A continuous mouse drag action.
  */
 export class DragAction extends MoveAction {
-    /* @ The running duration in milliseconds of the drag action, starting from the mouse down being held down. */
+    /* The running duration in milliseconds of the drag action, starting from the mouse down being held down. */
     public duration: number = 0;
-    /* @ A string representing the approximate direction of the drag action over the last tick ('up' | 'right' | 'left' | 'down'). */
+
+    /* A string representing the approximate direction of the drag action over the last tick ('up' | 'right' | 'left' | 'down'). */
     public direction: string;
-    /* @ The velocity of the drag action over the last tick. */
+
+    /* The velocity of the drag action over the last tick. */
     public velocity: number;
-    /* @ The x component of the last-tick-velocity vector. */
+
+    /* The x component of the last-tick-velocity vector. */
     public velocityX: number;
-    /* @ The y component of the last-tick-velocity vector. */
+
+    /* The y component of the last-tick-velocity vector. */
     public velocityY: number;
-    /* @ The timestamp of the last tick update. */
+
+    /* The timestamp of the last tick update. */
     private lastTime: number;
-    /* @ The time progression, in milliseconds, over the last tick. */
+
+    /* The time progression, in milliseconds, over the last tick. */
     private dt: number;
 
+    /**
+     * @constructor
+     */
     constructor (e: MouseEvent) {
         super(e);
 
@@ -120,6 +133,7 @@ export class DragAction extends MoveAction {
         this.updateDeltaTime();
         this.updateVelocity(mouseX, mouseY);
         this.updateDirection();
+
         super.update(mouseX, mouseY);
 
         this.duration += this.dt;
@@ -136,7 +150,8 @@ export class DragAction extends MoveAction {
     }
 
     /**
-     * Keeps track of the drag action velocity.
+     * Updates the current drag action {velocity} and velocity vector
+     * components from an x/y value.
      */
     private updateVelocity (x: number, y: number): void {
         var dx: number = x - this.mouseX;
@@ -148,7 +163,7 @@ export class DragAction extends MoveAction {
     }
 
     /**
-     * Keeps track of the drag action direction.
+     * Updates the current drag action {direction} based on velocity.
      */
     private updateDirection (): void {
         var absoluteVX: number = Math.abs(this.velocityX);

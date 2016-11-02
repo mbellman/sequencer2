@@ -13,24 +13,16 @@
  * Copyright (c) 2016 Malcolm Bellman
  */
 
-/**
- * @ private const PIXEL_STEP
- */
+/* Normalization constant. */
 const PIXEL_STEP: number = 10;
 
-/**
- * @ private const LINE_HEIGHT
- */
+/* Normalization constant. */
 const LINE_HEIGHT: number = 40;
 
-/**
- * @ private const PAGE_HEIGHT
- */
+/* Normalization constant. */
 const PAGE_HEIGHT: number = 800;
 
 /**
- * @ private interface GenericWheelEvent
- * 
  * An interface which combines properties of multiple mouse wheel event interfaces,
  * without enforcing any particular property requirements. While useless for type
  * checking, it provides context for the design of the normalizeWheel function
@@ -50,26 +42,29 @@ interface GenericWheelEvent {
 }
 
 /**
- * @ public interface NormalizedWheelDelta
- * 
  * An object containing normalized values from a GenericWheelEvent.
  */
-export interface NormalizedWheelDelta {
+export interface NormalizedWheel {
+    /* A normalized deltaX value. */
     spinX: number;
+    
+    /* A normalized deltaY value. */
     spinY: number;
+
+    /* The wheel event's horizontal pixel displacement. */
     pixelX: number;
+
+    /* The wheel event's vertical pixel displacement. */
     pixelY: number;
 }
 
 /**
- * @ public function normalizeWheel
- * 
  * Receives a mouse wheel event of unknown implementation and attempts to
  * yield normalized values for the spin delta and pixel displacement.
  */
-export function normalizeWheel (event: GenericWheelEvent): NormalizedWheelDelta {
-    var sX = 0, sY = 0;    // spinX, spinY
-    var pX = 0, pY = 0;    // pixelX, pixelY
+export function normalizeWheel (event: GenericWheelEvent): NormalizedWheel {
+    var sX = 0, sY = 0,   // spinX, spinY
+        pX = 0, pY = 0;   // pixelX, pixelY
 
     // Legacy
     if ('detail' in event) { sY = event.detail; }

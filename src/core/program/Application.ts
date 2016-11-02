@@ -1,6 +1,6 @@
 import { each } from "core/system/Utilities";
 import { Hash } from "core/system/structures/Types";
-import { $, Query } from "core/dom/query/Query";
+import { $, Query } from "core/dom/DOM";
 import { View } from "core/program/View";
 
 /**
@@ -10,6 +10,8 @@ import { View } from "core/program/View";
 abstract class Application {
     /* A container Element for the Application. */
     protected container: Element;
+
+    /* $(container). */
     protected $container: Query;
 
     /* An array of Views added to the Application. */
@@ -29,7 +31,7 @@ abstract class Application {
     }
 
     /**
-     * A required-override method for starting up the Application.
+     * A method for starting up the Application.
      */
     public abstract initialize (): void;
 

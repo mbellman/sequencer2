@@ -4,7 +4,7 @@ import ActionStore from "core/dom/data/ActionStore";
 
 import { ActionType, Action } from "core/dom/action/Action";
 import { ClickAction, DoubleClickAction, MoveAction, DragAction } from "core/dom/action/MouseActions";
-import { $, Query } from "core/dom/query/Query";
+import { $, Query } from "core/dom/DOM";
 
 /**
  * An API for binding "Action" listeners to DOM Elements. Actions are like Events, but can

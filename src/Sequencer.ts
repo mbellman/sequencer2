@@ -2,13 +2,13 @@ import Viewport from "core/dom/Viewport";
 import SequencerApplication from "applications/SequencerApplication";
 
 /**
- * The application entry point.
+ * The main program class.
  */
-class Sequencer
-{
+class Sequencer {
+	/**
+	 * The main program entry point.
+	 */
 	public static main (): void {
-		Viewport.initialize();
-
 		var app = new SequencerApplication();
 
 		app.initialize();
