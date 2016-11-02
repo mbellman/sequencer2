@@ -8,6 +8,8 @@ export interface Area {
     height: number;
 }
 
+export interface Rect extends Point, Area {}
+
 export interface Offset {
     top?: number;
     left?: number;

@@ -71,7 +71,6 @@ export default class SequenceView extends View implements Scrollable, Resizable 
     }
 
     /**
-     * SequenceView render event handler.
      * @override
      */
     public onRender (): void {
@@ -84,7 +83,6 @@ export default class SequenceView extends View implements Scrollable, Resizable 
     }
 
     /**
-     * SequenceView attach event handler.
      * @override
      */
     public onAttach (): void {
@@ -93,7 +91,7 @@ export default class SequenceView extends View implements Scrollable, Resizable 
 
     /**
      * A handler function to run as the ScrollArea is scrolled.
-     * @implementation (Scrollable)
+     * @implements (Scrollable)
      */
     public onScroll (): void {
         if (!this.$lastChannelView) {
@@ -105,7 +103,7 @@ export default class SequenceView extends View implements Scrollable, Resizable 
 
     /**
      * A handler function to run as the page resizes.
-     * @implementation (Resizable)
+     * @implements (Resizable)
      */
     public onResize (): void {
         this.updateScrollRegionArea();

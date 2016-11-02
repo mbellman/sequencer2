@@ -21,7 +21,6 @@ export default class SequencerMenuView extends View {
     }
 
     /**
-     * SequencerMenuView render event handler.
      * @override
      */
     public onRender (): void {

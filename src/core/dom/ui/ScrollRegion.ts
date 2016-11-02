@@ -26,7 +26,7 @@ type WheelDelta = Point;
 export default class ScrollRegion extends EventContainer {
     /**
      * @override
-     * @implementation (EventContainer)
+     * @implements (EventContainer)
      */
     protected events: EventManager = new EventManager();
 
@@ -149,7 +149,7 @@ export default class ScrollRegion extends EventContainer {
     /**
      * Delegates custom scroll event handlers.
      * @override
-     * @implementation (EventContainer)
+     * @implements (EventContainer)
      */
     public on (event: 'scroll', handler: Function): void {
         this.events.on(event, handler);

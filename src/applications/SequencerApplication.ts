@@ -24,7 +24,7 @@ export default class SequencerApplication extends Application {
 
     /**
      * @override
-     * @implementation (Application)
+     * @implements (Application)
      */
     public initialize (): void {
         super.attachTo('main');

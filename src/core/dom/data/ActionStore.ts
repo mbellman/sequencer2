@@ -16,7 +16,7 @@ export default class ActionStore implements IEventManager {
 
     /**
      * Adds a new DOMActionHandler to the DOMHandlerQueue for a particular action.
-     * @implementation (IEventManager)
+     * @implements (IEventManager)
      */
     public on (action: ActionType, handler: DOMActionHandler): void {
         if (!this.actions[action]) {
@@ -28,7 +28,7 @@ export default class ActionStore implements IEventManager {
 
     /**
      * Dereferences all queued DOMActionHandlers for the Element, effectively clearing its action bindings.
-     * @implementation (IEventManager)
+     * @implements (IEventManager)
      */
     public off (): void {
         each(this.actions, (handlers: DOMHandlerQueue, action: string) => {
@@ -39,7 +39,7 @@ export default class ActionStore implements IEventManager {
     /**
      * Dispatches each DOMActionHandler method for a particular action, working backward so that
      * later-bound handlers can return false, stopping the DOMActionHandler dispatch sequence.
-     * @implementation (IEventManager)
+     * @implements (IEventManager)
      */
     public trigger (action: ActionType, a: Action): void {
         this.last = a;

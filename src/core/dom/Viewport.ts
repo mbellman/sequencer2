@@ -10,7 +10,7 @@ import { EventManager, EventContainer } from "core/system/Event";
 class Viewport extends EventContainer {
     /**
      * An EventManager instance to manage viewport resize event handlers.
-     * @implementation (EventContainer)
+     * @implements (EventContainer)
      */
     protected events: EventManager = new EventManager();
 
@@ -26,7 +26,7 @@ class Viewport extends EventContainer {
     /**
      * @constructor
      */
-    constructor () {
+    private constructor () {
         super();
 
         this.readWindowSize();
@@ -64,7 +64,7 @@ class Viewport extends EventContainer {
 
     /**
      * Saves viewport resize event handlers to the internal {events} EventManager.
-     * @implementation (EventContainer)
+     * @implements (EventContainer)
      */
     public on (event: 'resize', handler: Function): void {
         this.events.on(event, handler);

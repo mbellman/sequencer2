@@ -30,7 +30,6 @@ export default class DropdownMenuView extends View {
     }
 
     /**
-     * DropdownMenuView attach event handler.
      * @override
      */
     public onAttach (): void {

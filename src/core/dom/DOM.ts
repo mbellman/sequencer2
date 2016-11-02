@@ -49,6 +49,9 @@ export class Query implements IEventManager {
      */
     private reacting: Hash<boolean> = {};
 
+    /**
+     * @constructor
+     */
     constructor (selector: string | Element | Array<Element>, stack: Query = null) {
         if (selector instanceof Element) {
             this.initFromArray([selector]);
@@ -107,7 +110,7 @@ export class Query implements IEventManager {
 
     /**
      * Binds an event handler to the queried Element(s).
-     * @implementation (IEventManager)
+     * @implements (IEventManager)
      */
     public on (event: string, handler: DOMEventHandler): Query {
         var [ event, targetSelector ] = event.split(' -> ');
@@ -131,7 +134,7 @@ export class Query implements IEventManager {
 
     /**
      * Unbinds one or all events from the queried Element(s).
-     * @implementation (IEventManager)
+     * @implements (IEventManager)
      */
     public off (event: string = null): Query {
         if (event) {
@@ -163,7 +166,7 @@ export class Query implements IEventManager {
 
     /**
      * Triggers all events of a specific type on the queried Element(s).
-     * @implementation (IEventManager)
+     * @implements (IEventManager)
      */
     public trigger (event: string, eventData: Hash<any> = {}): Query {
         var eventInstance: Event = new Event(event);

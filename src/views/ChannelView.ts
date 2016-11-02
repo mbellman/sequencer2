@@ -35,7 +35,6 @@ export default class ChannelView extends View {
     }
 
     /**
-     * ChannelView render event handler.
      * @override
      */
     public onRender (): void {
@@ -46,7 +45,6 @@ export default class ChannelView extends View {
     }
 
     /**
-     * ChannelView attach event handler.
      * @override
      */
     public onAttach (): void {
@@ -56,7 +54,6 @@ export default class ChannelView extends View {
     }
 
     /**
-     * ChannelView detach event handler.
      * @override
      */
     public onDetach (): void {

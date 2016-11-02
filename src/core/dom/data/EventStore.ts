@@ -18,7 +18,7 @@ export default class EventStore implements IEventManager {
 
     /**
      * Adds a new event handler to the internal store for a specific event.
-     * @implementation (IEventManager)
+     * @implements (IEventManager)
      */
     public on (event: string, namespace: string = 'default', handler: DOMEventHandler): void {
         this.validateEventStore(event, namespace);
@@ -27,7 +27,7 @@ export default class EventStore implements IEventManager {
 
     /**
      * Removes all event handlers for a particular event/namespace pair from the internal store.
-     * @implementation (IEventManager)
+     * @implements (IEventManager)
      */
     public off (event: string = null, namespace: string = 'default'): void {
         if (!event) {
@@ -45,7 +45,7 @@ export default class EventStore implements IEventManager {
 
     /**
      * Dispatches each DOMEventHandler method in each namespace for an event.
-     * @implementation (IEventManager)
+     * @implements (IEventManager)
      */
     public trigger (event: string, e: Event): void {
         var table: DOMEventTable = this.events[event];
