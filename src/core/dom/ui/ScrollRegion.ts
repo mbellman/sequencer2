@@ -235,7 +235,8 @@ export default class ScrollRegion extends EventContainer {
     }
 
     /**
-     * Caches the maximum scroll top/left values for boundary checks.
+     * Caches the maximum scroll top/left values for boundary checks;
+     * called only by setScrollArea().
      */
     private updateMaximumScrollOffset (): void {
         this.maximumScrollOffset.top = Math.max(0, this.scrollArea.height - this.$container.height());
@@ -243,7 +244,7 @@ export default class ScrollRegion extends EventContainer {
     }
 
     /**
-     * Clamps the current scroll top/left values to within the maximum ranges.
+     * Clamps the current scroll top/left values to within [0 - maximum].
      */
     private clampScrollOffsets (): void {
         this.scrollOffset.top = clamp(this.scrollTop, 0, this.maximumScrollOffset.top);

@@ -40,7 +40,9 @@ export default class SequenceView extends View implements Scrollable, Resizable 
     /* A ScrollRegion instance virtualizing scroll actions on the SequenceView. */
     public scrollRegion: ScrollRegion;
 
-    /* @override */
+    /**
+     * @override
+     */
     protected template: string = SequenceViewTemplate;
 
     /* The SequencerApplication instance the SequenceView is added to. */

@@ -1,7 +1,7 @@
 # Project + Code Pattern Rules
 If a rule is explicitly listed here, use it! If a rule is not explicitly listed here (or is open to some interpretation), exercise your best judgment.
 
-The guidelines laid out here are not **absolute**, but where exceptions are made those exceptions should be justified.
+The guidelines laid out here are not absolute, but where exceptions are made those exceptions should be justified.
 
 ## Folders
 1. All folder names should be lowercased.
@@ -22,7 +22,7 @@ import MyClass from "src/app/MyClass";
 import SomeModule from "src/app/SomeModule";
 
 import { helper } from "src/core/Utils";
-import { method, value } from "src/core/Tools";
+import { VALUE, method } from "src/core/Tools";
 ```
 
 ## Exports
@@ -34,15 +34,91 @@ export default class MyClass {}
 ```
 
 ```typescript
-export function method () {}
+export const VALUE: string = "Hello";
 
-export const value: string = "Hello";
+export function method () {}
 ```
 
 ## Styles
-1. All class variables, `vars`, `lets`, and `consts` should be typed using the form: `var myValue: number`.
-2. Variables in the top block scope of a class method or function should be `var`, and any variables within sub block scopes should be `let`.
-3. All class methods or functions should be typed using the form: `function myFunction (): void`.
+1. All class variables, class method and function parameters, `vars`, `lets`, and `consts` should be strongly typed using the form: `name: T`.
+2. All class methods or `functions` should be strongly typed using the form: `myFunction (): T`.
+3. Array types should use the form `Array<T>`.
+4. Variables in the top block scope of a class method or named function should be `var`, and any variables within sub block scopes should be `let`.
+
+### Formatting
+Curly braces should sit on the same line as their `class`/`function`/control structure:
+
+```typescript
+if (condition) {
+    // ...
+} else if (condition2) {
+    // ...
+} else {
+    // ...
+}
+
+function myFunction (): void {
+    // ...
+}
+
+class MyClass {
+    // ...
+}
+```
+
+Arrays and property lists assigned with multiple items should be formatted as follows:
+
+```typescript
+var myArray: Array<any> = [
+    item1,
+    item2,
+    item3
+];
+
+var myObject: any = {
+    prop1: item1,
+    prop2: item2,
+    prop3: item3
+};
+```
+
+Class variables and methods should be appropriately [commented](#comments) and separated by a line break:
+
+```typescript
+class MyClass {
+    /* Some variable */
+    public myString: string;
+
+    /* Some other variable */
+    public myNumber: number;
+
+    /**
+     * Some method
+     */
+    public myMethod (): void {
+
+    }
+
+    /**
+     * Some other method
+     */
+    public otherMethod (): void {
+
+    }
+}
+```
+
+Interface variable/method declarations should be appropriately [commented](#comments) and separated by a line break:
+
+```typescript
+interface MyInterface {
+    /* Variable */
+    someValue: string;
+
+    /* Method */
+    someMethod (): void;
+}
+```
 
 ## Classes
 ### Naming conventions
@@ -51,7 +127,7 @@ export const value: string = "Hello";
 3. Class variable names should be as descriptive as possible. If a variable is of a class or interface type, its name should be the camelCased equivalent of the class or interface name, e.g. `public someModule: SomeModule = new SomeModule();`. If a variable is one of several of a particular class or interface type, defer to a contextually descriptive choice.
 4. Class method names should clearly define their role. Avoid names which are terse or vague. **No shorthand or abbreviation is permitted**.
 5. If a class method:
-    * Performs an action, its name should start with a verb, e.g. `updateCurrentState`.
+    * Performs an action, its name should start with a verb, e.g. `updateCurrentState`, `findValue`.
     * Retrieves a value, its name should start with "get", e.g. `getSomeValue`.
     * Returns a boolean, its name should start with an auxiliary verb, e.g. `isLoaded`, `hasState`, `shouldRun`.
     * Represents an event method, it should start with "on", e.g. `onUpdate`.
@@ -134,12 +210,88 @@ enum MyEnum {
 type Key = string | number;
 ```
 
-Class variable, `var`, `const`, and `type` header comments should be of the style:
+Class constructor methods should be commented as follows:
+
+```typescript
+class MyClass {
+    /**
+     * @constructor
+     */
+    constructor () {
+
+    }
+}
+```
+
+Class variables or methods which override a superclass member should be commented as follows:
+
+```typescript
+/**
+ * @override
+ */
+```
+
+Class variables or methods which implement declared members from `interfaces` or required `abstract methods` from abstract classes should be commented as follows:
+
+```typescript
+/**
+ * @implements (AbstractClass OR InterfaceName)
+ */
+```
+
+Combinations of labels are fine:
+
+```typescript
+class UserService extends UserContainer implements IService, Disposable {
+    /**
+     * @implements (IService)
+     */
+    public type: ServiceType;
+
+    /**
+     * @override
+     * @implements (UserContainer)
+     */
+    protected user: User;
+
+    /**
+     * @override
+     * @implements (UserContainer)
+     */
+    public getUser (): User {
+        return this.user;
+    }
+
+    /**
+     * @implements (IService)
+     */
+    public startService (): void {
+
+    }
+
+    /**
+     * @implements (Diposable)
+     */
+    public dispose (): void {
+
+    }
+}
+```
+
+Class variable, interface field, `var`, `const`, and `type` header comments should be of the style:
 
 ```typescript
 class SomeClass {
     /* ... */
     private secret: string;
+}
+
+interface SomeInterface {
+    /* ... */
+    someValue: string;
+
+    /* ... */
+    someMethod (): void;
 }
 
 /* ... */

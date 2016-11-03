@@ -10,7 +10,9 @@ import { View } from "core/program/View";
  * The user interface for individual sequencer channels.
  */
 export default class ChannelView extends View {
-    /* @override */
+    /**
+     * @override
+     */
     protected template: string = ChannelTemplate;
 
     /* The Sequence passed in from the parent SequenceView. */
