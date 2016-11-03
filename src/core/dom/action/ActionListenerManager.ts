@@ -14,7 +14,7 @@ import { $, Query, DOMListenerManager } from "core/dom/DOM";
  * 
  * This API is leveraged by Query, and should not be used manually.
  */
-export default class ActionListener implements DOMListenerManager {
+export default class ActionListenerManager implements DOMListenerManager {
     /**
      * Delegates a particular Action binding on a Query.
      * @implements (DOMListenerManager)
@@ -44,10 +44,10 @@ export default class ActionListener implements DOMListenerManager {
      * @implements (DOMListenerManager)
      */
     public remove (query: Query): void {
-        query.off('click.ActionListener')
-            .off('contextmenu.ActionListener')
-            .off('mousemove.ActionListener')
-            .off('mousedown.ActionListener');
+        query.off('click.ActionListenerManager')
+            .off('contextmenu.ActionListenerManager')
+            .off('mousemove.ActionListenerManager')
+            .off('mousedown.ActionListenerManager');
     }
 
     /**
@@ -55,7 +55,7 @@ export default class ActionListener implements DOMListenerManager {
      * both single-click and double-click Actions.
      */
     private delegateClick (query: Query): void {
-        query.on('click.ActionListener', (e: MouseEvent) => {
+        query.on('click.ActionListenerManager', (e: MouseEvent) => {
             var actions: ActionStore = Data.getData(<Element>e.currentTarget).actions;
 
             if (actions.lastAction) {
@@ -80,7 +80,7 @@ export default class ActionListener implements DOMListenerManager {
      * Binds a 'contextmenu' event handler on a Query to manage right-click Actions.
      */
     private delegateRightClick (query: Query): void {
-        query.on('contextmenu.ActionListener', (e: MouseEvent) => {
+        query.on('contextmenu.ActionListenerManager', (e: MouseEvent) => {
             var clickAction: ClickAction = new ClickAction(e);
             clickAction.type = ActionType.RIGHT_CLICK;
 
@@ -96,7 +96,7 @@ export default class ActionListener implements DOMListenerManager {
         var moveAction: MoveAction;
         var lastMoveTime: number = 0;
 
-        query.on('mousemove.ActionListener', (e: MouseEvent) => {
+        query.on('mousemove.ActionListenerManager', (e: MouseEvent) => {
             if (Time.since(lastMoveTime) > 1000) {
                 moveAction = new MoveAction(e);
             } else {
@@ -114,17 +114,17 @@ export default class ActionListener implements DOMListenerManager {
      * event handlers to monitor and manage drag Actions.
      */
     private delegateDrag (query: Query): void {
-        query.on('mousedown.ActionListener', (e: MouseEvent) => {
+        query.on('mousedown.ActionListenerManager', (e: MouseEvent) => {
             var actions: ActionStore = Data.getData(<Element>e.currentTarget).actions;
             var dragAction: DragAction = new DragAction(e);
 
-            $('body').on('mousemove.ActionListener', (e: MouseEvent) => {
+            $('body').on('mousemove.ActionListenerManager', (e: MouseEvent) => {
                 dragAction.update(e.clientX, e.clientY);
                 actions.fire(ActionType.DRAG, dragAction);
             });
 
-            $('body').on('mouseup.ActionListener', function (e: MouseEvent) {
-                $(this).off('mousemove.ActionListener mouseup.ActionListener');
+            $('body').on('mouseup.ActionListenerManager', function (e: MouseEvent) {
+                $(this).off('mousemove.ActionListenerManager mouseup.ActionListenerManager');
             });
         });
     }

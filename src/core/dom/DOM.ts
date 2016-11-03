@@ -68,17 +68,17 @@ export class Query implements IEventManager {
     /* The Query's collection of DOM Elements. */
     private elements: Array<Element>;
 
-    /* A persistent EventListenerManager instance for event listener bindings on Elements. */
-    private static eventListenerManager: EventListenerManager = new EventListenerManager();
-
-    /* A persistent ActionListenerManager instance for Action bindings on Elements. */
-    private static actionListenerManager: ActionListenerManager = new ActionListenerManager();
-
     /** 
      * A table of boolean states for each ActionType representing whether or not
      * the Query has been bound with that particular action via react().
      */
     private reacting: Hash<boolean> = {};
+
+    /* A persistent EventListenerManager instance for event listener bindings on Elements. */
+    private static eventListenerManager: EventListenerManager = new EventListenerManager();
+
+    /* A persistent ActionListenerManager instance for Action bindings on Elements. */
+    private static actionListenerManager: ActionListenerManager = new ActionListenerManager();
 
     /**
      * @constructor
