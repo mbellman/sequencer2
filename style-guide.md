@@ -127,26 +127,26 @@ interface MyInterface {
 3. Class variable names should be as descriptive as possible. If a variable is of a class or interface type, its name should be the camelCased equivalent of the class or interface name, e.g. `public someModule: SomeModule = new SomeModule();`. If a variable is one of several of a particular class or interface type, defer to a contextually descriptive choice.
 4. Class method names should clearly define their role. Avoid names which are terse or vague. **No shorthand or abbreviation is permitted**.
 5. If a class method:
-    * Performs an action, its name should start with a verb, e.g. `updateCurrentState`, `findValue`.
-    * Retrieves a value, its name should start with "get", e.g. `getSomeValue`.
+    * Performs an action, its name should start with a verb, e.g. `updateCurrentState`, `renderItems`.
+    * Retrieves a value (and is not just a `getter`), its name should start with "get", e.g. `getSomeValue`.
     * Returns a boolean, its name should start with an auxiliary verb, e.g. `isLoaded`, `hasState`, `shouldRun`.
-    * Represents an event method, it should start with "on", e.g. `onUpdate`.
+    * Represents an event method, it should start with "on" followed by the capitalized event name, e.g. `onUpdate`.
 
 ### Order and priority
 1. Class variables should precede class methods.
 2. The order of access modifiers should be as follows: `public`, `protected`, `private`.
 3. The `constructor` method should precede all other class methods.
-4. `get` and `set` methods should precede all standard class methods.
-5. Standard methods which retrieve or set values should precede all remaining methods.
-6. Methods using the name pattern "on{Event}" should precede all remaining methods.
+4. `getter` and `setter` methods should precede all standard class methods.
+5. Methods using the name pattern "on{Event}" should precede all remaining methods.
 
 ### Access Modifiers
 1. All public members should be labelled as `public` with the exception of the constructor method.
-2. All getter and setter methods should be labelled as `public`.
+2. All `getter` and `setter` methods should be labelled as `public`.
 
 ## Interfaces
 1. All `interface` names should use capitalized CamelCase.
 2. An `interface` name can be changed to use the form ICamelCase where a default class implementation also shares its name, but otherwise should omit the preceding "I".
+3. All `interface` members should use lowercased camelCase.
 
 ## Functions
 1. All `function` names should use lowercased camelCase.
@@ -159,12 +159,12 @@ interface MyInterface {
 2. All `enum` property names should use all-capitalized SNAKE_CASE.
 
 ## Variables and Constants
-1. All variable names should use camelCase.
+1. All variable names should use lowercased camelCase.
 2. All `const` names should use all-capitalized SNAKE_CASE.
 
 ## Comments
-1. Always add a header comment for `classes`, class methods, class variables, `interfaces`, interface properties, `functions`, `types`, `enums`, and `vars`/`consts` in the module or global scope. Even if the purpose of a construct seems obvious, it's safer to avoid any ambiguity. Comments at regular intervals also impart a certain visual consistency to the look of the code.
-2. Use comments sparingly inside `functions` or class methods. If you are tempted to use a comment to describe a particular control flow within the function, see if it can be explained as part of the function's header comment. For exceedingly long functions or algorithms, comments may indeed be necessary for clarification or exposition.
+1. **Always** add a header comment for `classes`, class methods, class variables, `interfaces`, interface members, `functions`, `types`, `enums`, and `vars`/`consts` in the module or global scope. Even if the purpose of a construct seems obvious, it's safer to avoid any ambiguity. Comments at regular intervals also impart a certain visual consistency to the look of the code.
+2. Use comments sparingly inside `functions` or class methods. If you are tempted to use a comment to describe a particular control flow within the function, see if it can be explained as part of the function's header comment. For exceedingly long functions or algorithms, comments may indeed be necessary for clarification or exposition. Use whichever comment format seems appropriate (`// ...`, `/* ... */`, etc.).
 
 `class`, class member, `interface`, `function`, `enum`, and `type` header comments should be of the style:
 
