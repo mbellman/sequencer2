@@ -1,13 +1,12 @@
 import { each } from "core/system/Utilities";
-import { IEventManager } from "core/system/Event";
 import { Hash } from "core/system/structures/Types";
-import { DOMActionHandler, DOMHandlerQueue } from "core/dom/DOM";
+import { DOMActionHandler, DOMHandlerQueue, DOMHandlerStore } from "core/dom/DOM";
 import { ActionType, Action } from "core/dom/action/Action";
 
 /**
  * An action handler store and manager for individual document Elements.
  */
-export default class ActionStore implements IEventManager {
+export default class ActionStore implements DOMHandlerStore {
     /* A reference to the last Action triggered on the Element. */
     public lastAction: Action;
 
@@ -16,9 +15,9 @@ export default class ActionStore implements IEventManager {
 
     /**
      * Adds a new DOMActionHandler to the DOMHandlerQueue for a particular action.
-     * @implements (IEventManager)
+     * @implements (DOMHandlerStore)
      */
-    public on (action: ActionType, handler: DOMActionHandler): void {
+    public bind (action: ActionType, handler: DOMActionHandler): void {
         if (!this.actions[action]) {
             this.actions[action] = [];
         }
@@ -28,9 +27,9 @@ export default class ActionStore implements IEventManager {
 
     /**
      * Removes all DOMActionHandlers.
-     * @implements (IEventManager)
+     * @implements (DOMHandlerStore)
      */
-    public off (): void {
+    public unbind (): void {
         this.actions = {};
     }
 
@@ -38,9 +37,9 @@ export default class ActionStore implements IEventManager {
      * Dispatches each DOMActionHandler method for a particular action, passing an Action instance
      * into each handler. Loops backward so that later-bound handlers can return false, stopping
      * the DOMActionHandler dispatch sequence.
-     * @implements (IEventManager)
+     * @implements (DOMHandlerStore)
      */
-    public trigger (action: ActionType, a: Action): void {
+    public fire (action: ActionType, a: Action): void {
         this.lastAction = a;
 
         var handlers: DOMHandlerQueue = this.actions[action] || [];

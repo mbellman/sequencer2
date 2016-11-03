@@ -1,37 +1,36 @@
 import { each } from "core/system/Utilities";
-import { IEventManager } from "core/system/Event";
 import { Hash } from "core/system/structures/Types";
-import { DOMEventHandler, DOMHandlerQueue } from "core/dom/DOM";
+import { DOMEventHandler, DOMHandlerQueue, DOMHandlerStore } from "core/dom/DOM";
 
 /**
  * A Hash containing all DOMEventHandlers bound for an event for a document Element. Each key
  * represents an event namespace and each value is a DOMHandlerQueue of handlers for that namespace.
  */
-type DOMEventTable = Hash<DOMHandlerQueue>;
+type DOMEventHandlerTable = Hash<DOMHandlerQueue>;
 
 /**
  * An event handler store and manager for individual Elements.
  */
-export default class EventStore implements IEventManager {
-    /* An internal store of DOMEventTables for each event bound to the Element. */
-    private events: Hash<DOMEventTable> = {};
+export default class EventStore implements DOMHandlerStore {
+    /* An internal store of DOMEventHandlerTables for each event bound to the Element. */
+    private events: Hash<DOMEventHandlerTable> = {};
 
     /**
      * Adds a new event handler to the internal store for a specific event.
-     * @implements (IEventManager)
+     * @implements (DOMHandlerStore)
      */
-    public on (event: string, namespace: string = 'default', handler: DOMEventHandler): void {
+    public bind (event: string, namespace: string = 'default', handler: DOMEventHandler): void {
         this.validateEventStore(event, namespace);
         this.events[event][namespace].push(handler);
     }
 
     /**
      * Removes all event handlers for a particular event/namespace pair from the internal store.
-     * @implements (IEventManager)
+     * @implements (DOMHandlerStore)
      */
-    public off (event: string = null, namespace: string = 'default'): void {
+    public unbind (event: string = null, namespace: string = 'default'): void {
         if (!event) {
-            each(this.events, (table: DOMEventTable, event: string) => {
+            each(this.events, (table: DOMEventHandlerTable, event: string) => {
                 delete this.events[event];
             });
         } else {
@@ -45,10 +44,10 @@ export default class EventStore implements IEventManager {
 
     /**
      * Dispatches each DOMEventHandler method in each namespace for an event.
-     * @implements (IEventManager)
+     * @implements (DOMHandlerStore)
      */
-    public trigger (event: string, e: Event): void {
-        var table: DOMEventTable = this.events[event];
+    public fire (event: string, e: Event): void {
+        var table: DOMEventHandlerTable = this.events[event];
 
         each(table, (handlers: DOMHandlerQueue) => {
             each(handlers, (handler: DOMEventHandler) => {
@@ -61,7 +60,7 @@ export default class EventStore implements IEventManager {
      * Determines whether any DOMEventHandlers are still bound on an event or its namespaces.
      */
     public has (event: string): boolean {
-        var table: DOMEventTable = this.events[event];
+        var table: DOMEventHandlerTable = this.events[event];
 
         if (!table) {
             return false;
@@ -82,7 +81,7 @@ export default class EventStore implements IEventManager {
             this.events[event] = {};
         }
 
-        var table: DOMEventTable = this.events[event];
+        var table: DOMEventHandlerTable = this.events[event];
 
         if (!table[namespace]) {
             table[namespace] = [];

@@ -14,11 +14,12 @@ import { $, Query, DOMListenerManager } from "core/dom/DOM";
  * 
  * This API is leveraged by Query, and should not be used manually.
  */
-export default class ActionListener {
+export default class ActionListener implements DOMListenerManager {
     /**
      * Delegates a particular Action binding on a Query.
+     * @implements (DOMListenerManager)
      */
-    public static add (query: Query, action: ActionType): void {
+    public add (query: Query, action: ActionType): void {
         switch (action) {
             case ActionType.CLICK:
             case ActionType.DOUBLE_CLICK:
@@ -40,8 +41,9 @@ export default class ActionListener {
 
     /**
      * Removes all Action bindings on a Query.
+     * @implements (DOMListenerManager)
      */
-    public static remove (query: Query): void {
+    public remove (query: Query): void {
         query.off('click.ActionListener')
             .off('contextmenu.ActionListener')
             .off('mousemove.ActionListener')
@@ -52,7 +54,7 @@ export default class ActionListener {
      * Binds a singular click event handler on a Query to manage
      * both single-click and double-click Actions.
      */
-    private static delegateClick (query: Query): void {
+    private delegateClick (query: Query): void {
         query.on('click.ActionListener', (e: MouseEvent) => {
             var actions: ActionStore = Data.getData(<Element>e.currentTarget).actions;
 
@@ -62,7 +64,7 @@ export default class ActionListener {
                 if (actions.lastAction.type === ActionType.CLICK && delay < 250) {
                     var doubleClickAction: DoubleClickAction = new DoubleClickAction(e, delay);
 
-                    actions.trigger(ActionType.DOUBLE_CLICK, doubleClickAction);
+                    actions.fire(ActionType.DOUBLE_CLICK, doubleClickAction);
 
                     return;
                 }
@@ -70,19 +72,19 @@ export default class ActionListener {
 
             var click: ClickAction = new ClickAction(e);
 
-            actions.trigger(ActionType.CLICK, click);
+            actions.fire(ActionType.CLICK, click);
         });
     }
 
     /**
      * Binds a 'contextmenu' event handler on a Query to manage right-click Actions.
      */
-    private static delegateRightClick (query: Query): void {
+    private delegateRightClick (query: Query): void {
         query.on('contextmenu.ActionListener', (e: MouseEvent) => {
             var clickAction: ClickAction = new ClickAction(e);
             clickAction.type = ActionType.RIGHT_CLICK;
 
-            Data.getData(<Element>e.currentTarget).actions.trigger(ActionType.RIGHT_CLICK, clickAction);
+            Data.getData(<Element>e.currentTarget).actions.fire(ActionType.RIGHT_CLICK, clickAction);
             e.preventDefault();
         });
     }
@@ -90,7 +92,7 @@ export default class ActionListener {
     /**
      * Binds a 'mousemove' event handler on a Query to manage move Actions.
      */
-    private static delegateMove (query: Query): void {
+    private delegateMove (query: Query): void {
         var moveAction: MoveAction;
         var lastMoveTime: number = 0;
 
@@ -103,7 +105,7 @@ export default class ActionListener {
 
             lastMoveTime = Date.now();
 
-            Data.getData(<Element>e.currentTarget).actions.trigger(ActionType.MOVE, moveAction);
+            Data.getData(<Element>e.currentTarget).actions.fire(ActionType.MOVE, moveAction);
         });
     }
 
@@ -111,14 +113,14 @@ export default class ActionListener {
      * Binds a 'mousedown' event handler on a Query which uses additional body
      * event handlers to monitor and manage drag Actions.
      */
-    private static delegateDrag (query: Query): void {
+    private delegateDrag (query: Query): void {
         query.on('mousedown.ActionListener', (e: MouseEvent) => {
             var actions: ActionStore = Data.getData(<Element>e.currentTarget).actions;
             var dragAction: DragAction = new DragAction(e);
 
             $('body').on('mousemove.ActionListener', (e: MouseEvent) => {
                 dragAction.update(e.clientX, e.clientY);
-                actions.trigger(ActionType.DRAG, dragAction);
+                actions.fire(ActionType.DRAG, dragAction);
             });
 
             $('body').on('mouseup.ActionListener', function (e: MouseEvent) {

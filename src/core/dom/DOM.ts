@@ -1,7 +1,7 @@
 import Data from "core/dom/data/Data";
 import EventStore from "core/dom/data/EventStore";
-import EventListener from "core/dom/event/EventListener";
-import ActionListener from "core/dom/action/ActionListener";
+import EventListenerManager from "core/dom/event/EventListenerManager";
+import ActionListenerManager from "core/dom/action/ActionListenerManager";
 
 import { each, isInArray, hasOwn, toArray } from "core/system/Utilities";
 import { IEventManager } from "core/system/Event";
@@ -25,7 +25,7 @@ export type DOMActionHandler = (action: Action) => any;
 export type DOMHandlerQueue = Array<DOMEventHandler | DOMActionHandler>;
 
 /**
- * A manager for native or custom listeners bound on Queries or Elements.
+ * A manager and tracker for Event or Action listeners bound on Elements or Queries.
  */
 export interface DOMListenerManager {
     /* Adds a listener to the Query or Element. */
@@ -33,6 +33,20 @@ export interface DOMListenerManager {
 
     /* Removes a listener from the Query or Element. */
     remove (...args: Array<any>): void;
+}
+
+/**
+ * A manager and dispatcher for DOM Event/Action handlers.
+ */
+export interface DOMHandlerStore {
+    /* Binds a DOM handler to be fired on a specific DOM Event or Action. */
+    bind (...args: Array<any>): void;
+
+    /* Removes DOM handler bindings for a specific DOM Event or Action. */
+    unbind (...args: Array<any>): void;
+
+    /* Fires all DOM handlers for a specific Event or Action. */
+    fire (...args: Array<any>);
 }
 
 /**
@@ -53,6 +67,12 @@ export class Query implements IEventManager {
 
     /* The Query's collection of DOM Elements. */
     private elements: Array<Element>;
+
+    /* A persistent EventListenerManager instance for event listener bindings on Elements. */
+    private static eventListenerManager: EventListenerManager = new EventListenerManager();
+
+    /* A persistent ActionListenerManager instance for Action bindings on Elements. */
+    private static actionListenerManager: ActionListenerManager = new ActionListenerManager();
 
     /** 
      * A table of boolean states for each ActionType representing whether or not
@@ -133,11 +153,11 @@ export class Query implements IEventManager {
         }
 
         this.eachElement((element: Element) => {
-            if (!EventListener.isListening(element, event)) {
-                EventListener.add(element, event);
+            if (!Query.eventListenerManager.isListening(element, event)) {
+                Query.eventListenerManager.add(element, event);
             }
 
-            Data.getData(element).events.on(event, namespace, handler);
+            Data.getData(element).events.bind(event, namespace, handler);
         });
 
         return this;
@@ -165,10 +185,10 @@ export class Query implements IEventManager {
         this.eachElement((element: Element) => {
             let eventStore: EventStore = Data.getData(element).events;
 
-            eventStore.off(event, namespace);
+            eventStore.unbind(event, namespace);
 
             if (!namespace || !eventStore.has(event)) {
-                EventListener.remove(element, event);
+                Query.eventListenerManager.remove(element, event);
             }
         });
 
@@ -187,7 +207,7 @@ export class Query implements IEventManager {
         });
 
         this.eachElement((element: Element) => {
-            Data.getData(element).events.trigger(event, eventInstance);
+            Data.getData(element).events.fire(event, eventInstance);
         });
 
         return this;
@@ -198,13 +218,13 @@ export class Query implements IEventManager {
      */
     public react (action: ActionType, handler: DOMActionHandler): Query {
         if (!this.reacting[action]) {
-            ActionListener.add(this, action);
+            Query.actionListenerManager.add(this, action);
 
             this.reacting[action] = true;
         }
 
         this.eachElement((element: Element) => {
-            Data.getData(element).actions.on(action, handler);
+            Data.getData(element).actions.bind(action, handler);
         });
 
         return this;
@@ -214,10 +234,10 @@ export class Query implements IEventManager {
      * Removes all Action/DOMActionHandler delegations from the queried Element(s).
      */
     public unreact (): Query {
-        ActionListener.remove(this);
+        Query.actionListenerManager.remove(this);
 
         this.eachElement((element: Element) => {
-            Data.getData(element).actions.off();
+            Data.getData(element).actions.unbind();
         });
 
         return this;
