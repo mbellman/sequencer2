@@ -11,18 +11,18 @@ import { Hash } from "core/system/structures/Types";
 const DATA_ID: string = 'data';
 
 /**
- * Data pertaining to individual document elements.
+ * Data pertaining to individual Elements.
  */
 class ElementData {
-    /* An event handler store for the Element. */
+    /* A DOMEventHandler store for the Element. */
     public events: EventStore = new EventStore();
 
-    /* An action handler store for the Element. */
+    /* A DOMActionHandler store for the Element. */
     public actions: ActionStore = new ActionStore();
 }
 
 /**
- * An internal store and accompanying methods for managing ElementData on individual document elements.
+ * An API for managing ElementData on individual Elements.
  */
 export default class Data {
     /* The internal store for element data. */

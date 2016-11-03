@@ -1,10 +1,11 @@
-import { bindAll } from "core/system/Utilities";
+import { bindAll, defaultTo } from "core/system/Utilities";
 import { EasingFunction } from "core/system/math/tween/Ease";
 
 interface TweenParameters {
     start: number;
     end: number;
     duration: number;
+    delay?: number;
     ease: EasingFunction;
     onUpdate: TweenHandler;
     onComplete?: Function;
@@ -16,58 +17,74 @@ interface TweenParameters {
 type TweenHandler = (value: number) => void;
 
 /**
- * @ private class TweenAction
+ * TweenAction
  */
 class TweenAction {
-    private startValue: number;
-    private endValue: number;
+    private tween: TweenParameters;
     private range: number;
     private startTime: number;
-    private easeDuration: number;
-    private easeFunction: EasingFunction;
-    private onUpdate: TweenHandler;
-    private onComplete: Function;
+    private isStopped: boolean = false;
 
-    constructor (params: TweenParameters) {
+    /**
+     * @constructor
+     */
+    constructor (tween: TweenParameters) {
         bindAll(this, 'update');
 
-        this.startValue = params.start;
-        this.endValue = params.end;
-        this.range = params.end - params.start;
-        this.startTime = Date.now();
-        this.easeDuration = params.duration * 1000;
-        this.easeFunction = params.ease;
-        this.onUpdate = params.onUpdate;
+        tween.duration *= 1000;
+        tween.delay = defaultTo(tween.delay, 0) * 1000;
 
-        if (params.onComplete) {
-            this.onComplete = params.onComplete;
-        }
+        this.tween = tween;
+        this.range = tween.end - tween.start;
+        this.startTime = Date.now();
 
         this.update();
+    }
+
+    public stop (): void {
+        this.isStopped = true;
     }
 
     /**
      * 
      */
     private update (): void {
-        var elapsedTime: number = Date.now() - this.startTime;
-        var easeProgress: number = elapsedTime / this.easeDuration;
-        var easeValue: number = this.easeFunction(easeProgress);
-        var newValue: number = this.startValue + (easeValue * this.range);
+        if (this.isDelayed()) {
+            requestAnimationFrame(this.update);
 
-        if (elapsedTime > this.easeDuration) {
-            this.onUpdate(this.endValue);
+            return;
+        }
 
-            if (this.onComplete) {
-                this.onComplete();
+        var { start, end, duration, delay, ease, onUpdate, onComplete } = this.tween;
+
+        var elapsedTime: number = this.getElapsedTime() - delay;
+        var easeProgress: number = elapsedTime / duration;
+        var easeValue: number = ease(easeProgress);
+        var newValue: number = start + (easeValue * this.range);
+
+        if (elapsedTime > duration) {
+            onUpdate(end);
+
+            if (onComplete) {
+                onComplete();
             }
 
             return;
         }
 
-        this.onUpdate(newValue);
+        onUpdate(newValue);
 
-        requestAnimationFrame(this.update);
+        if (!this.isStopped) {
+            requestAnimationFrame(this.update);
+        }
+    }
+
+    private isDelayed (): boolean {
+        return this.tween.delay > this.getElapsedTime();
+    }
+
+    private getElapsedTime (): number {
+        return Date.now() - this.startTime;
     }
 }
 
@@ -75,7 +92,7 @@ class TweenAction {
  * An API for TweenAction operations.
  */
 export default class Tween {
-    public static run (params: TweenParameters): void {
-        new TweenAction(params);
+    public static run (params: TweenParameters): TweenAction {
+        return new TweenAction(params);
     }
 }

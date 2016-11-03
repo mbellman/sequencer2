@@ -13,9 +13,15 @@ export const enum ActionType {
  * A base template for describing any kind of user input action.
  */
 export abstract class Action {
+	/* The type of Action. */
 	public type: ActionType;
+
+	/* The time of Action instantiation in unix epoch milliseconds. */
 	public timestamp: number;
 
+	/**
+	 * @constructor
+	 */
 	constructor (type: ActionType) {
 		this.type = type;
 		this.timestamp = Date.now();

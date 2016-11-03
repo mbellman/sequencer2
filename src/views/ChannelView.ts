@@ -10,6 +10,9 @@ import { View } from "core/program/View";
  * The user interface for individual sequencer channels.
  */
 export default class ChannelView extends View {
+    /* The index of the ChannelView within the list of ChannelViews, starting with 1. */
+    public index: number;
+
     /**
      * @override
      */
@@ -30,6 +33,7 @@ export default class ChannelView extends View {
     constructor (sequence: Sequence) {
         super('channel hidden');
 
+        this.index = sequence.getTotalChannels() + 1;
         this.sequence = sequence;
         this.channel = new Channel();
 

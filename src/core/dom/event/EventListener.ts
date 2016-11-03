@@ -5,7 +5,9 @@ import { Hash } from "core/system/structures/Types";
 
 /**
  * A type signature for a list of event names (keys) and true boolean
- * values indicating that a listener is bound on the event.
+ * values indicating that a listener is bound for that event. Each
+ * Element delegated DOM events gets its own ListenerTable created
+ * and stored in EventListener.listeners.
  */
 type ListenerTable = Hash<boolean>;
 
@@ -19,11 +21,24 @@ function globalListener (e: Event): void {
 }
 
 /**
- * An API for binding event listeners to document Elements.
+ * An API for managing event listeners on Elements.
  */
 export default class EventListener {
     /* A store of ListenerTables for each Element representing its currently bound events. */
     private static listeners: Hash<ListenerTable> = {};
+
+    /**
+     * Determines whether an event listener for a specific event has been bound on an Element.
+     */
+    public static isListening (element: Element, event: string = null): boolean {
+        var listeners: ListenerTable = this.getElementListenerTable(element);
+
+        if (!event) {
+            return !!listeners;
+        }
+
+        return (listeners ? !!listeners[event] : false);
+    }
 
     /**
      * Binds a listener to an Element for a specific event.
@@ -31,7 +46,7 @@ export default class EventListener {
     public static add (element: Element, event: string): void {
         var id: string = Data.getId(element);
 
-        if (!this.listening(element)) {
+        if (!this.isListening(element)) {
             this.listeners[id] = {};
         }
 
@@ -43,26 +58,12 @@ export default class EventListener {
     /**
      * Removes one or all event listeners on an Element.
      */
-    public static remove (element: Element, event: string = null): void {
+    public static remove (element: Element, event?: string): void {
         if (!event) {
             this.removeAll(element);
         } else {
             this.removeOne(element, event);
         }
-    }
-
-    /**
-     * Determines whether any event or a specific event is being monitored on an Element.
-     */
-    public static listening (element: Element, event: string = null): boolean {
-        var id: string = Data.getId(element);
-        var listeners: ListenerTable = this.listeners[id];
-
-        if (!event) {
-            return !!listeners;
-        }
-
-        return (listeners ? !!listeners[event] : false);
     }
 
     /**
@@ -84,13 +85,21 @@ export default class EventListener {
      * event from its store in {listeners}.
      */
     private static removeOne (element: Element, event: string): void {
-        var id: string = Data.getId(element);
-        var listeners: ListenerTable = this.listeners[id];
+        var listeners: ListenerTable = this.getElementListenerTable(element);
 
         element.removeEventListener(event, globalListener);
 
         if (listeners) {
             delete listeners[event];
         }
+    }
+
+    /**
+     * Returns the internal ListenerTable for a specific Element.
+     */
+    private static getElementListenerTable (element: Element): ListenerTable {
+        var id: string = Data.getId(element);
+
+        return this.listeners[id];
     }
 }

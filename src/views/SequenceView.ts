@@ -25,10 +25,10 @@ const CHANNEL_HEIGHT: number = 300;
 const CHANNEL_MARGIN: number = 50;
 
 /* The combined height of a ChannelView and the ChannelView bottom margin. */
-const CHANNEL_TOTAL_HEIGHT: number = CHANNEL_HEIGHT + CHANNEL_MARGIN;
+const CHANNEL_PADDED_HEIGHT : number = CHANNEL_HEIGHT + CHANNEL_MARGIN;
 
 /* The bottom margin for the add channel button when pushed toward the bottom of the page. */
-const ADD_BUTTON_BOTTOM_MARGIN: number = 150;
+const ADD_BUTTON_BOTTOM_MARGIN: number = 125;
 
 /**
  * The primary sequencer interface.
@@ -37,25 +37,25 @@ export default class SequenceView extends View implements Scrollable, Resizable 
     /* The Sequence instance coupled to the SequenceView. */
     public sequence: Sequence = new Sequence();
 
-    /* A ScrollRegion instance virtualizing scroll actions on the SequenceView. */
-    public scrollRegion: ScrollRegion;
-
     /**
      * @override
      */
     protected template: string = SequenceViewTemplate;
 
-    /* The SequencerApplication instance the SequenceView is added to. */
+    /* The top-level SequencerApplication controller. */
     private application: SequencerApplication;
 
-    /* The add channel button $(element). */
+    /* A ScrollRegion instance virtualizing scroll actions on the SequenceView. */
+    private scrollRegion: ScrollRegion;
+
+    /* The "add channel" button $(element). */
     private $addChannelButton: Query;
 
-    /* The ChannelView list container $(element). */
-    private $channelViews: Query;
+    /* The ChannelView container $(element). */
+    private $channelViewContainer: Query;
 
     /**
-     * The last-added ChannelView $(element), saved as a reference for add channel button
+     * The last-added ChannelView $(element), saved as a reference for "add channel"" button
      * snapping calculations.
      */
     private $lastChannelView: Query;
@@ -77,7 +77,7 @@ export default class SequenceView extends View implements Scrollable, Resizable 
      */
     public onRender (): void {
         this.$addChannelButton = this.$('.add-channel-button');
-        this.$channelViews = this.$('#channel-views');
+        this.$channelViewContainer = this.$('#channel-views');
 
         this.$addChannelButton.on('click', () => {
             this.addChannelView();
@@ -118,14 +118,79 @@ export default class SequenceView extends View implements Scrollable, Resizable 
     public addChannelView (): void {
         var channelView: ChannelView = new ChannelView(this.sequence);
 
-        channelView.attachTo(this.$channelViews);
+        channelView.attachTo(this.$channelViewContainer);
+        this.onChannelViewAdded(channelView);
+    }
 
-        this.positionChannelView(channelView);
-        this.animateInChannelView(channelView);
+    /**
+     * Turns the SequenceView into a virtual ScrollRegion.
+     */
+    private createScrollRegion (): void {
+        this.scrollRegion = new ScrollRegion(this.$element, this.$channelViewContainer);
+    
+        this.scrollRegion.configure({
+            speed: 0.92
+        });
+
+        this.scrollRegion.on('scroll', this.onScroll);
+    }
+
+    /**
+     * A handler function for newly-added ChannelViews.
+     */
+    private onChannelViewAdded (channelView: ChannelView): void {
+        this.positionChannelViewOnAdded(channelView);
+        this.revealChannelViewOnAdded(channelView);
         this.slideAddChannelButton();
         this.updateScrollRegionArea();
+        this.scrollToChannelView(channelView);
 
         this.$lastChannelView = channelView.$element;
+    }
+
+    /**
+     * Sets the top position of a newly-added ChannelView.
+     */
+    private positionChannelViewOnAdded (channelView: ChannelView): void {
+        var totalChannels: number = this.sequence.getTotalChannels();
+        var existingHeight: number = (totalChannels - 1) * CHANNEL_PADDED_HEIGHT;
+        var topPosition: number = CHANNEL_LIST_TOP_MARGIN + existingHeight;
+
+        channelView.$element.css('top', topPosition + 'px');
+    }
+
+    /**
+     * Animates a newly added ChannelView into view by removing
+     * its "hidden" class on a delay to avoid CSS transition +
+     * DOM element insertion race conditions.
+     */
+    private revealChannelViewOnAdded (channelView: ChannelView): void {
+        setTimeout(() => {
+            channelView.$element.removeClass('hidden');
+        }, 50);
+    }
+
+    /**
+     * Smoothly scrolls to a particular ChannelView.
+     */
+    private scrollToChannelView (channelView: ChannelView): void {
+        var channelViewBottom: number = CHANNEL_LIST_TOP_MARGIN + (channelView.index * CHANNEL_PADDED_HEIGHT);
+        var scrollRegionBottom: number = this.scrollRegion.scrollTop + Viewport.height;
+
+        if (channelViewBottom > scrollRegionBottom) {
+            var newScrollTop: number = channelViewBottom - 1.5 * CHANNEL_PADDED_HEIGHT;
+
+            Tween.run({
+                start: this.scrollRegion.scrollTop,
+                end: newScrollTop,
+                duration: 0.5,
+                delay: 0.4,
+                ease: Ease.inOutQuad,
+                onUpdate: (top: number) => {
+                    this.scrollRegion.scrollTop = top;
+                }
+            });
+        }
     }
 
     /**
@@ -138,27 +203,11 @@ export default class SequenceView extends View implements Scrollable, Resizable 
         }
 
         var $addPanel: Query = this.$addChannelButton.parent();
-        var lastChannelTop: number = this.$lastChannelView.bounds().top;
-        var maximumAddPanelTop: number = lastChannelTop + CHANNEL_TOTAL_HEIGHT - 25;
+        var lastChannelViewTop: number = this.$lastChannelView.bounds().top;
+        var maximumAddPanelTop: number = lastChannelViewTop + CHANNEL_PADDED_HEIGHT  - 25;
         var newTop: number = Math.min(maximumAddPanelTop, Viewport.height - ADD_BUTTON_BOTTOM_MARGIN);
 
         $addPanel.css('top', newTop + 'px');
-    }
-
-    /**
-     * Turns the SequenceView into a virtual ScrollRegion.
-     */
-    private createScrollRegion (): void {
-        var width: number = this.$element.bounds().width;
-        var height: number = 0;
-
-        this.scrollRegion = new ScrollRegion(this.$element, this.$channelViews, width, height);
-    
-        this.scrollRegion.configure({
-            speed: 0.92
-        });
-
-        this.scrollRegion.on('scroll', this.onScroll);
     }
 
     /**
@@ -166,30 +215,9 @@ export default class SequenceView extends View implements Scrollable, Resizable 
      */
     private updateScrollRegionArea (): void {
         var totalChannels: number = this.sequence.getTotalChannels();
-        var scrollHeight: number = SCROLL_HEIGHT_BUFFER + totalChannels * CHANNEL_TOTAL_HEIGHT;
+        var scrollHeight: number = SCROLL_HEIGHT_BUFFER + totalChannels * CHANNEL_PADDED_HEIGHT ;
 
         this.scrollRegion.setScrollArea(Viewport.width, scrollHeight);
-    }
-
-    /**
-     * Sets the top position of a newly added ChannelView.
-     */
-    private positionChannelView (channelView: ChannelView): void {
-        var totalChannels: number = this.sequence.getTotalChannels();
-        var newTop: number = CHANNEL_LIST_TOP_MARGIN + (totalChannels - 1) * CHANNEL_TOTAL_HEIGHT;
-
-        channelView.$element.css('top', newTop + 'px');
-    }
-
-    /**
-     * Animates a newly added ChannelView into view by removing
-     * its "hidden" class on a delay to avoid CSS transition +
-     * DOM element insertion race conditions.
-     */
-    private animateInChannelView (channelView: ChannelView): void {
-        setTimeout(() => {
-            channelView.$element.removeClass('hidden');
-        }, 50);
     }
 
     /**
@@ -204,7 +232,7 @@ export default class SequenceView extends View implements Scrollable, Resizable 
         Tween.run({
             start: addPanelTop,
             end: newTop,
-            duration: 0.55,
+            duration: 0.5,
             ease: Ease.inOutCubic,
             onUpdate: (v: number) => {
                 $addPanel.css('top', v + 'px');

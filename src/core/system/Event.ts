@@ -34,10 +34,23 @@ export class EventManager implements IEventManager {
     }
 
     /**
-     * Removes all handlers for an event.
+     * Removes a specific handler for an event, all handlers for an event, or all events.
      */
-    public off (event: string): void {
-        delete this.events[event];
+    public off (event?: string, handler?: Function): void {
+        if (event && handler) {
+            return each(this.events[event], (fn: Function, index: number): any => {
+                if (handler === fn) {
+                    return this.events[event].splice(index, 1);
+                }
+            });
+        }
+
+        if (event && !handler) {
+            delete this.events[event];
+            return;
+        }
+
+        this.events = {};
     }
 
     /**
@@ -51,13 +64,26 @@ export class EventManager implements IEventManager {
 }
 
 /**
- * An object which includes an internal EventManager, using a public on() method
- * to delegate event handlers on the EventManager.
+ * An object which contains an internal EventManager, using public on() and off()
+ * proxy methods to delegate or remove event handlers. Derived classes can call
+ * this.events.trigger() internally. Used when a class can have events subscribed
+ * to, but not manually triggered from outside the definition.
  */
-export abstract class EventContainer {
+export abstract class EventsContainer {
     /* An internal event store facilitated by an EventManager instance. */
-    protected abstract events: EventManager;
+    protected events: EventManager = new EventManager();
 
-    /* Delegates a handler function for an event. */
-    public abstract on (...args: Array<any>): void;
+    /**
+     * A proxy for this.events.on().
+     */
+    public on (...args: Array<any>): void {
+        this.events.on.apply(this.events, args);
+    }
+
+    /**
+     * A proxy for this.events.off().
+     */
+    public off (...args: Array<any>): void {
+        this.events.off.apply(this.events, args);
+    }
 }

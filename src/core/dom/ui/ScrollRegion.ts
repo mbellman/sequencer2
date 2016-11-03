@@ -1,16 +1,16 @@
-import Time from "core/system/Time";
-import Tween from "core/system/math/tween/Tween";
-
 import { normalizeWheel, NormalizedWheel } from "ext/NormalizeWheel";
-import { EventManager, EventContainer } from "core/system/Event";
+import { EventManager, EventsContainer } from "core/system/Event";
 import { bindAll, defaultTo } from "core/system/Utilities";
 import { clamp, hasSameSign } from "core/system/math/Utilities";
 import { Point, Area, Offset } from "core/system/math/Geometry";
 import { Momentum2 } from "core/system/math/Physics";
-import { Ease } from "core/system/math/tween/Ease";
 import { Query } from "core/dom/DOM";
 
+/**
+ * Settings for a ScrollRegion instance.
+ */
 interface ScrollRegionSettings {
+    /* The scroll speed from [0 - 1], handled as the scroll momentum decay factor. */
     speed?: number;
 }
 
@@ -23,15 +23,9 @@ type WheelDelta = Point;
  * Creates a virtual scroll region inside an element, overriding its DOM wheel
  * event and using a CSS translation transform to represent scroll behavior.
  */
-export default class ScrollRegion extends EventContainer {
-    /**
-     * @override
-     * @implements (EventContainer)
-     */
-    protected events: EventManager = new EventManager();
-
+export default class ScrollRegion extends EventsContainer {
     /* The instance settings, configurable via configure(). */
-    protected settings: ScrollRegionSettings = {
+    private settings: ScrollRegionSettings = {
         speed: 0.9
     };
 
@@ -96,7 +90,7 @@ export default class ScrollRegion extends EventContainer {
     public set scrollTop (top: number) {
         this.scrollOffset.top = top;
 
-        this.scrollTo(top, null);
+        this.scrollTo(top, this.scrollLeft);
     }
 
     /**
@@ -112,7 +106,7 @@ export default class ScrollRegion extends EventContainer {
     public set scrollLeft (left: number) {
         this.scrollOffset.left = left;
 
-        this.scrollTo(null, left);
+        this.scrollTo(this.scrollTop, left);
     }
 
     /**
@@ -147,25 +141,16 @@ export default class ScrollRegion extends EventContainer {
     }
 
     /**
-     * Delegates custom scroll event handlers.
-     * @override
-     * @implements (EventContainer)
-     */
-    public on (event: 'scroll', handler: Function): void {
-        this.events.on(event, handler);
-    }
-
-    /**
      * Sets the top/left scroll position.
      */
-    public scrollTo (top?: number, left?: number): void {
-        var translation: string = 'translate(' + -left + 'px, ' + -top + 'px)';
+    public scrollTo (top: number, left: number): void {
+        this.scrollOffset.top = clamp(top, 0, this.maximumScrollOffset.top);
+        this.scrollOffset.left = clamp(left, 0, this.maximumScrollOffset.left);
 
-        this.scrollOffset.top = defaultTo(top, this.scrollTop);
-        this.scrollOffset.left = defaultTo(left, this.scrollLeft);
+        var translation: string = 'translate(' + -this.scrollLeft + 'px, ' + -this.scrollTop + 'px)';
 
         this.$content.transform(translation);
-        this.events.trigger('scroll', this.scrollTop, this.scrollLeft);
+        this.events.trigger('scroll');
     }
 
     /**
@@ -195,7 +180,6 @@ export default class ScrollRegion extends EventContainer {
         this.isScrolling = true;
 
         this.updateScrollOffsetsFromMomentum();
-        this.clampScrollOffsets();
         this.decayMomentum();
         this.scrollTo(this.scrollTop, this.scrollLeft);
 
@@ -240,15 +224,7 @@ export default class ScrollRegion extends EventContainer {
      */
     private updateMaximumScrollOffset (): void {
         this.maximumScrollOffset.top = Math.max(0, this.scrollArea.height - this.$container.height());
-        this.maximumScrollOffset.left = Math.max(0, this.scrollArea.height - this.$container.width());
-    }
-
-    /**
-     * Clamps the current scroll top/left values to within [0 - maximum].
-     */
-    private clampScrollOffsets (): void {
-        this.scrollOffset.top = clamp(this.scrollTop, 0, this.maximumScrollOffset.top);
-        this.scrollOffset.left = clamp(this.scrollLeft, 0, this.maximumScrollOffset.left);
+        this.maximumScrollOffset.left = Math.max(0, this.scrollArea.width - this.$container.width());
     }
 
     /**

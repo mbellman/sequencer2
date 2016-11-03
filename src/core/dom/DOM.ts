@@ -25,6 +25,17 @@ export type DOMActionHandler = (action: Action) => any;
 export type DOMHandlerQueue = Array<DOMEventHandler | DOMActionHandler>;
 
 /**
+ * A manager for native or custom listeners bound on Queries or Elements.
+ */
+export interface DOMListenerManager {
+    /* Adds a listener to the Query or Element. */
+    add (...args: Array<any>): void;
+
+    /* Removes a listener from the Query or Element. */
+    remove (...args: Array<any>): void;
+}
+
+/**
  * A DOM selector and manipulation manager.
  */
 export class Query implements IEventManager {
@@ -122,7 +133,7 @@ export class Query implements IEventManager {
         }
 
         this.eachElement((element: Element) => {
-            if (!EventListener.listening(element, event)) {
+            if (!EventListener.isListening(element, event)) {
                 EventListener.add(element, event);
             }
 
@@ -194,6 +205,19 @@ export class Query implements IEventManager {
 
         this.eachElement((element: Element) => {
             Data.getData(element).actions.on(action, handler);
+        });
+
+        return this;
+    }
+
+    /**
+     * Removes all Action/DOMActionHandler delegations from the queried Element(s).
+     */
+    public unreact (): Query {
+        ActionListener.remove(this);
+
+        this.eachElement((element: Element) => {
+            Data.getData(element).actions.off();
         });
 
         return this;

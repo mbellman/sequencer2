@@ -1,27 +1,21 @@
 import { each } from "core/system/Utilities";
 import { Area } from "core/system/math/Geometry";
-import { EventManager, EventContainer } from "core/system/Event";
+import { EventManager, EventsContainer } from "core/system/Event";
 
 /**
  * An API which provides information about the browser page viewport. Since this module
  * exports a Viewport singleton as its default, methods and properties can be referenced
  * as if static.
  */
-class Viewport extends EventContainer {
-    /**
-     * An EventManager instance to manage viewport resize event handlers.
-     * @implements (EventContainer)
-     */
-    protected events: EventManager = new EventManager();
+class Viewport extends EventsContainer {
+    /* A static Viewport singleton. */
+    private static viewport: Viewport;
 
     /* The current viewport width/height. */
     private area: Area = {
         width: 0,
         height: 0
     };
-
-    /* A static Viewport singleton. */
-    private static viewport: Viewport;
 
     /**
      * @constructor

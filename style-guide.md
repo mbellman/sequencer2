@@ -124,7 +124,7 @@ interface MyInterface {
 ### Naming conventions
 1. All class names should use capitalized CamelCase.
 2. All class member names should use lowercased camelCase.
-3. Class variable names should be as descriptive as possible. If a variable is of a class or interface type, its name should be the camelCased equivalent of the class or interface name, e.g. `public someModule: SomeModule = new SomeModule();`. If a variable is one of several of a particular class or interface type, defer to a contextually descriptive choice.
+3. Class variable names should be as descriptive as possible. If a variable is of a specific type, its name should ideally be the lowercased camelCase equivalent of the type name, e.g. `public someModule: SomeModule = new SomeModule()`. If a variable is one of several of a particular class or interface type, defer to a contextually descriptive choice.
 4. Class method names should clearly define their role. Avoid names which are terse or vague. **No shorthand or abbreviation is permitted**.
 5. If a class method:
     * Performs an action, its name should start with a verb, e.g. `updateCurrentState`, `renderItems`.
@@ -213,14 +213,21 @@ type Key = string | number;
 Class constructor methods should be commented as follows:
 
 ```typescript
-class MyClass {
-    /**
-     * @constructor
-     */
-    constructor () {
+/**
+ * @constructor
+ */
+```
 
-    }
-}
+Class `getter` and `setter` methods should be commented as follows:
+
+```typescript
+/**
+ * @getter {fieldName}
+ */
+
+/**
+ * @setter {fieldName}
+ */
 ```
 
 Class variables or methods which override a superclass member should be commented as follows:

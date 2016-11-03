@@ -45,6 +45,9 @@ export class DoubleClickAction extends MouseAction {
     /* The delay in milliseconds between clicks. */
     public delay: number;
 
+    /**
+     * @constructor
+     */
     constructor(e: MouseEvent, delay: number) {
         super(ActionType.DOUBLE_CLICK, e);
 
