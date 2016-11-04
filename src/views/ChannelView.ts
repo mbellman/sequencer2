@@ -1,10 +1,11 @@
+import View from "core/program/View";
 import Canvas from "core/dom/canvas/Canvas";
 import Sequence from "classes/Sequence";
 import Channel from "classes/Channel";
 import ChannelTemplate from "templates/ChannelTemplate";
 
+import { bindAll } from "core/system/Utilities";
 import { Query } from "core/dom/DOM";
-import { View } from "core/program/View";
 
 /**
  * The user interface for individual sequencer channels.
@@ -33,6 +34,8 @@ export default class ChannelView extends View {
     constructor (sequence: Sequence) {
         super('channel hidden');
 
+        bindAll(this, 'setupChannelCanvasOnAttach');
+
         this.index = sequence.getTotalChannels() + 1;
         this.sequence = sequence;
         this.channel = new Channel();
@@ -54,9 +57,7 @@ export default class ChannelView extends View {
      * @override
      */
     public onAttach (): void {
-        setTimeout(() => {
-            this.setupChannelCanvas();
-        }, 600);
+        setTimeout(this.setupChannelCanvasOnAttach, 600);
     }
 
     /**
@@ -69,7 +70,7 @@ export default class ChannelView extends View {
     /**
      * Instantiates and configures the channelCanvas.
      */
-    private setupChannelCanvas (): void {
+    private setupChannelCanvasOnAttach (): void {
         var $canvas: Query = this.$('canvas.channel-sequence');
         this.channelCanvas = new Canvas($canvas.element(0));
 

@@ -1,9 +1,9 @@
+import View from "core/program/View";
 import Viewport from "core/dom/Viewport";
 
-import { each } from "core/system/Utilities";
+import { each, bindAll } from "core/system/Utilities";
 import { Hash } from "core/system/structures/Types";
 import { $, Query, DOMEventHandler } from "core/dom/DOM";
-import { View } from "core/program/View";
 
 /**
  * Represents a union of the DOMEventHandler type and a DropdownMenuView instance,
@@ -16,7 +16,7 @@ type DropdownHandler = DOMEventHandler | DropdownMenuView;
  * A Hash of options for a DropdownMenuView, where each key represents text for
  * the dropdown option, and each value represents the DropdownHandler for that option.
  */
-type DropdownMenuBuildConfiguration = Hash<DropdownHandler>;
+type DropdownMenuBuildOptions = Hash<DropdownHandler>;
 
 /**
  * A reusable dropdown menu interface.
@@ -27,6 +27,8 @@ export default class DropdownMenuView extends View {
      */
     constructor () {
         super('dropdown-menu hidden');
+
+        bindAll(this, 'showMenu');
     }
 
     /**
@@ -55,7 +57,7 @@ export default class DropdownMenuView extends View {
     /**
      * Sets up the text/handler for each dropdown menu option.
      */
-    public build (options: DropdownMenuBuildConfiguration): DropdownMenuView {
+    public build (options: DropdownMenuBuildOptions): DropdownMenuView {
         super.render('ul');
 
         each(options, (handler: DropdownHandler, text: string) => {
@@ -77,9 +79,7 @@ export default class DropdownMenuView extends View {
             .off('click dropdown:hide dropdown:show')
             .on('mouseenter', () => {
                 this.alignSubMenuBeforeShow();
-                setTimeout(() => {
-                    this.showMenu();
-                }, 50);
+                setTimeout(this.showMenu, 50);
             })
             .on('mouseleave', () => {
                 this.hideMenu();

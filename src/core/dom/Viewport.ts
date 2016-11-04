@@ -57,14 +57,6 @@ class Viewport extends EventsContainer {
     }
 
     /**
-     * Saves viewport resize event handlers to the internal {events} EventManager.
-     * @implements (EventContainer)
-     */
-    public on (event: 'resize', handler: Function): void {
-        this.events.on(event, handler);
-    }
-
-    /**
      * Checks and saves the current window width/height.
      */
     private readWindowSize (): void {

@@ -5,7 +5,7 @@ import { $, Query } from "core/dom/DOM";
  * A basic shell for application Views. Each View represents a reusable block of HTML content
  * and associated functionality which can be freely attached to the document.
  */
-export abstract class View {
+abstract class View {
     /* The rendered View Element. */
     public element: Element;
 
@@ -101,16 +101,4 @@ export abstract class View {
     }
 }
 
-/**
- * A View which handles scrolling.
- */
-export interface Scrollable extends View {
-    onScroll (): void;
-}
-
-/**
- * A View which handles resizing.
- */
-export interface Resizable extends View {
-    onResize (): void;
-}
+export default View;

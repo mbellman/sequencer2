@@ -1,7 +1,8 @@
+import View from "core/program/View";
+
 import { each } from "core/system/Utilities";
 import { Hash } from "core/system/structures/Types";
 import { $, Query } from "core/dom/DOM";
-import { View } from "core/program/View";
 
 /**
  * A basic shell for program Application instances. An Application is essentially a controller

@@ -46,7 +46,7 @@ export interface DOMHandlerStore {
     unbind (...args: Array<any>): void;
 
     /* Fires all DOM handlers for a specific Event or Action. */
-    fire (...args: Array<any>);
+    fire (...args: Array<any>): void;
 }
 
 /**

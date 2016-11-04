@@ -1,10 +1,10 @@
 import Application from "core/program/Application";
+import View from "core/program/View";
+import DropdownMenuView from "plugins/ui/views/DropdownMenuView";
 import SequencerMenuView from "views/SequencerMenuView";
-import DropdownMenuView from "views/DropdownMenuView";
 import SequenceView from "views/SequenceView";
 
 import { $, Query } from "core/dom/DOM";
-import { View } from "core/program/View";
 
 /* A space-separated list of all style themes for the sequencer. */
 const STYLE_THEMES: string = 'main night';

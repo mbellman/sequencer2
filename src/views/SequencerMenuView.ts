@@ -1,8 +1,8 @@
+import View from "core/program/View";
+import DropdownMenuView from "plugins/ui/views/DropdownMenuView";
 import SequencerApplication from "applications/SequencerApplication";
-import DropdownMenuView from "views/DropdownMenuView";
 
 import { $ } from "core/dom/DOM";
-import { View } from "core/program/View";
 
 /**
  * The user interface for the sequencer's top menu bar.
