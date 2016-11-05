@@ -1,4 +1,4 @@
-import { normalizeWheel, NormalizedWheel } from "external/NormalizeWheel";
+import { normalizeWheel, NormalizedWheel } from "plugins/external/NormalizeWheel";
 import { EventManager, EventsContainer } from "core/system/Event";
 import { bindAll, defaultTo } from "core/system/Utilities";
 import { clamp, hasSameSign } from "core/system/math/Utilities";

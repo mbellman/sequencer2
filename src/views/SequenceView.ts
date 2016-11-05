@@ -104,7 +104,7 @@ export default class SequenceView extends View implements ScrollableView, Resiza
 
     /**
      * A handler function to run as the ScrollArea is scrolled.
-     * @implements (Scrollable)
+     * @implements (ScrollableView)
      */
     public onScroll (): void {
         if (!this.$lastChannelView) {
@@ -116,7 +116,7 @@ export default class SequenceView extends View implements ScrollableView, Resiza
 
     /**
      * A handler function to run as the page resizes.
-     * @implements (Resizable)
+     * @implements (ResizableView)
      */
     public onResize (): void {
         this.updateScrollRegionArea();
@@ -167,8 +167,8 @@ export default class SequenceView extends View implements ScrollableView, Resiza
      */
     private positionLastChannelViewOnAdded (): void {
         var totalChannels: number = this.sequence.getTotalChannels();
-        var existingHeight: number = (totalChannels - 1) * CHANNEL_PADDED_HEIGHT;
-        var newChannelViewTop: number = CHANNEL_LIST_TOP_MARGIN + existingHeight;
+        var channelListHeight: number = (totalChannels - 1) * CHANNEL_PADDED_HEIGHT;
+        var newChannelViewTop: number = CHANNEL_LIST_TOP_MARGIN + channelListHeight;
 
         this.$lastChannelView.css('top', newChannelViewTop + 'px');
     }
@@ -185,8 +185,8 @@ export default class SequenceView extends View implements ScrollableView, Resiza
     }
 
     /**
-     * Slides the add channel button (via its parent panel container) to its new
-     * position, out of the way of the added ChannelView(s).
+     * Slides the add channel button (via its parent panel container) ttoward the
+     * botom of the page after adding a new ChannelView.
      */
     private slideAddChannelButtonOnClicked (): void {
         var addPanelTop: number = this.$addChannelPanel.bounds().top;
@@ -199,8 +199,8 @@ export default class SequenceView extends View implements ScrollableView, Resiza
             end: newAddPanelTop,
             duration: 0.55,
             ease: Ease.inOutCubic,
-            onUpdate: (v: number) => {
-                this.$addChannelPanel.css('top', v + 'px');
+            onUpdate: (top: number) => {
+                this.$addChannelPanel.css('top', top + 'px');
             },
             onComplete: () => {
                 this.isAddChannelButtonSliding = false;
@@ -251,7 +251,7 @@ export default class SequenceView extends View implements ScrollableView, Resiza
      */
     private updateScrollRegionArea (): void {
         var totalChannels: number = this.sequence.getTotalChannels();
-        var scrollHeight: number = SCROLL_HEIGHT_BUFFER + totalChannels * CHANNEL_PADDED_HEIGHT ;
+        var scrollHeight: number = SCROLL_HEIGHT_BUFFER + totalChannels * CHANNEL_PADDED_HEIGHT;
 
         this.scrollRegion.setScrollArea(Viewport.width, scrollHeight);
     }

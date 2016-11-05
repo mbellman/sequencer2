@@ -6,7 +6,8 @@ The guidelines laid out here are not absolute, but where exceptions are made tho
 ## Folders
 1. All folder names should be lowercased.
 2. All TypeScript/JavaScript files should be somewhere within the `src` directory.
-3. All **externally-sourced** TypeScript/JavaScript files or libraries should be somewhere within the `src/ext` directory.
+3. The `src/plugins` folder is meant to contain modules which are less project-specific, but do not constitute aspects of the core framework implementation: reusable components, widgets, and so on.
+4. All **externally-sourced** modules or libraries should be housed within the `src/plugins/external` directory.
 
 ## Files
 1. All files names should be capitalized.
