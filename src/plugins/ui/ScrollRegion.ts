@@ -124,6 +124,20 @@ export default class ScrollRegion extends EventsContainer {
     }
 
     /**
+     * @getter {maximumScrollTop}
+     */
+    public get maximumScrollTop (): number {
+        return this.maximumScrollOffset.top;
+    }
+
+    /**
+     * @getter {maximumScrollLeft}
+     */
+    public get maximumScrollLeft (): number {
+        return this.maximumScrollOffset.left;
+    }
+
+    /**
      * Sets the ScrollRegion area width/height.
      */
     public setScrollArea (width?: number, height?: number): void {

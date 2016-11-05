@@ -1,4 +1,3 @@
-import Tween from "core/system/math/tween/Tween";
 import Viewport from "core/dom/Viewport";
 import View from "core/program/View";
 import ScrollRegion from "plugins/ui/ScrollRegion";
@@ -9,6 +8,7 @@ import SequenceViewTemplate from "templates/SequenceViewTemplate";
 
 import { bindAll } from "core/system/Utilities";
 import { clamp } from "core/system/math/Utilities";
+import { TweenAction, Tween } from "core/system/math/tween/Tween";
 import { Ease } from "core/system/math/tween/Ease";
 import { $, Query } from "core/dom/DOM";
 import { ScrollableView, ResizableView } from "plugins/ui/views/Interfaces";
@@ -65,11 +65,10 @@ export default class SequenceView extends View implements ScrollableView, Resiza
     private $lastChannelView: Query;
 
     /**
-     * Determines whether the "add channel" button tween is currently active.
-     * (TODO: Make this a TweenAction returned by Tween.run() and add a "running"
-     * status check instead)
+     * The TweenAction associated with the "add channel" button. While running, prevents
+     * keepAddChannelButtonSnapped() from overriding the tween position.
      */
-    private isAddChannelButtonSliding: boolean = false;
+    private addChannelButtonTween: TweenAction;
 
     /**
      * @constructor
@@ -192,18 +191,13 @@ export default class SequenceView extends View implements ScrollableView, Resiza
         var addPanelTop: number = this.$addChannelPanel.bounds().top;
         var newAddPanelTop: number = clamp(addPanelTop + CHANNEL_HEIGHT, 0, Viewport.height - ADD_BUTTON_BOTTOM_MARGIN);
 
-        this.isAddChannelButtonSliding = true;
-
-        Tween.run({
+        this.addChannelButtonTween = Tween.run({
             start: addPanelTop,
             end: newAddPanelTop,
             duration: 0.55,
             ease: Ease.inOutCubic,
             onUpdate: (top: number) => {
                 this.$addChannelPanel.css('top', top + 'px');
-            },
-            onComplete: () => {
-                this.isAddChannelButtonSliding = false;
             }
         });
     }
@@ -216,7 +210,7 @@ export default class SequenceView extends View implements ScrollableView, Resiza
         var scrollRegionBottom: number = this.scrollRegion.scrollTop + Viewport.height;
 
         if (channelViewBottom > scrollRegionBottom) {
-            var newScrollTop: number = channelViewBottom - 1.5 * CHANNEL_PADDED_HEIGHT;
+            var newScrollTop: number = Math.min(channelViewBottom - 1.5 * CHANNEL_PADDED_HEIGHT, this.scrollRegion.maximumScrollTop);
 
             Tween.run({
                 start: this.scrollRegion.scrollTop,
@@ -235,7 +229,7 @@ export default class SequenceView extends View implements ScrollableView, Resiza
      * ScrollRegion scrollTop is close enough to the bottom of its area.
      */
     private keepAddChannelButtonSnapped (): void {
-        if (this.scrollRegion.scrollHeight < Viewport.height || this.isAddChannelButtonSliding) {
+        if (this.scrollRegion.scrollHeight < Viewport.height || this.isAddChannelButtonTweening()) {
             return;
         }
 
@@ -254,5 +248,12 @@ export default class SequenceView extends View implements ScrollableView, Resiza
         var scrollHeight: number = SCROLL_HEIGHT_BUFFER + totalChannels * CHANNEL_PADDED_HEIGHT;
 
         this.scrollRegion.setScrollArea(Viewport.width, scrollHeight);
+    }
+
+    /**
+     * Determines whether the "add channel" button is in the middle of an animation tween.
+     */
+    private isAddChannelButtonTweening (): boolean {
+        return this.addChannelButtonTween && !this.addChannelButtonTween.isStopped();
     }
 }
