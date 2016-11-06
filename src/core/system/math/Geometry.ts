@@ -1,3 +1,10 @@
+export const enum Direction {
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT
+}
+
 export interface Point {
     x: number;
     y: number;

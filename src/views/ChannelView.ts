@@ -36,7 +36,7 @@ export default class ChannelView extends View {
 
         bindAll(this, 'setupChannelCanvasOnAttach');
 
-        this.index = sequence.getTotalChannels() + 1;
+        this.index = sequence.getTotalChannels();
         this.sequence = sequence;
         this.channel = new Channel();
 

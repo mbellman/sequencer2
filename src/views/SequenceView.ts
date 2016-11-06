@@ -8,6 +8,7 @@ import SequenceViewTemplate from "templates/SequenceViewTemplate";
 
 import { bindAll } from "core/system/Utilities";
 import { clamp } from "core/system/math/Utilities";
+import { Direction } from "core/system/math/Geometry";
 import { TweenAction, Tween } from "core/system/math/tween/Tween";
 import { Ease } from "core/system/math/tween/Ease";
 import { $, Query } from "core/dom/DOM";
@@ -19,14 +20,14 @@ const SCROLL_HEIGHT_PADDING: number = 300;
 /* The top margin for the ChannelView pile. */
 const CHANNEL_LIST_TOP_MARGIN: number = 75;
 
-/* The height of each ChannelView. */
-const CHANNEL_HEIGHT: number = 300;
-
 /* The bottom margin for each ChannelView. */
 const CHANNEL_MARGIN: number = 50;
 
-/* The combined height of a ChannelView and the ChannelView bottom margin. */
-const CHANNEL_PADDED_HEIGHT : number = CHANNEL_HEIGHT + CHANNEL_MARGIN;
+/**
+ * A value used in determining which ChannelViews are visible on-screen. If the pixel height of the
+ * visible portion of a ChannelView is less than this limit, it will not be considered as on-screen.
+ */
+const CHANNEL_CLIPPING_LIMIT: number = 10;
 
 /* The bottom margin for the add channel button when pushed toward the bottom of the page. */
 const ADD_BUTTON_BOTTOM_MARGIN: number = 125;
@@ -46,20 +47,20 @@ export default class SequenceView extends View implements ScrollableView, Resiza
     /* The top-level SequencerApplication controller. */
     private application: SequencerApplication;
 
-    /* A ScrollRegion instance virtualizing scroll actions on the SequenceView. */
-    private scrollRegion: ScrollRegion;
-
     /* The button panel container $(element) housing various UI buttons. */
     private $buttonPanel: Query;
 
     /* The ChannelView list container $(element). */
     private $channelViewContainer: Query;
 
-    /**
-     * The last-added ChannelView $(element), saved as a reference for "add channel" button
-     * snapping calculations.
-     */
-    private $lastChannelView: Query;
+    /* An array of ChannelViews added to the ChannelView list. */
+    private channelViews: Array<ChannelView> = [];
+
+    /* A ScrollRegion instance virtualizing scroll actions on the SequenceView. */
+    private scrollRegion: ScrollRegion;
+
+    /* The current expanded/compressed height for each ChannelView. */
+    private channelViewHeight: number = 300;
 
     /**
      * The TweenAction associated with the "add channel" button. While running, prevents
@@ -67,13 +68,16 @@ export default class SequenceView extends View implements ScrollableView, Resiza
      */
     private buttonPanelTween: TweenAction;
 
+    /* The TweenAction associated with ScrollRegion tweens. */
+    private scrollTween: TweenAction;
+
     /**
      * @constructor
      */
     constructor (application: SequencerApplication) {
         super('sequence-view');
 
-        bindAll(this, 'onScroll', 'onResize', 'addChannelView', 'expandChannelViews', 'compressChannelViews');
+        bindAll(this, 'onScroll', 'onResize', 'addChannelView', 'expandChannelViews', 'compressChannelViews', 'scrollUpOneChannelView', 'scrollDownOneChannelView');
 
         this.application = application;
 
@@ -103,7 +107,7 @@ export default class SequenceView extends View implements ScrollableView, Resiza
      * @implements (ScrollableView)
      */
     public onScroll (): void {
-        if (!this.$lastChannelView) {
+        if (this.channelViews.length === 0) {
             return;
         }
 
@@ -126,6 +130,8 @@ export default class SequenceView extends View implements ScrollableView, Resiza
         var channelView: ChannelView = new ChannelView(this.sequence);
 
         channelView.attachTo(this.$channelViewContainer);
+
+        this.channelViews.push(channelView);
         this.onChannelViewAdded(channelView);
     }
 
@@ -146,15 +152,79 @@ export default class SequenceView extends View implements ScrollableView, Resiza
     /**
      * Scrolls to the next above ChannelView.
      */
-    private scrollUpOneChannelView (): void {
-        console.log('up');
+    public scrollUpOneChannelView (): void {
+        this.scrollOneChannelView(Direction.UP);
     }
 
     /**
      * Scrolls to the next below ChannelView.
      */
-    private scrollDownOneChannelView (): void {
-        console.log('down');
+    public scrollDownOneChannelView (): void {
+        this.scrollOneChannelView(Direction.DOWN);
+    }
+
+    /**
+     * Scrolls one ChannelView distance in a particular direction.
+     */
+    private scrollOneChannelView (direction: Direction): void {
+        var onScreenChannelViews: Array<ChannelView> = this.getOnScreenChannelViews();
+        var firstOnScreenIndex: number = onScreenChannelViews[0].index;
+        var targetIndex: number = firstOnScreenIndex + (direction === Direction.UP ? -1 : 1);
+
+        if (direction === Direction.UP && onScreenChannelViews[0].$element.bounds().top < 0) {
+            // If scrolling up, and if the first on-screen ChannelView is partially clipped
+            // at the top, scroll to that one instead of the ChannelView above it.
+            targetIndex += 1;
+        }
+
+        var clampedTargetIndex: number = clamp(targetIndex, 0, this.channelViews.length - 1);
+
+        this.scrollToChannelView(this.channelViews[clampedTargetIndex]);
+    }
+
+    /**
+     * Returns the $(element) for the last ChannelView in the list.
+     */
+    private getLastChannelViewQuery (): Query {
+        return this.channelViews[this.channelViews.length - 1].$element;
+    }
+
+    /**
+     * Returns a subset of the {channelViews} array comprising only ChannelViews visible
+     * within the viewport boundary.
+     */
+    private getOnScreenChannelViews (): Array<ChannelView> {
+        var scrollTop: number = this.scrollRegion.scrollTop;
+        var views: Array<ChannelView> = [];
+
+        for (var i = 0 ; i < this.channelViews.length ; i++) {
+            let channelView: ChannelView = this.channelViews[i];
+            let channelViewTop: number = this.getChannelViewTop(channelView);
+            let channelViewBottom: number = channelViewTop + this.channelViewHeight;
+
+            if (
+                channelViewBottom - CHANNEL_MARGIN - CHANNEL_CLIPPING_LIMIT > scrollTop &&
+                channelViewTop + CHANNEL_CLIPPING_LIMIT < scrollTop + Viewport.height
+            ) {
+                views.push(channelView);
+            }
+        }
+
+        return views;
+    }
+
+    /**
+     * Returns the total padded height of each ChannelView, counting its base height and margin.
+     */
+    private getChannelViewPaddedHeight (): number {
+        return this.channelViewHeight + CHANNEL_MARGIN;
+    }
+
+    /**
+     * Returns the top offset of a particular ChannelView within the ScrollRegion.
+     */
+    private getChannelViewTop (channelView: ChannelView): number {
+        return CHANNEL_LIST_TOP_MARGIN + channelView.index * this.getChannelViewPaddedHeight();
     }
 
     /**
@@ -168,17 +238,12 @@ export default class SequenceView extends View implements ScrollableView, Resiza
      * Shows specific View elements once the necessary total channel thresholds are met.
      */
     private showElementsOnChannelViewAdded (): void {
-        var totalChannels: number = this.sequence.getTotalChannels();
+        var totalChannels: number = this.channelViews.length;
 
-        switch (totalChannels) {
-            case 1:
-                this.$buttonPanel.find('.button-column.resize').fadeIn();
-                break;
-            case 2:
-                this.$buttonPanel.find('.button-column.jump').fadeIn();
-                break;
-            default:
-                break;
+        if (totalChannels === 1) {
+            this.$buttonPanel.find('.button-column.resize').fadeIn();
+        } else if (totalChannels === 2) {
+            this.$buttonPanel.find('.button-column.jump').fadeIn();
         }
     }
 
@@ -216,8 +281,6 @@ export default class SequenceView extends View implements ScrollableView, Resiza
      * A handler function for adding a new ChannelView.
      */
     private onChannelViewAdded (channelView: ChannelView): void {
-        this.$lastChannelView = channelView.$element;
-
         this.positionLastChannelViewOnAdded();
         this.revealLastChannelViewOnAdded();
         this.slideButtonPanelOnAddButtonClicked();
@@ -233,11 +296,10 @@ export default class SequenceView extends View implements ScrollableView, Resiza
      * Sets the top position of a newly-added ChannelView.
      */
     private positionLastChannelViewOnAdded (): void {
-        var totalChannels: number = this.sequence.getTotalChannels();
-        var channelListHeight: number = (totalChannels - 1) * CHANNEL_PADDED_HEIGHT;
+        var channelListHeight: number = (this.channelViews.length - 1) * this.getChannelViewPaddedHeight();
         var newChannelViewTop: number = CHANNEL_LIST_TOP_MARGIN + channelListHeight;
 
-        this.$lastChannelView.css('top', newChannelViewTop + 'px');
+        this.getLastChannelViewQuery().css('top', newChannelViewTop + 'px');
     }
 
     /**
@@ -246,7 +308,7 @@ export default class SequenceView extends View implements ScrollableView, Resiza
      */
     private revealLastChannelViewOnAdded (): void {
         setTimeout(() => {
-            this.$lastChannelView.removeClass('hidden');
+            this.getLastChannelViewQuery().removeClass('hidden');
         }, 50);
     }
 
@@ -254,9 +316,13 @@ export default class SequenceView extends View implements ScrollableView, Resiza
      * Slides the button panel toward the bottom of the page after adding a new ChannelView.
      */
     private slideButtonPanelOnAddButtonClicked (): void {
+        if (this.isButtonPanelTweening()) {
+            this.buttonPanelTween.stop();
+        }
+
         var buttonPanelTop: number = this.$buttonPanel.bounds().top;
-        var topReduction: number = this.sequence.getTotalChannels() === 1 ? 40 : 0;
-        var newButtonPanelTop: number = clamp(buttonPanelTop + CHANNEL_PADDED_HEIGHT, 0, Viewport.height - ADD_BUTTON_BOTTOM_MARGIN);
+        var topReduction: number = this.channelViews.length === 1 ? 40 : 0;
+        var newButtonPanelTop: number = Math.min(buttonPanelTop + this.getChannelViewPaddedHeight(), Viewport.height - ADD_BUTTON_BOTTOM_MARGIN);
 
         this.buttonPanelTween = Tween.run({
             start: buttonPanelTop,
@@ -273,22 +339,23 @@ export default class SequenceView extends View implements ScrollableView, Resiza
      * Smoothly scrolls to a particular ChannelView.
      */
     private scrollToChannelView (channelView: ChannelView): void {
-        var channelViewBottom: number = CHANNEL_LIST_TOP_MARGIN + (channelView.index * CHANNEL_PADDED_HEIGHT);
-        var scrollRegionBottom: number = this.scrollRegion.scrollTop + Viewport.height;
-
-        if (channelViewBottom > scrollRegionBottom) {
-            var newScrollTop: number = Math.min(channelViewBottom - 1.5 * CHANNEL_PADDED_HEIGHT, this.scrollRegion.maximumScrollTop);
-
-            Tween.run({
-                start: this.scrollRegion.scrollTop,
-                end: newScrollTop,
-                duration: 0.5,
-                ease: Ease.inOutQuad,
-                onUpdate: (top: number) => {
-                    this.scrollRegion.scrollTop = top;
-                }
-            });
+        if (this.isScrollTweening()) {
+            this.scrollTween.stop();
         }
+
+        var channelViewTop: number = this.getChannelViewTop(channelView);
+        var newScrollTop: number = channelViewTop - 1.5 * CHANNEL_MARGIN;
+        var clampedScrollTop: number = clamp(newScrollTop, 0, this.scrollRegion.maximumScrollTop);
+
+        this.scrollTween = Tween.run({
+            start: this.scrollRegion.scrollTop,
+            end: clampedScrollTop,
+            duration: 0.5,
+            ease: Ease.inOutQuad,
+            onUpdate: (top: number) => {
+                this.scrollRegion.scrollTop = top;
+            }
+        });
     }
 
     /**
@@ -300,8 +367,8 @@ export default class SequenceView extends View implements ScrollableView, Resiza
             return;
         }
 
-        var lastChannelViewTop: number = this.$lastChannelView.bounds().top;
-        var maximumButtonPanelTop: number = lastChannelViewTop + CHANNEL_PADDED_HEIGHT - 25;
+        var lastChannelViewTop: number = this.getLastChannelViewQuery().bounds().top;
+        var maximumButtonPanelTop: number = lastChannelViewTop + this.getChannelViewPaddedHeight() - 25;
         var newButtonPanelTop: number = Math.min(maximumButtonPanelTop, Viewport.height - ADD_BUTTON_BOTTOM_MARGIN);
 
         this.$buttonPanel.css('top', newButtonPanelTop + 'px');
@@ -311,16 +378,23 @@ export default class SequenceView extends View implements ScrollableView, Resiza
      * Resizes the ScrollRegion scroll area based on the total number of ChannelViews.
      */
     private resizeScrollRegionArea (): void {
-        var totalChannels: number = this.sequence.getTotalChannels();
-        var scrollHeight: number = SCROLL_HEIGHT_PADDING + totalChannels * CHANNEL_PADDED_HEIGHT;
+        var totalChannels: number = this.channelViews.length;
+        var scrollHeight: number = SCROLL_HEIGHT_PADDING + totalChannels * this.getChannelViewPaddedHeight();
 
         this.scrollRegion.setScrollArea(Viewport.width, scrollHeight);
     }
 
     /**
-     * Determines whether the button panel is in the middle of an animation tween.
+     * Determines whether {buttonPanelTween} is currently active.
      */
     private isButtonPanelTweening (): boolean {
         return this.buttonPanelTween && !this.buttonPanelTween.isStopped();
+    }
+
+    /**
+     * Determines whether {scrollTween} is currently active.
+     */
+    private isScrollTweening (): boolean {
+        return this.scrollTween && !this.scrollTween.isStopped();
     }
 }
