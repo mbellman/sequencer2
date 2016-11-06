@@ -7,6 +7,8 @@ import { each, isInArray, hasOwn, toArray } from "core/system/Utilities";
 import { IEventManager } from "core/system/Event";
 import { Hash } from "core/system/structures/Types";
 import { ActionType, Action } from "core/dom/action/Action";
+import { Tween } from "core/system/math/tween/Tween";
+import { Ease } from "core/system/math/tween/Ease";
 
 /**
  * A DOM event handler method fired by an event trigger.
@@ -308,7 +310,7 @@ export class Query implements IEventManager {
     /**
      * Sets a css property on the queried Element(s).
      */
-    public css (property: string, value: string): Query {
+    public css (property: string, value: string | number): Query {
         this.eachElement((element: Element) => {
             let el: HTMLElement = <HTMLElement>element;
 
@@ -429,10 +431,57 @@ export class Query implements IEventManager {
     }
 
     /**
+     * Shows the queried Element(s).
+     */
+    public show (): Query {
+        return this.css('display', 'initial');
+    }
+
+    /**
+     * Hides the queried Element(s).
+     */
+    public hide (): Query {
+        return this.css('display', 'none');
+    }
+
+    /**
      * Returns the previous Query in the stack chain if one exists; otherwise returns {this}.
      */
     public pop (): Query {
         return this.stack || this;
+    }
+
+    /**
+     * Fades the queried Element(s) in from 0 opacity.
+     */
+    public fadeIn (duration: number = 0.5): Query {
+        this.css('opacity', '0').show();
+
+        Tween.run({start: 0, end: 1, ease: Ease.outQuad, duration: duration,
+            onUpdate: (opacity: number) => {
+                this.css('opacity', opacity);
+            }
+        });
+
+        return this;
+    }
+
+    /**
+     * Fades the queried Element(s) out from 1 to 0 opacity, hiding them after the fade completes.
+     */
+    public fadeOut (duration: number = 0.5): Query {
+        this.css('opacity', '1');
+
+        Tween.run({start: 1, end: 0, ease: Ease.outQuad, duration: duration,
+            onUpdate: (opacity: number) => {
+                this.css('opacity', opacity);
+            },
+            onComplete: () => {
+                this.hide();
+            }
+        });
+
+        return this;
     }
 
     /**
@@ -447,6 +496,7 @@ export class Query implements IEventManager {
      */
     private initFromSelector (selector: string): void {
         var elements: NodeList = document.querySelectorAll(selector);
+
         this.elements = toArray(elements);
         this.selector = selector;
     }

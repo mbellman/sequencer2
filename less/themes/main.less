@@ -15,7 +15,11 @@
 /* @ main-gray @ */
 @main-gray: #BBB;
 
+@main-gray-L10: lighten(@main-gray, 10%);
+
+@main-gray-D10: darken(@main-gray, 10%);
 @main-gray-D20: darken(@main-gray, 20%);
+@main-gray-D40: darken(@main-gray, 40%);
 
 .sequencer {
     &.main {
@@ -56,10 +60,46 @@
         }
 
         .sequence-view {
-            .add-channel-panel {
-                .add-channel-button {
+            .button-panel {
+                .button-column {
+                    &.resize {
+                        .expand,
+                        .compress {
+                            button {
+                                background-color: @main-gray;
+                                box-shadow: 0 0 0 1px @main-gray-D20;
+                                .border(0, 0, 1px solid #FFF, 0);
+                            }
+
+                            i.fa {
+                                text-shadow: 1px -1px 0 @main-gray-L10;
+                            }
+                        }
+                    }
+
+                    &.jump {
+                        .up,
+                        .down {
+                            button {
+                                background-color: @main-gray-D20;
+                                box-shadow: 0 0 0 1px @main-gray-D40;
+                                .border(0, 0, 1px solid @main-gray-D10, 0);
+                            }
+
+                            i.fa {
+                                text-shadow: 0 -1px 0 @main-gray;
+                            }
+                        }
+                    }
+                }
+
+                button.add-channel {
+                    @border-color: desaturate(@main-blue-D20, 20%);
+                    @border-1px: 1px solid @border-color;
+                    @border-4px: 4px solid @border-color;
+
                     background-color: @main-blue;
-                    border-color: desaturate(@main-blue-D20, 20%);
+                    .border(0, @border-1px, @border-4px, @border-1px);
                     color: #FFF;
                     text-shadow: 0 -1px 0 @main-blue-D20;
                 }

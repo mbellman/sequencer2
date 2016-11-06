@@ -16,6 +16,11 @@
 /* @ night-pink @ */
 @night-pink: #FDF;
 
+/* @ night-red @ */
+@night-red: #C5B;
+
+@night-red-D20: darken(@night-red, 20%);
+
 .sequencer {
     &.night {
         background: @night-purple-L60;
@@ -56,10 +61,50 @@
         }
 
         .sequence-view {
-            .add-channel-panel {
-                .add-channel-button {
+            .button-panel {
+                .button-column {
+                    &.resize {
+                        .expand,
+                        .compress {
+                            button {
+                                background-color: @night-purple-L30;
+                                box-shadow: 0 0 0 1px @night-purple-L10;
+                                .border(0, 0, 1px solid #FFF, 0);
+                            }
+
+                            i.fa {
+                                text-shadow: 1px -1px 0 @night-purple-D20;
+                            }
+                        }
+                    }
+
+                    &.jump {
+                        .up,
+                        .down {
+                            button {
+                                background-color: @night-red;
+                                box-shadow: 0 0 0 1px @night-red-D20;
+                                .border(0, 0, 1px solid #FFF, 0);
+                            }
+
+                            i.fa {
+                                text-shadow: 0 -1px 0 @night-red-D20;
+                            }
+                        }
+                    }
+
+                    i.fa {
+                        color: @night-pink !important;
+                    }
+                }
+
+                button.add-channel {
+                    @border-color: desaturate(@night-purple-D30, 20%);
+                    @border-1px: 1px solid @border-color;
+                    @border-4px: 4px solid @border-color;
+
                     background-color: @night-purple-D10;
-                    border-color: desaturate(@night-purple-D20, 20%);
+                    .border(0, @border-1px, @border-4px, @border-1px);
                     color: @night-pink;
                     text-shadow: 0 -1px 0 #000;
                 }

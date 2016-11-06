@@ -1,10 +1,12 @@
 @import "core/mixins/base.less";
 @import "core/classes.less";
 @import "core/ease.less";
+@import "plugins/font-awesome/font-awesome.less";
 @import "plugins/dropdown-menu.less";
 @import "plugins/scroll-region.less";
 
 @import "themes/base.less";
+@import "buttons.less";
 @import "variables.less";
 
 body {
@@ -55,7 +57,7 @@ main {
         .sequence-view {
             .fill();
 
-            .add-channel-panel {
+            .button-panel {
                 position: absolute;
                 .size(70%, 100px);
                 .topleft(100px, 15%);
@@ -67,28 +69,60 @@ main {
                     opacity: 1;
                 }
 
-                .add-channel-button {
-                    @button-width: @add-channel-button-size + 100px;
-                    @button-height: @add-channel-button-size;
+                > * {
+                    position: absolute;
+                    .topleft(0, 50%);
+                }
+
+                .button-column {
+                    .size(40px, 100%);
+
+                    > .button {
+                        position: absolute;
+
+                        &:first-child {
+                            .topleft(12px, 0);
+                        }
+
+                        &:last-child {
+                            .topleft(56px, 0);
+                        }
+                        
+                        button {
+                            .size(36px, 36px);
+                            border-radius: 3px;
+                        }
+
+                        i.fa {
+                            position: absolute;
+                            .topleft(10px, 11px);
+                            .font(FontAwesome, 16px, bold);
+                        }
+                    }
+
+                    &.resize {
+                        margin: 0 0 0 -130px;
+
+                        i.fa {
+                            .transform(rotate(-45deg));
+                        }
+                    }
+
+                    &.jump {
+                        margin: 0 0 0 94px;
+                    }
+                }
+
+                button.add-channel {
+                    @button-width: @add-channel-button-height + 100px;
+                    @button-height: @add-channel-button-height;
                     @button-y-margin: (100px - @button-height) / 2;
 
-                    position: relative;
                     .size(@button-width, @button-height);
-                    margin: @button-y-margin auto;
+                    margin: @button-y-margin 0 0 -(@button-width / 2);
                     border-radius: 5px;
-                    .border(0, 1px solid #000, 4px solid #000, 1px solid #000);
                     .font(Arial, 50px, bold);
-                    line-height: @button-height;
-                    .transform(scale(0.9));
-                    .transition-transform(0.2s, @ease-out-quart);
-
-                    &:hover {
-                        .transform(scale(1));
-                    }
-
-                    &:active {
-                        .transform(scale(0.9));
-                    }
+                    line-height: (@button-height - 2);
                 }
             }
 

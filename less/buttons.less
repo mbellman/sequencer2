@@ -1,0 +1,20 @@
+@import "core/mixins/base.less";
+@import "core/classes.less";
+@import "core/ease.less";
+
+.button {
+    .pointer;
+}
+
+.scale-button {
+    .transform(scale(0.9));
+    .transition-transform(0.15s, @ease-out-quart);
+
+    &:hover {
+        .transform(scale(1));
+    }
+
+    &:active {
+        .transform(scale(0.9));
+    }
+}
