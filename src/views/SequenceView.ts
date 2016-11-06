@@ -164,25 +164,6 @@ export default class SequenceView extends View implements ScrollableView, Resiza
     }
 
     /**
-     * Scrolls one ChannelView distance in a particular direction.
-     */
-    private scrollOneChannelView (direction: Direction): void {
-        var onScreenChannelViews: Array<ChannelView> = this.getOnScreenChannelViews();
-        var firstOnScreenIndex: number = onScreenChannelViews[0].index;
-        var targetIndex: number = firstOnScreenIndex + (direction === Direction.UP ? -1 : 1);
-
-        if (direction === Direction.UP && onScreenChannelViews[0].$element.bounds().top < 0) {
-            // If scrolling up, and if the first on-screen ChannelView is partially clipped
-            // at the top, scroll to that one instead of the ChannelView above it.
-            targetIndex += 1;
-        }
-
-        var clampedTargetIndex: number = clamp(targetIndex, 0, this.channelViews.length - 1);
-
-        this.scrollToChannelView(this.channelViews[clampedTargetIndex]);
-    }
-
-    /**
      * Returns the $(element) for the last ChannelView in the list.
      */
     private getLastChannelViewQuery (): Query {
@@ -225,6 +206,21 @@ export default class SequenceView extends View implements ScrollableView, Resiza
      */
     private getChannelViewTop (channelView: ChannelView): number {
         return CHANNEL_LIST_TOP_MARGIN + channelView.index * this.getChannelViewPaddedHeight();
+    }
+
+    /**
+     * A handler function for adding a new ChannelView.
+     */
+    private onChannelViewAdded (channelView: ChannelView): void {
+        this.positionLastChannelViewOnAdded();
+        this.revealLastChannelViewOnAdded();
+        this.slideButtonPanelOnAddButtonClicked();
+        this.resizeScrollRegionArea();
+        this.showElementsOnChannelViewAdded();
+
+        setTimeout(() => {
+            this.scrollToChannelView(channelView);
+        }, 350);
     }
 
     /**
@@ -275,21 +271,6 @@ export default class SequenceView extends View implements ScrollableView, Resiza
         });
 
         this.scrollRegion.on('scroll', this.onScroll);
-    }
-
-    /**
-     * A handler function for adding a new ChannelView.
-     */
-    private onChannelViewAdded (channelView: ChannelView): void {
-        this.positionLastChannelViewOnAdded();
-        this.revealLastChannelViewOnAdded();
-        this.slideButtonPanelOnAddButtonClicked();
-        this.resizeScrollRegionArea();
-        this.showElementsOnChannelViewAdded();
-
-        setTimeout(() => {
-            this.scrollToChannelView(channelView);
-        }, 350);
     }
 
     /**
@@ -356,6 +337,25 @@ export default class SequenceView extends View implements ScrollableView, Resiza
                 this.scrollRegion.scrollTop = top;
             }
         });
+    }
+
+    /**
+     * Scrolls to the next ChannelView in a particular direction.
+     */
+    private scrollOneChannelView (direction: Direction): void {
+        var onScreenChannelViews: Array<ChannelView> = this.getOnScreenChannelViews();
+        var firstOnScreenIndex: number = onScreenChannelViews[0].index;
+        var targetIndex: number = firstOnScreenIndex + (direction === Direction.UP ? -1 : 1);
+
+        if (direction === Direction.UP && onScreenChannelViews[0].$element.bounds().top < 0) {
+            // If scrolling up, and if the first on-screen ChannelView is partially clipped
+            // at the top, scroll to that one instead of the ChannelView above it.
+            targetIndex += 1;
+        }
+
+        var clampedTargetIndex: number = clamp(targetIndex, 0, this.channelViews.length - 1);
+
+        this.scrollToChannelView(this.channelViews[clampedTargetIndex]);
     }
 
     /**
