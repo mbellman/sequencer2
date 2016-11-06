@@ -49,14 +49,14 @@ export default class SequenceView extends View implements ScrollableView, Resiza
     /* A ScrollRegion instance virtualizing scroll actions on the SequenceView. */
     private scrollRegion: ScrollRegion;
 
-    /* The button panel $(element), containing the ChannelView resize and "add channel" buttons. */
+    /* The button panel container $(element) housing various UI buttons. */
     private $buttonPanel: Query;
 
-    /* The ChannelView container $(element). */
+    /* The ChannelView list container $(element). */
     private $channelViewContainer: Query;
 
     /**
-     * The last-added ChannelView $(element), saved as a reference for "add channel"" button
+     * The last-added ChannelView $(element), saved as a reference for "add channel" button
      * snapping calculations.
      */
     private $lastChannelView: Query;
@@ -188,17 +188,13 @@ export default class SequenceView extends View implements ScrollableView, Resiza
     private bindButtonPanelEventsOnRender (): void {
         this.$buttonPanel
             .find('.add-channel')
-                .on('click', this.addChannelView)
-                .pop()
+                .on('click', this.addChannelView).pop()
             .find('.button.expand')
-                .on('click', this.expandChannelViews)
-                .pop()
+                .on('click', this.expandChannelViews).pop()
             .find('.button.compress')
-                .on('click', this.compressChannelViews)
-                .pop()
+                .on('click', this.compressChannelViews).pop()
             .find('.button.up')
-                .on('click', this.scrollUpOneChannelView)
-                .pop()
+                .on('click', this.scrollUpOneChannelView).pop()
             .find('.button.down')
                 .on('click', this.scrollDownOneChannelView);
     }
