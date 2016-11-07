@@ -33,6 +33,17 @@ const CHANNEL_CLIPPING_LIMIT: number = 10;
 const ADD_BUTTON_BOTTOM_MARGIN: number = 125;
 
 /**
+ * First and last indexes for a specific range.
+ */
+interface IndexBounds {
+    /* The start of the index range. */
+    first: number;
+
+    /* The end of the index range. */
+    last: number;
+}
+
+/**
  * The primary sequencer interface.
  */
 export default class SequenceView extends View implements ScrollableView, ResizableView {
@@ -172,24 +183,35 @@ export default class SequenceView extends View implements ScrollableView, Resiza
     }
 
     /**
+     * Returns the first and last on-screen ChannelView indices by dividing scroll position by
+     * ChannelView height. Since both values are clamped to within [0 - {totalChannels}], it is
+     * possible for both to return the same index, or for the bottom on-screen ChannelView to
+     * be in the middle of the page.
+     */
+    private getOnScreenChannelViewIndexBounds (): IndexBounds {
+        var scrollTop: number = this.scrollRegion.scrollTop;
+        var totalChannels: number = this.channelViews.length;
+        var channelViewPaddedHeight: number = this.getChannelViewPaddedHeight();
+        var firstIndex: number = Math.floor((scrollTop + CHANNEL_CLIPPING_LIMIT) / channelViewPaddedHeight);
+        var lastIndex: number = Math.floor((scrollTop + Viewport.height - CHANNEL_CLIPPING_LIMIT) / channelViewPaddedHeight);
+
+        return {
+            first: clamp(firstIndex, 0, totalChannels - 1),
+            last: clamp(lastIndex, 0, totalChannels - 1)
+        };
+    }
+
+    /**
      * Returns a subset of the {channelViews} array comprising only ChannelViews visible
      * within the viewport boundary.
      */
     private getOnScreenChannelViews (): Array<ChannelView> {
-        var scrollTop: number = this.scrollRegion.scrollTop;
+        var indexBounds: IndexBounds = this.getOnScreenChannelViewIndexBounds();
+        var { first, last } = indexBounds;
         var views: Array<ChannelView> = [];
 
-        for (var i = 0 ; i < this.channelViews.length ; i++) {
-            let channelView: ChannelView = this.channelViews[i];
-            let channelViewTop: number = this.getChannelViewTop(channelView);
-            let channelViewBottom: number = channelViewTop + this.channelViewHeight;
-
-            if (
-                channelViewBottom - CHANNEL_MARGIN - CHANNEL_CLIPPING_LIMIT > scrollTop &&
-                channelViewTop + CHANNEL_CLIPPING_LIMIT < scrollTop + Viewport.height
-            ) {
-                views.push(channelView);
-            }
+        for (var i = first ; i < last ; i++) {
+            views.push(this.channelViews[i]);
         }
 
         return views;
@@ -214,7 +236,6 @@ export default class SequenceView extends View implements ScrollableView, Resiza
      */
     private onChannelViewAdded (channelView: ChannelView): void {
         this.positionLastChannelViewOnAdded();
-        this.revealLastChannelViewOnAdded();
         this.slideButtonPanelOnAddButtonClicked();
         this.resizeScrollRegionArea();
         this.showElementsOnChannelViewAdded();
@@ -272,16 +293,6 @@ export default class SequenceView extends View implements ScrollableView, Resiza
     }
 
     /**
-     * Animates a newly added ChannelView into view by removing its "hidden" class on a delay
-     * to avoid CSS transition + DOM element insertion race conditions.
-     */
-    private revealLastChannelViewOnAdded (): void {
-        setTimeout(() => {
-            this.getLastChannelViewQuery().removeClass('hidden');
-        }, 50);
-    }
-
-    /**
      * Shows specific View elements once the necessary total channel thresholds are met.
      */
     private showElementsOnChannelViewAdded (): void {
@@ -318,7 +329,7 @@ export default class SequenceView extends View implements ScrollableView, Resiza
         this.buttonPanelTween = Tween.run({
             start: buttonPanelTop,
             end: newButtonPanelTop - topReduction,
-            duration: 0.55,
+            duration: 0.5,
             ease: Ease.inOutCubic,
             onUpdate: (top: number) => {
                 this.$buttonPanel.css('top', top + 'px');

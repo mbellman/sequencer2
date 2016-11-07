@@ -56,9 +56,7 @@ export default class ChannelView extends View implements ResizableView {
      * @constructor
      */
     constructor (sequence: Sequence) {
-        super('channel hidden');
-
-        bindAll(this, 'setupChannelCanvasOnAttach');
+        super('channel');
 
         this.index = sequence.getTotalChannels();
         this.sequence = sequence;
@@ -71,19 +69,18 @@ export default class ChannelView extends View implements ResizableView {
      * @override
      */
     public onRender (): void {
-        var channelName: string = this.channel.getName();
-
         this.$content = this.$('.channel-content');
 
-        this.$element.attr('id', channelName);
-        this.$('.channel-label').html(channelName);
+        this.createChannelNameLabelOnRender();
+        this.setupChannelCanvasOnRender();
     }
 
     /**
      * @override
      */
     public onAttach (): void {
-        setTimeout(this.setupChannelCanvasOnAttach, 600);
+        this.resizeChannelCanvas();
+        this.revealChannelViewOnAttach();
     }
 
     /**
@@ -101,16 +98,44 @@ export default class ChannelView extends View implements ResizableView {
     }
 
     /**
+     * Sets up the ChannelView name label in the top bar area.
+     */
+    private createChannelNameLabelOnRender (): void {
+        var channelName: string = this.channel.getName();
+
+        this.$element.attr('id', channelName);
+        this.$('.channel-label').html(channelName);
+    }
+
+    /**
      * Instantiates and configures the channelCanvas.
      */
-    private setupChannelCanvasOnAttach (): void {
+    private setupChannelCanvasOnRender (): void {
         var $canvas: Query = this.$('canvas.channel-sequence');
 
         this.channelCanvas = new Canvas($canvas.element(0));
-
-        this.resizeChannelCanvas();
     }
 
+    /**
+     * Animates the ChannelView from 0 to full scale.
+     */
+    private revealChannelViewOnAttach (): void {
+        this.$element.transform('scale(0)');
+
+        Tween.run({
+            start: 0,
+            end: 1,
+            duration: 0.5,
+            ease: Ease.inOutCubic,
+            onUpdate: (scale: number) => {
+                this.$element.transform('scale(' + scale + ')');
+            }
+        });
+    }
+
+    /**
+     * Updates the channel canvas size.
+     */
     private resizeChannelCanvas (): void {
         var contentWidth: number = this.$content.width();
         var canvasWidth: number;
