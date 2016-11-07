@@ -338,14 +338,14 @@ export class Query implements IEventManager {
      * Returns the width of the first Element in the Query.
      */
     public width (): number {
-        return Math.round(this.bounds().width);
+        return this.length > 0 ? this.element(0).clientWidth : 0;
     }
 
     /**
      * Returns the height of the first Element in the Query.
      */
     public height (): number {
-        return Math.round(this.bounds().height);
+        return this.length > 0 ? this.element(0).clientHeight : 0;
     }
 
     /**
@@ -445,13 +445,6 @@ export class Query implements IEventManager {
     }
 
     /**
-     * Returns the previous Query in the stack chain if one exists; otherwise returns {this}.
-     */
-    public pop (): Query {
-        return this.stack || this;
-    }
-
-    /**
      * Fades the queried Element(s) in from 0 opacity.
      */
     public fadeIn (duration: number = 0.5): Query {
@@ -482,6 +475,13 @@ export class Query implements IEventManager {
         });
 
         return this;
+    }
+
+    /**
+     * Returns the previous Query in the stack chain if one exists; otherwise returns {this}.
+     */
+    public pop (): Query {
+        return this.stack || this;
     }
 
     /**

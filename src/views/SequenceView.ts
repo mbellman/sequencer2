@@ -1,12 +1,12 @@
 import Viewport from "core/dom/Viewport";
 import View from "core/program/View";
 import ScrollRegion from "plugins/ui/ScrollRegion";
+import Sequence from "classes/Sequence";
 import SequencerApplication from "applications/SequencerApplication";
 import ChannelView from "views/ChannelView";
-import Sequence from "classes/Sequence";
 import SequenceViewTemplate from "templates/SequenceViewTemplate";
 
-import { bindAll } from "core/system/Utilities";
+import { each, bindAll } from "core/system/Utilities";
 import { clamp } from "core/system/math/Utilities";
 import { Direction } from "core/system/math/Geometry";
 import { TweenAction, Tween } from "core/system/math/tween/Tween";
@@ -120,6 +120,7 @@ export default class SequenceView extends View implements ScrollableView, Resiza
      */
     public onResize (): void {
         this.resizeScrollRegionArea();
+        this.updateChannelViewsOnResize();
         this.keepButtonPanelSnapped();
     }
 
@@ -231,19 +232,6 @@ export default class SequenceView extends View implements ScrollableView, Resiza
     }
 
     /**
-     * Shows specific View elements once the necessary total channel thresholds are met.
-     */
-    private showElementsOnChannelViewAdded (): void {
-        var totalChannels: number = this.channelViews.length;
-
-        if (totalChannels === 1) {
-            this.$buttonPanel.find('.button-column.resize').fadeIn();
-        } else if (totalChannels === 2) {
-            this.$buttonPanel.find('.button-column.jump').fadeIn();
-        }
-    }
-
-    /**
      * Sets up click bindings on the button panel buttons.
      */
     private bindButtonPanelEventsOnRender (): void {
@@ -291,6 +279,28 @@ export default class SequenceView extends View implements ScrollableView, Resiza
         setTimeout(() => {
             this.getLastChannelViewQuery().removeClass('hidden');
         }, 50);
+    }
+
+    /**
+     * Shows specific View elements once the necessary total channel thresholds are met.
+     */
+    private showElementsOnChannelViewAdded (): void {
+        var totalChannels: number = this.channelViews.length;
+
+        if (totalChannels === 1) {
+            this.$buttonPanel.find('.button-column.resize').fadeIn();
+        } else if (totalChannels === 2) {
+            this.$buttonPanel.find('.button-column.jump').fadeIn();
+        }
+    }
+
+    /**
+     * Manually triggers the resize handler for each ChannelView whenever the viewport is resized.
+     */
+    private updateChannelViewsOnResize (): void {
+        each(this.channelViews, (channelView: ChannelView) => {
+            channelView.onResize();
+        });
     }
 
     /**
