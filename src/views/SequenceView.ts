@@ -346,7 +346,7 @@ export default class SequenceView extends View implements ScrollableView, Resiza
         }
 
         var channelViewTop: number = this.getChannelViewTop(channelView);
-        var newScrollTop: number = channelViewTop - 1.5 * CHANNEL_MARGIN;
+        var newScrollTop: number = channelViewTop - CHANNEL_MARGIN * 1.5;
         var clampedScrollTop: number = clamp(newScrollTop, 0, this.scrollRegion.maximumScrollTop);
 
         this.scrollTween = Tween.run({

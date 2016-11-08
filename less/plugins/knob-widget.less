@@ -1,4 +1,5 @@
 @import "../core/mixins/base.less";
+@import "../core/classes.less";
 
 .knob-widget,
 .knob-center {
@@ -9,7 +10,8 @@
 }
 
 .knob-widget {
-    .size(40px, 40px);
+    position: relative;
+    .pointer;
     .backface-visibility(hidden);
 
     .knob {

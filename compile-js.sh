@@ -11,7 +11,7 @@ echo "Compiling JavaScript...";
 tsc
 
 if [ -f ${files[0]} ]; then
-	echo "Compressing..."
+	echo "Compressing JavaScript..."
 	uglifyjs -o js/bundle.min.js js/bundle.js -c -m keep_fargs=true
 	echo "Done."
 else

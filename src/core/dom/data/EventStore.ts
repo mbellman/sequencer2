@@ -43,7 +43,7 @@ export default class EventStore implements DOMHandlerStore {
     }
 
     /**
-     * Dispatches each DOMEventHandler method in each namespace for an event.
+     * Dispatches all DOMEventHandler methods associated with an event.
      * @implements (DOMHandlerStore)
      */
     public fire (event: string, e: Event): void {

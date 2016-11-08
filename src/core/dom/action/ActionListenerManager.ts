@@ -1,10 +1,11 @@
 import Time from "core/system/Time";
 import Data from "core/dom/data/Data";
+import Dictionary from "core/system/structures/Dictionary";
 import ActionStore from "core/dom/data/ActionStore";
 
 import { ActionType, Action } from "core/dom/action/Action";
 import { ClickAction, DoubleClickAction, MoveAction, DragAction } from "core/dom/action/MouseActions";
-import { $, Query, DOMListenerManager } from "core/dom/DOM";
+import { $, Query, DOMListenerTable, DOMListenerManager } from "core/dom/DOM";
 
 /**
  * An API for binding "Action" listeners to DOM Elements. Actions are like Events, but can
@@ -15,6 +16,16 @@ import { $, Query, DOMListenerManager } from "core/dom/DOM";
  * This API is leveraged by Query, and should not be used manually.
  */
 export default class ActionListenerManager implements DOMListenerManager {
+    /* A Dictionary of DOMListenerTables for each Query. */
+    private listeners: Dictionary<Query, DOMListenerTable> = new Dictionary<Query, DOMListenerTable>();
+
+    /**
+     * Determines whether an action binding for a specific action has been bound on a Query.
+     */
+    public isListening (query: Query, action: ActionType): boolean {
+        return true;
+    }
+
     /**
      * Delegates a particular Action binding on a Query.
      * @implements (DOMListenerManager)

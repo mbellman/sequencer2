@@ -10,7 +10,7 @@ const SequenceViewTemplate: string =
             <i class="fa fa-compress"></i>
         </div>
     </div>
-    <button class="add-channel button scale-button text-center">+</button>
+    <button class="add-channel button scale-button">+</button>
     <div class="button-column jump">
         <div class="up button scale-button">
             <button class="button"></button>

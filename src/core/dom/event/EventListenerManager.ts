@@ -2,15 +2,7 @@ import Data from "core/dom/data/Data";
 
 import { each } from "core/system/Utilities";
 import { Hash } from "core/system/structures/Types";
-import { DOMListenerManager } from "core/dom/DOM";
-
-/**
- * A type signature for a list of event names (keys) and true boolean
- * values indicating that a listener is bound for that event. Each
- * Element delegated event listeners through the EventListener API
- * gets its own ListenerTable entry in the EventListener {listeners}.
- */
-type ListenerTable = Hash<boolean>;
+import { DOMListenerTable, DOMListenerManager } from "core/dom/DOM";
 
 /**
  * An event listener function bound only once per Element per event type. The
@@ -27,14 +19,14 @@ function globalListener (e: Event): void {
  * This API is leveraged by Query, and should not be used manually.
  */
 export default class EventListenerManager implements DOMListenerManager {
-    /* A table of ListenerTables for each Element, where each key is the Element's unique data ID. */
-    private listeners: Hash<ListenerTable> = {};
+    /* A table of DOMListenerTables for each Element, where each key is the Element's unique data ID. */
+    private listeners: Hash<DOMListenerTable> = {};
 
     /**
      * Determines whether an event listener for a specific event has been bound on an Element.
      */
-    public isListening (element: Element, event: string = null): boolean {
-        var listeners: ListenerTable = this.getElementListenerTable(element);
+    public isListening (element: Element, event?: string): boolean {
+        var listeners: DOMListenerTable = this.getElementListenerTable(element);
 
         if (!event) {
             return !!listeners;
@@ -72,13 +64,22 @@ export default class EventListenerManager implements DOMListenerManager {
     }
 
     /**
+     * Returns the internal DOMListenerTable for a specific Element.
+     */
+    private getElementListenerTable (element: Element): DOMListenerTable {
+        var id: string = Data.getId(element);
+
+        return this.listeners[id];
+    }
+
+    /**
      * Removes all event listeners from an Element and deletes its store in {listeners}.
      */
     private removeAll (element: Element): void {
         var id: string = Data.getId(element);
-        var listeners: ListenerTable = this.listeners[id];
+        var listeners: DOMListenerTable = this.listeners[id];
 
-        each(listeners, (state: boolean, event: string) => {
+        each(listeners, (isBound: boolean, event: string) => {
             element.removeEventListener(event, globalListener);
         });
 
@@ -90,21 +91,12 @@ export default class EventListenerManager implements DOMListenerManager {
      * event from its store in {listeners}.
      */
     private removeOne (element: Element, event: string): void {
-        var listeners: ListenerTable = this.getElementListenerTable(element);
+        var listeners: DOMListenerTable = this.getElementListenerTable(element);
 
         element.removeEventListener(event, globalListener);
 
         if (listeners) {
             delete listeners[event];
         }
-    }
-
-    /**
-     * Returns the internal ListenerTable for a specific Element.
-     */
-    private getElementListenerTable (element: Element): ListenerTable {
-        var id: string = Data.getId(element);
-
-        return this.listeners[id];
     }
 }

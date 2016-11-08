@@ -11,6 +11,7 @@
 
 @main-blue-D20: darken(@main-blue, 20%);
 @main-blue-D30: darken(@main-blue, 30%);
+@main-blue-D40: darken(@main-blue, 40%);
 
 /* @ main-gray @ */
 @main-gray: #BBB;
@@ -106,7 +107,7 @@
             }
 
             #channel-views {
-                .channel {
+                .channel-view {
                     box-shadow: 0 0 0 4px #FFF;
 
                     .channel-top-bar {
@@ -125,6 +126,19 @@
                             @canvas-border: 3px solid @main-blue-L10;
 
                             .border(@canvas-border, 0, @canvas-border, 0);
+                        }
+
+                        .channel-controls {
+                            background-color: @main-blue-D20;
+                            border: 3px solid #FFF;
+                            box-shadow: -1px 1px 1px -1px #000;
+
+                            .control-knob-view {
+                                label {
+                                    color: @main-blue-L20;
+                                    text-shadow: 0 1px 0 @main-blue-D40;
+                                }
+                            }
                         }
                     }
                 }

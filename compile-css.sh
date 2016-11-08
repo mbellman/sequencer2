@@ -4,7 +4,7 @@ if [ -f $outfile ]; then
     rm $outfile
 fi
 
-echo "Compiling CSS...";
+echo "Compiling and compressing CSS...";
 lessc --clean-css less/sequencer.less $outfile
 
 if [ -f $outfile ]; then

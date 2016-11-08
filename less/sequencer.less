@@ -18,6 +18,12 @@ body {
     * {
         .noselect;
     }
+
+    &.nocursor {
+        * {
+            .nocursor;
+        }
+    }
 }
 
 main {
@@ -37,8 +43,7 @@ main {
             .transition(opacity, 0.25s);
 
             .menu-option {
-                position: relative;
-                display: inline-block;
+                .inline-block;
                 .size(auto, @menu-height);
                 margin: 0 5px;
                 padding: 0 10px;
@@ -66,8 +71,8 @@ main {
 
             .button-panel {
                 position: absolute;
-                .size(70%, 100px);
-                .topleft(100px, 15%);
+                .size(40%, 100px);
+                .topleft(100px, 30%);
                 opacity: 0.6;
                 z-index: 10;
                 .transition(opacity, 0.2s);
@@ -129,6 +134,7 @@ main {
                     margin: @button-y-margin 0 0 -(@button-width / 2);
                     border-radius: 5px;
                     .font(Arial, 50px, bold);
+                    .center-text;
                     line-height: (@button-height - 2);
                 }
             }
@@ -136,7 +142,7 @@ main {
             #channel-views {
                 .fill();
 
-                .channel {
+                .channel-view {
                     position: absolute;
                     .size(75%, @channel-height);
                     left: 15%;
@@ -173,11 +179,31 @@ main {
                             border-radius: 5px;
                         }
 
-                        .channel-settings {
-                            position: relative;
-                            display: inline-block;
+                        .channel-controls {
+                            .inline-block;
                             margin: 25px 10px 0;
+                            padding: 10px;
+                            border-radius: 5px;
+                            .center-text;
                             vertical-align: top;
+
+                            .control-knob-view {
+                                .inline-block;
+                                width: 50px;
+
+                                .control-knob {
+                                    position: relative;
+                                    .center-text;
+
+                                    .knob-widget {
+                                        margin: 0 auto;
+                                    }
+                                }
+
+                                label {
+                                    .font(Arial, 14px, bold);
+                                }
+                            }
                         }
                     }
                 }

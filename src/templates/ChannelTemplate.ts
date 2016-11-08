@@ -4,7 +4,7 @@ const ChannelTemplate: string =
 </div>
 <div class="channel-content">
     <canvas class="channel-sequence"></canvas>
-    <div class="channel-settings"></div>
+    <div class="channel-controls"></div>
 </div>`;
 
 export default ChannelTemplate;

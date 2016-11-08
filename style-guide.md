@@ -44,10 +44,9 @@ export function method () {}
 1. All class variables, class method and function parameters, `vars`, `lets`, and `consts` should be strongly typed using the form: `name: T`.
 2. All class methods or `functions` should be strongly typed using the form: `myFunction (): T`.
 3. Array types should use the form `Array<T>`.
-4. Variables in the top block scope of a class method or named function should be `var`, and any variables within sub block scopes should be `let`.
 
 ### Formatting
-Curly braces should sit on the same line as their `class`/`function`/control structure:
+Curly braces should sit on the same line as their `class`/`function`/control structure/etc.:
 
 ```typescript
 if (condition) {
@@ -124,14 +123,18 @@ interface MyInterface {
 ## Classes
 ### Naming conventions
 1. All class names should use capitalized CamelCase.
-2. All class member names should use lowercased camelCase.
+2. All class member names (variables or methods) should use lowercased camelCase.
 3. Class variable names should be as descriptive as possible. If a variable is of a specific type, its name should ideally be the lowercased camelCase equivalent of the type name, e.g. `public someModule: SomeModule = new SomeModule()`. If a variable is one of several of a particular class or interface type, defer to a contextually descriptive choice.
-4. Class method names should clearly define their role. Avoid names which are terse or vague. **No shorthand or abbreviation is permitted**.
+4. Class method names should clearly define their role. Avoid names which are terse or vague. Exceptions should only be in the event of making an API elegant to use.
 5. If a class method:
     * Performs an action, its name should start with a verb, e.g. `updateCurrentState`, `renderItems`.
     * Retrieves a value (and is not just a `getter`), its name should start with "get", e.g. `getSomeValue`.
     * Returns a boolean, its name should start with an auxiliary verb, e.g. `isLoaded`, `hasState`, `shouldRun`.
     * Represents an event method, it should start with "on" followed by the capitalized event name, e.g. `onUpdate`.
+
+### Access Modifiers
+1. All public members should be labelled as `public` with the exception of the constructor method.
+2. All `get` and `set` methods should be labelled as `public`.
 
 ### Order and priority
 1. Class variables should precede class methods.
@@ -139,10 +142,6 @@ interface MyInterface {
 3. The `constructor` method should precede all other class methods.
 4. `getter` and `setter` methods should precede all standard class methods.
 5. Methods using the name pattern "on{Event}" should precede all remaining methods.
-
-### Access Modifiers
-1. All public members should be labelled as `public` with the exception of the constructor method.
-2. All `getter` and `setter` methods should be labelled as `public`.
 
 ## Interfaces
 1. All `interface` names should use capitalized CamelCase.
@@ -161,13 +160,13 @@ interface MyInterface {
 
 ## Variables and Constants
 1. All variable names should use lowercased camelCase.
-2. All `const` names should use all-capitalized SNAKE_CASE.
+2. All `const` names should use all-capitalized SNAKE_CASE, with the exception of View template strings.
 
 ## Comments
 1. **Always** add a header comment for `classes`, class methods, class variables, `interfaces`, interface members, `functions`, `types`, `enums`, and `vars`/`consts` in the module or global scope. Even if the purpose of a construct seems obvious, it's safer to avoid any ambiguity. Comments at regular intervals also impart a certain visual consistency to the look of the code.
 2. Use comments sparingly inside `functions` or class methods. If you are tempted to use a comment to describe a particular control flow within the function, see if it can be explained as part of the function's header comment. For exceedingly long functions or algorithms, comments may indeed be necessary for clarification or exposition. Use whichever comment format seems appropriate (`// ...`, `/* ... */`, etc.).
 
-`class`, class member, `interface`, `function`, `enum`, and `type` header comments should be of the style:
+`class`, class method, `interface`, `function`, `enum`, and `type` header comments should be of the style:
 
 ```typescript
 /**
@@ -219,7 +218,7 @@ Class constructor methods should be commented as follows:
  */
 ```
 
-Class `getter` and `setter` methods should be commented as follows:
+Class `get` and `set` methods should be commented as follows:
 
 ```typescript
 /**
@@ -286,7 +285,7 @@ class UserService extends UserContainer implements IService, Disposable {
 }
 ```
 
-Class variable, interface field, `var`, `const`, and `type` header comments should be of the style:
+Class variable, interface field, `var`, and `const` header comments should be of the style:
 
 ```typescript
 class SomeClass {

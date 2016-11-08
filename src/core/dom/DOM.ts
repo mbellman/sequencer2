@@ -27,6 +27,14 @@ export type DOMActionHandler = (action: Action) => any;
 export type DOMHandlerQueue = Array<DOMEventHandler | DOMActionHandler>;
 
 /**
+ * A type signature for a list of event or action names (keys) and true boolean
+ * values indicating that an event or action listener is bound for that event or
+ * action. Leveraged by ActionListenerManager and EventListenerManager to avoid
+ * redundant listener bindings on Elements or Queries.
+ */
+export type DOMListenerTable = Hash<boolean>;
+
+/**
  * A manager and tracker for Event or Action listeners bound on Elements or Queries.
  */
 export interface DOMListenerManager {
@@ -182,7 +190,7 @@ export class Query implements IEventManager {
             }
         }
 
-        var [ event, namespace ] = (event ? event.split('.') : [null, null]);
+        var [ event, namespace ] = (event ? event.split('.') : [ null, null ]);
 
         this.eachElement((element: Element) => {
             let eventStore: EventStore = Data.getData(element).events;

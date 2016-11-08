@@ -1,8 +1,8 @@
 import View from "core/program/View";
 import Canvas from "core/dom/canvas/Canvas";
-import KnobWidget from "plugins/ui/widgets/KnobWidget";
 import Sequence from "classes/Sequence";
 import Channel from "classes/Channel";
+import ControlKnobView from "views/ControlKnobView";
 import ChannelTemplate from "templates/ChannelTemplate";
 
 import { bindAll } from "core/system/Utilities";
@@ -50,8 +50,8 @@ export default class ChannelView extends View implements ResizableView {
     /* The ChannelView content area below the top bar. */
     private $content: Query;
 
-    /* The ChannelView settings container, to the right of the channel canvas. */
-    private $settings: Query;
+    /* The ChannelView controls container, to the right of the channel canvas. */
+    private $controls: Query;
 
     /* A Canvas instance visualizing the Channel notes. */
     private channelCanvas: Canvas;
@@ -60,7 +60,7 @@ export default class ChannelView extends View implements ResizableView {
      * @constructor
      */
     constructor (sequence: Sequence) {
-        super('channel');
+        super('channel-view');
 
         this.index = sequence.getTotalChannels();
         this.sequence = sequence;
@@ -74,11 +74,11 @@ export default class ChannelView extends View implements ResizableView {
      */
     public onRender (): void {
         this.$content = this.$('.channel-content');
-        this.$settings = this.$('.channel-settings');
+        this.$controls = this.$('.channel-controls');
 
         this.createChannelNameLabelOnRender();
         this.setupChannelCanvasOnRender();
-        this.setupSettingsOnRender();
+        this.setupChannelControlsOnRender();
     }
 
     /**
@@ -123,12 +123,16 @@ export default class ChannelView extends View implements ResizableView {
     }
 
     /**
-     * Sets up the ChannelView settings area.
+     * Sets up the ChannelView controls area.
      */
-    private setupSettingsOnRender (): void {
-        var knob: KnobWidget = new KnobWidget();
+    private setupChannelControlsOnRender (): void {
+        var volume: ControlKnobView = new ControlKnobView('VOL', 90);
+        var modulation: ControlKnobView = new ControlKnobView('MOD', -45);
+        var pan: ControlKnobView = new ControlKnobView('PAN', 90);
 
-        knob.embed(this.$settings);
+        volume.attachTo(this.$controls);
+        modulation.attachTo(this.$controls);
+        pan.attachTo(this.$controls);
     }
 
     /**
