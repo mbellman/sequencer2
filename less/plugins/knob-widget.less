@@ -5,15 +5,17 @@
     border-radius: 50%;
     border: 2px solid #000;
     background: #FFF;
+    box-sizing: border-box;
 }
 
 .knob-widget {
     .size(40px, 40px);
+    .backface-visibility(hidden);
 
     .knob {
         position: absolute;
-        .size(70%, 70%);
-        .topleft(15%, 15%);
+        .size(60%, 60%);
+        .topleft(20%, 20%);
 
         > * {
             position: absolute;
@@ -23,7 +25,7 @@
             .size(100%, 20%);
             top: 50%;
             margin-top: -10%;
-            left: -20%;
+            left: -28%;
             background: #000;
         }
 
@@ -31,7 +33,6 @@
             .fill();
             .topleft(50%, 50%);
             margin: -50% 0 0 -50%;
-            box-sizing: border-box;
             z-index: 2;
         }
     }

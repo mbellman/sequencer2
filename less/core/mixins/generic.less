@@ -1,23 +1,23 @@
-/* @ Fill a certain percentage of the parent container (100% x 100% by default). */
+/* Fills a certain percentage of the parent container (100% x 100% by default). */
 .fill(@width: 100%, @height: 100%) {
     position: absolute;
     width: @width;
     height: @height;
 }
 
-/* @ Set element dimensions. */
+/* Sets element dimensions. */
 .size(@width, @height) {
     width: @width;
     height: @height;
 }
 
-/* @ Set a top/left position. */
+/* Sets a top/left position. */
 .topleft(@top, @left) {
     top: @top;
     left: @left;
 }
 
-/* @ Set a font style. */
+/* Sets a font style. */
 .font(@family, @size: 12px, @weight: normal, @color: #000) {
     font-family: @family;
     font-size: @size;
@@ -25,7 +25,7 @@
     color: @color;
 }
 
-/* @ Set each border side style. */
+/* Sets each border side style. */
 .border(@top, @right, @bottom, @left) {
     border-top: @top;
     border-right: @right;
@@ -33,7 +33,7 @@
     border-left: @left;
 }
 
-/* @ Set each corner border radius. */
+/* Sets each corner border radius. */
 .border-radius(@top-left, @top-right, @bottom-right, @bottom-left) {
     border-top-left-radius: @top-left;
     border-top-right-radius: @top-right;

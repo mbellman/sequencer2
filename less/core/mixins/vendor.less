@@ -1,4 +1,4 @@
-/* @ Set a property transition. */
+/* Sets a property transition. */
 .transition(@prop, @duration, @ease: linear) {
     -webkit-transition: @prop @duration @ease;
     -moz-transition: @prop @duration @ease;
@@ -6,7 +6,7 @@
     transition: @prop @duration @ease;
 }
 
-/* @ Sets a transform transition. */
+/* Sets a transform transition. */
 .transition-transform(@duration, @ease: linear) {
     -webkit-transition: -webkit-transform @duration @ease;
     -moz-transition: -moz-transform @duration @ease;
@@ -14,7 +14,7 @@
     transition: transform @duration @ease;
 }
 
-/* @ Set a transform. */
+/* Sets a transform. */
 .transform(@expression) {
     -webkit-transform: @expression;
     -moz-transform: @expression;
@@ -22,11 +22,18 @@
     transform: @expression;
 }
 
-/* @ Sets a transform origin. */
+/* Sets a transform origin. */
 .origin(@x: 50%, @y: 50%) {
     -webkit-transform-origin: @x @y;
     -moz-transform-origin: @x @y;
     -ms-transform-origin: @x @y;
     -o-transform-origin: @x @y;
     transform-origin: @x @y;
+}
+
+/* Sets the backface visibility state. */
+.backface-visibility(@visibility) {
+    -webkit-backface-visibility: @visibility;
+    -moz-backface-visibility: @visibility;
+    backface-visibility: @visibility;
 }
