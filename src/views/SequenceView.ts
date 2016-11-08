@@ -184,8 +184,8 @@ export default class SequenceView extends View implements ScrollableView, Resiza
 
     /**
      * Returns the first and last on-screen ChannelView indices by dividing scroll position by
-     * ChannelView height. Since both values are clamped to within [0 - {totalChannels}], it is
-     * possible for both to return the same index, or for the bottom on-screen ChannelView to
+     * ChannelView height. Since both indices are clamped to within [0 - {totalChannels}], it's
+     * possible for both to represent the same index, or for the last on-screen ChannelView to
      * be in the middle of the page.
      */
     private getOnScreenChannelViewIndexBounds (): IndexBounds {

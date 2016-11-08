@@ -1,8 +1,10 @@
 @import "core/mixins/base.less";
 @import "core/classes.less";
 @import "core/ease.less";
+
 @import "plugins/dropdown-menu.less";
 @import "plugins/scroll-region.less";
+@import "plugins/knob-widget.less";
 
 @import "themes/base.less";
 @import "font-awesome.less";
@@ -12,6 +14,10 @@
 body {
     .fill();
     margin: 0;
+
+    * {
+        .noselect;
+    }
 }
 
 main {
@@ -144,7 +150,6 @@ main {
                         .border-radius(5px, 5px, 0, 0);
 
                         .channel-label {
-                            display: inline-block;
                             margin: 4px 0 0 10px;
                             .font(Arial, 15px, bold);
                         }
@@ -163,9 +168,16 @@ main {
 
                             position: relative;
                             .size(70%, @canvas-height);
-                            background: #FFF;
                             margin: 25px;
+                            background: #FFF;
                             border-radius: 5px;
+                        }
+
+                        .channel-settings {
+                            position: relative;
+                            display: inline-block;
+                            margin: 25px 10px 0;
+                            vertical-align: top;
                         }
                     }
                 }

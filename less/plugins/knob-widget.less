@@ -1,0 +1,38 @@
+@import "../core/mixins/base.less";
+
+.knob-widget,
+.knob-center {
+    border-radius: 50%;
+    border: 2px solid #000;
+    background: #FFF;
+}
+
+.knob-widget {
+    .size(40px, 40px);
+
+    .knob {
+        position: absolute;
+        .size(70%, 70%);
+        .topleft(15%, 15%);
+
+        > * {
+            position: absolute;
+        }
+
+        .knob-dial {
+            .size(100%, 20%);
+            top: 50%;
+            margin-top: -10%;
+            left: -20%;
+            background: #000;
+        }
+
+        .knob-center {
+            .fill();
+            .topleft(50%, 50%);
+            margin: -50% 0 0 -50%;
+            box-sizing: border-box;
+            z-index: 2;
+        }
+    }
+}

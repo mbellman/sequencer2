@@ -1,5 +1,6 @@
 import View from "core/program/View";
 import Canvas from "core/dom/canvas/Canvas";
+import KnobWidget from "plugins/ui/widgets/KnobWidget";
 import Sequence from "classes/Sequence";
 import Channel from "classes/Channel";
 import ChannelTemplate from "templates/ChannelTemplate";
@@ -49,6 +50,9 @@ export default class ChannelView extends View implements ResizableView {
     /* The ChannelView content area below the top bar. */
     private $content: Query;
 
+    /* The ChannelView settings container, to the right of the channel canvas. */
+    private $settings: Query;
+
     /* A Canvas instance visualizing the Channel notes. */
     private channelCanvas: Canvas;
 
@@ -70,9 +74,11 @@ export default class ChannelView extends View implements ResizableView {
      */
     public onRender (): void {
         this.$content = this.$('.channel-content');
+        this.$settings = this.$('.channel-settings');
 
         this.createChannelNameLabelOnRender();
         this.setupChannelCanvasOnRender();
+        this.setupSettingsOnRender();
     }
 
     /**
@@ -117,6 +123,15 @@ export default class ChannelView extends View implements ResizableView {
     }
 
     /**
+     * Sets up the ChannelView settings area.
+     */
+    private setupSettingsOnRender (): void {
+        var knob: KnobWidget = new KnobWidget();
+
+        knob.embed(this.$settings);
+    }
+
+    /**
      * Animates the ChannelView from 0 to full scale.
      */
     private revealChannelViewOnAttach (): void {
@@ -134,13 +149,15 @@ export default class ChannelView extends View implements ResizableView {
     }
 
     /**
-     * Updates the channel canvas size.
+     * Updates the channel canvas pixel dimensions.
      */
     private resizeChannelCanvas (): void {
         var contentWidth: number = this.$content.width();
         var canvasWidth: number;
 
         if (contentWidth < CHANNEL_CONTENT_WIDTH_THRESHOLD) {
+            // At small resolutions, preserve some width for the remaining
+            // content area to the right of the canvas.
             canvasWidth = contentWidth - REMAINING_CONTENT_WIDTH;
         } else {
             canvasWidth = CHANNEL_CANVAS_WIDTH_RATIO * contentWidth;

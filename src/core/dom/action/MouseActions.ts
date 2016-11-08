@@ -112,6 +112,9 @@ export class DragAction extends MoveAction {
     /* The y component of the last-tick-velocity vector. */
     public velocityY: number;
 
+    /* Flipped to true when the mouse is released. */
+    public ended: boolean = false;
+
     /* The timestamp of the last tick update. */
     private lastTime: number;
 

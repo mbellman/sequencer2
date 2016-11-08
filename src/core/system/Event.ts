@@ -38,11 +38,13 @@ export class EventManager implements IEventManager {
      */
     public off (event?: string, handler?: Function): void {
         if (event && handler) {
-            return each(this.events[event], (fn: Function, index: number): any => {
+            each(this.events[event], (fn: Function, index: number): any => {
                 if (handler === fn) {
                     return this.events[event].splice(index, 1);
                 }
             });
+
+            return;
         }
 
         if (event && !handler) {
@@ -76,14 +78,14 @@ export abstract class EventsContainer {
     /**
      * A proxy for this.events.on().
      */
-    public on (...args: Array<any>): void {
-        this.events.on.apply(this.events, args);
+    public on (event: string, handler: Function): void {
+        this.events.on(event, handler);
     }
 
     /**
      * A proxy for this.events.off().
      */
-    public off (...args: Array<any>): void {
-        this.events.off.apply(this.events, args);
+    public off (event?: string, handler?: Function): void {
+        this.events.off(event, handler);
     }
 }

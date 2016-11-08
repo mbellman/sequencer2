@@ -28,7 +28,7 @@ export default class DropdownMenuView extends View {
     constructor () {
         super('dropdown-menu hidden');
 
-        bindAll(this, 'showMenu');
+        bindAll(this, 'showMenu', 'hideMenu');
     }
 
     /**
@@ -40,12 +40,8 @@ export default class DropdownMenuView extends View {
                 this.toggleShowHideMenu();
                 e.stopPropagation();
             })
-            .on('dropdown:hide', () => {
-                this.hideMenu();
-            })
-            .on('dropdown:show', () => {
-                this.showMenu();
-            });
+            .on('dropdown:hide', this.hideMenu)
+            .on('dropdown:show', this.showMenu);
 
         $('body').on('click', (e: Event) => {
             if (this.isExpanded() && !this.element.contains(<Node>e.target)) {
@@ -81,9 +77,7 @@ export default class DropdownMenuView extends View {
                 this.alignSubMenuBeforeShow();
                 setTimeout(this.showMenu, 50);
             })
-            .on('mouseleave', () => {
-                this.hideMenu();
-            });
+            .on('mouseleave', this.hideMenu);
     }
 
     /**
@@ -124,9 +118,9 @@ export default class DropdownMenuView extends View {
         this.$element.addClass('align')
             .removeClass('sub-dropdown-left');
 
-        var bounds: any = this.$element.bounds();
+        var menuBounds: any = this.$element.bounds();
 
-        if (bounds.right > Viewport.width) {
+        if (menuBounds.right > Viewport.width) {
             this.$element.addClass('sub-dropdown-left');
         }
 

@@ -124,6 +124,9 @@ export default class ActionListenerManager implements DOMListenerManager {
             });
 
             $('body').on('mouseup.ActionListenerManager', function (e: MouseEvent) {
+                dragAction.ended = true;
+
+                actions.fire(ActionType.DRAG, dragAction);
                 $(this).off('mousemove.ActionListenerManager mouseup.ActionListenerManager');
             });
         });
