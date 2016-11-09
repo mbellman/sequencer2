@@ -1,4 +1,20 @@
-/* Sets a property transition. */
+/* Sets a linear background gradient. */
+.linear-gradient(@gradient) {
+    background: -webkit-linear-gradient(@gradient);
+    background: -moz-linear-gradient(@gradient);
+    background: -o-linear-gradient(@gradient);
+    background: linear-gradient(@gradient);
+}
+
+/* Sets a radial background gradient. */
+.radial-gradient(@gradient) {
+    background: -webkit-radial-gradient(@gradient);
+    background: -moz-radial-gradient(@gradient);
+    background: -o-radial-gradient(@gradient);
+    background: radial-gradient(@gradient);
+}
+
+/* Sets miscellaneous property transition(s). */
 .transition(@prop, @duration, @ease: linear) {
     -webkit-transition: @prop @duration @ease;
     -moz-transition: @prop @duration @ease;
@@ -31,7 +47,14 @@
     transform-origin: @x @y;
 }
 
-/* Sets the backface visibility state. */
+/* Sets a transform perspective. */
+.perspective(@perspective) {
+    -webkit-perspective: @perspective;
+    -moz-perspective: @perspective;
+    perspective: @perspective;
+}
+
+/* Sets backface visibility. */
 .backface-visibility(@visibility) {
     -webkit-backface-visibility: @visibility;
     -moz-backface-visibility: @visibility;

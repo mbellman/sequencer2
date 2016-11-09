@@ -210,7 +210,7 @@ export default class SequenceView extends View implements ScrollableView, Resiza
         var { first, last } = indexBounds;
         var views: Array<ChannelView> = [];
 
-        for (var i = first ; i < last ; i++) {
+        for (var i = first ; i <= last ; i++) {
             views.push(this.channelViews[i]);
         }
 

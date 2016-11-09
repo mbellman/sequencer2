@@ -88,8 +88,6 @@ export default class ScrollRegion extends EventsContainer {
      * @setter {scrollTop}
      */
     public set scrollTop (top: number) {
-        this.scrollOffset.top = top;
-
         this.scrollTo(top, this.scrollLeft);
     }
 
@@ -104,8 +102,6 @@ export default class ScrollRegion extends EventsContainer {
      * @setter {scrollLeft}
      */
     public set scrollLeft (left: number) {
-        this.scrollOffset.left = left;
-
         this.scrollTo(this.scrollTop, left);
     }
 
@@ -158,8 +154,8 @@ export default class ScrollRegion extends EventsContainer {
      * Sets the top/left scroll position.
      */
     public scrollTo (top: number, left: number): void {
-        this.scrollOffset.top = clamp(top, 0, this.maximumScrollOffset.top);
-        this.scrollOffset.left = clamp(left, 0, this.maximumScrollOffset.left);
+        this.scrollOffset.top = Math.round(clamp(top, 0, this.maximumScrollOffset.top));
+        this.scrollOffset.left = Math.round(clamp(left, 0, this.maximumScrollOffset.left));
 
         var translation: string = 'translate(' + -this.scrollLeft + 'px, ' + -this.scrollTop + 'px)';
 

@@ -1,11 +1,12 @@
 @import "../core/mixins/base.less";
 @import "../core/classes.less";
 
+@base-gradient: #000, #A88 20%, #100 60%, #522 60%, #A88 100%;
+@center-gradient: #FFF, #888 60%, #FFF 60%, #000 80%, #FFF 100%;
+
 .knob-widget,
 .knob-center {
     border-radius: 50%;
-    border: 2px solid #000;
-    background: #FFF;
     box-sizing: border-box;
 }
 
@@ -13,6 +14,8 @@
     position: relative;
     .pointer;
     .backface-visibility(hidden);
+    .radial-gradient(@base-gradient);
+    box-shadow: 0 0 1px 1px #000;
 
     .knob {
         position: absolute;
@@ -24,17 +27,20 @@
         }
 
         .knob-dial {
-            .size(100%, 20%);
+            .size(80%, 25%);
             top: 50%;
-            margin-top: -10%;
-            left: -28%;
-            background: #000;
+            left: -25%;
+            margin-top: -12%;
+            border-radius: 50%;
+            background: #AAA;
         }
 
         .knob-center {
             .fill();
             .topleft(50%, 50%);
             margin: -50% 0 0 -50%;
+            box-shadow: 0 0 1px 0 #000;
+            .radial-gradient(@center-gradient);
             z-index: 2;
         }
     }

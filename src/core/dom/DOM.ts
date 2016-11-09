@@ -39,10 +39,13 @@ export type DOMListenerTable = Hash<boolean>;
  */
 export interface DOMListenerManager {
     /* Adds a listener to the Query or Element. */
-    add (...args: Array<any>): void;
+    add (target: Element | Query, ...args: Array<any>): void;
 
     /* Removes a listener from the Query or Element. */
-    remove (...args: Array<any>): void;
+    remove (target: Element | Query, ...args: Array<any>): void;
+
+    /* Determines whether an Event or Action is bound on an Element or Query. */
+    isListening (target: Element | Query, ...args: Array<any>): boolean;
 }
 
 /**
