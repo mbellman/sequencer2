@@ -1,11 +1,12 @@
 import Time from "core/system/Time";
 import Data from "core/dom/data/Data";
-import Dictionary from "core/system/structures/Dictionary";
 import ActionStore from "core/dom/data/ActionStore";
 
-import { ActionType, Action } from "core/dom/action/Action";
+import { each } from "core/system/Utilities";
+import { Hash } from "core/system/structures/Types";
+import { ActionType } from "core/dom/action/Action";
 import { ClickAction, DoubleClickAction, MoveAction, DragAction } from "core/dom/action/MouseActions";
-import { $, Query, DOMListenerTable, DOMListenerManager } from "core/dom/DOM";
+import { $, DOMListenerTable, DOMListenerManager } from "core/dom/DOM";
 
 /**
  * An API for binding "Action" listeners to DOM Elements. Actions are like Events, but can
@@ -16,34 +17,38 @@ import { $, Query, DOMListenerTable, DOMListenerManager } from "core/dom/DOM";
  * This API is leveraged by Query, and should not be used manually.
  */
 export default class ActionListenerManager implements DOMListenerManager {
-    /* A Dictionary of DOMListenerTables for each Query. */
-    private listeners: Dictionary<Query, DOMListenerTable> = new Dictionary<Query, DOMListenerTable>();
+    /* A Hash of DOMListenerTables for each Element, where each key is the Element's unique data ID. */
+    private listeners: Hash<DOMListenerTable> = {};
 
     /**
-     * Determines whether an action binding for a specific action has been bound on a Query.
+     * Determines whether a specific action has been bound on an Element.
      */
-    public isListening (query: Query, action: ActionType): boolean {
-        return true;
+    public isListening (element: Element, action: ActionType): boolean {
+        var id: string = Data.getId(element);
+
+        return !!this.listeners[id] && !!this.listeners[id][action];
     }
 
     /**
-     * Delegates a particular Action binding on a Query.
+     * Delegates a particular Action binding on an Element.
      * @implements (DOMListenerManager)
      */
-    public add (query: Query, action: ActionType): void {
+    public add (element: Element, action: ActionType): void {
         switch (action) {
             case ActionType.CLICK:
             case ActionType.DOUBLE_CLICK:
-                this.delegateClick(query);
+                this.delegateClick(element);
                 break;
             case ActionType.RIGHT_CLICK:
-                this.delegateRightClick(query);
+                this.delegateRightClick(element);
                 break;
             case ActionType.MOVE:
-                this.delegateMove(query);
+                this.delegateMove(element);
                 break;
+            case ActionType.DRAG_START:
             case ActionType.DRAG:
-                this.delegateDrag(query);
+            case ActionType.DRAG_END:
+                this.delegateDrag(element);
                 break;
             default:
                 break;
@@ -51,22 +56,28 @@ export default class ActionListenerManager implements DOMListenerManager {
     }
 
     /**
-     * Removes all Action bindings on a Query.
+     * Removes all Action bindings on an Element.
      * @implements (DOMListenerManager)
      */
-    public remove (query: Query): void {
-        query.off('click.ActionListenerManager')
+    public remove (element: Element): void {
+        var id: string = Data.getId(element);
+
+        delete this.listeners[id];
+
+        $(element).off('click.ActionListenerManager')
             .off('contextmenu.ActionListenerManager')
             .off('mousemove.ActionListenerManager')
             .off('mousedown.ActionListenerManager');
     }
 
     /**
-     * Binds a singular click event handler on a Query to manage
+     * Binds a singular click event handler on an Element to manage
      * both single-click and double-click Actions.
      */
-    private delegateClick (query: Query): void {
-        query.on('click.ActionListenerManager', (e: MouseEvent) => {
+    private delegateClick (element: Element): void {
+        this.listenTo(element, [ActionType.CLICK, ActionType.DOUBLE_CLICK]);
+
+        $(element).on('click.ActionListenerManager', (e: MouseEvent) => {
             var actions: ActionStore = Data.getData(<Element>e.currentTarget).actions;
 
             if (actions.lastAction) {
@@ -88,10 +99,12 @@ export default class ActionListenerManager implements DOMListenerManager {
     }
 
     /**
-     * Binds a 'contextmenu' event handler on a Query to manage right-click Actions.
+     * Binds a 'contextmenu' event handler on an Element to manage right-click Actions.
      */
-    private delegateRightClick (query: Query): void {
-        query.on('contextmenu.ActionListenerManager', (e: MouseEvent) => {
+    private delegateRightClick (element: Element): void {
+        this.listenTo(element, [ActionType.RIGHT_CLICK]);
+
+        $(element).on('contextmenu.ActionListenerManager', (e: MouseEvent) => {
             var clickAction: ClickAction = new ClickAction(e);
             clickAction.type = ActionType.RIGHT_CLICK;
 
@@ -101,13 +114,15 @@ export default class ActionListenerManager implements DOMListenerManager {
     }
 
     /**
-     * Binds a 'mousemove' event handler on a Query to manage move Actions.
+     * Binds a 'mousemove' event handler on an Element to manage move Actions.
      */
-    private delegateMove (query: Query): void {
+    private delegateMove (element: Element): void {
+        this.listenTo(element, [ActionType.MOVE]);
+
         var moveAction: MoveAction;
         var lastMoveTime: number = 0;
 
-        query.on('mousemove.ActionListenerManager', (e: MouseEvent) => {
+        $(element).on('mousemove.ActionListenerManager', (e: MouseEvent) => {
             if (Time.since(lastMoveTime) > 1000) {
                 moveAction = new MoveAction(e);
             } else {
@@ -121,13 +136,17 @@ export default class ActionListenerManager implements DOMListenerManager {
     }
 
     /**
-     * Binds a 'mousedown' event handler on a Query which uses additional body
+     * Binds a 'mousedown' event handler on an Element which uses additional body
      * event handlers to monitor and manage drag Actions.
      */
-    private delegateDrag (query: Query): void {
-        query.on('mousedown.ActionListenerManager', (e: MouseEvent) => {
+    private delegateDrag (element: Element): void {
+        this.listenTo(element, [ActionType.DRAG_START, ActionType.DRAG, ActionType.DRAG_END]);
+
+        $(element).on('mousedown.ActionListenerManager', (e: MouseEvent) => {
             var actions: ActionStore = Data.getData(<Element>e.currentTarget).actions;
             var dragAction: DragAction = new DragAction(e);
+
+            actions.fire(ActionType.DRAG_START, dragAction);
 
             $('body').on('mousemove.ActionListenerManager', (e: MouseEvent) => {
                 dragAction.update(e.clientX, e.clientY);
@@ -135,11 +154,24 @@ export default class ActionListenerManager implements DOMListenerManager {
             });
 
             $('body').on('mouseup.ActionListenerManager', function (e: MouseEvent) {
-                dragAction.ended = true;
-
-                actions.fire(ActionType.DRAG, dragAction);
+                actions.fire(ActionType.DRAG_END, dragAction);
                 $(this).off('mousemove.ActionListenerManager mouseup.ActionListenerManager');
             });
+        });
+    }
+
+    /**
+     * Registers specific Actions as active on Elements in the internal {listeners} table.
+     */
+    private listenTo (element: Element, actions: Array<ActionType>): void {
+        var id: string = Data.getId(element);
+
+        if (!this.listeners[id]) {
+            this.listeners[id] = {};
+        }
+
+        each(actions, (action: ActionType) => {
+            this.listeners[id][action] = true;
         });
     }
 }

@@ -58,7 +58,7 @@ export default class KnobWidget extends Widget {
     constructor (settings: KnobSettings = {}) {
         super('knob-widget');
 
-        bindAll(this, 'rotateKnobOnDrag');
+        bindAll(this, 'onKnobDragStart', 'onKnobDrag', 'onKnobDragEnd');
 
         this.settings.sensitivity = defaultTo(settings.sensitivity, 1);
         this.settings.size = defaultTo(settings.size, 50);
@@ -84,28 +84,36 @@ export default class KnobWidget extends Widget {
         
         this.$widget.css('width', this.settings.size + 'px')
             .css('height', this.settings.size + 'px')
-            .on('mousedown', () => {
-                $('body').addClass('nocursor');
-            })
-            .react(ActionType.DRAG, this.rotateKnobOnDrag);
+            .react(ActionType.DRAG_START, this.onKnobDragStart)
+            .react(ActionType.DRAG, this.onKnobDrag)
+            .react(ActionType.DRAG_END, this.onKnobDragEnd);
         
         this.rotation = this.settings.angle;
     }
 
     /**
+     * An action handler for 'grabbing' the knob.
+     */
+    private onKnobDragStart (): void {
+        $('body').addClass('nocursor');
+    }
+
+    /**
      * An action handler for dragging the knob.
      */
-    private rotateKnobOnDrag (a: DragAction): void {
-        var newAngle: number = this.angle - (a.deltaY * this.settings.sensitivity);
-        var clampedAngle: number = clamp(newAngle, this.settings.min, this.settings.max);
+    private onKnobDrag (a: DragAction): void {
+        var angle: number = this.getNewAngleFromDragAction(a);
 
-        this.rotate(clampedAngle);
+        this.rotate(angle);
+    }
 
-        if (a.ended) {
-            this.angle = clampedAngle;
+    /**
+     * An action handler for releasing the knob.
+     */
+    private onKnobDragEnd (a: DragAction): void {
+        this.angle = this.getNewAngleFromDragAction(a);
 
-            $('body').removeClass('nocursor');
-        }
+        $('body').removeClass('nocursor');
     }
 
     /**
@@ -114,5 +122,14 @@ export default class KnobWidget extends Widget {
     private rotate (angle: number): void {
         this.$knob.transform('rotate(' + angle + 'deg)');
         this.events.trigger('rotate', angle);
+    }
+
+    /**
+     * Determines a new angle for the knob based on a drag Action.
+     */
+    private getNewAngleFromDragAction (a: DragAction): number {
+        var newAngle: number = this.angle - (a.deltaY * this.settings.sensitivity);
+
+        return clamp(newAngle, this.settings.min, this.settings.max);
     }
 }

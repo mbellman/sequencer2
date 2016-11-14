@@ -6,7 +6,9 @@ export const enum ActionType {
 	DOUBLE_CLICK,
 	RIGHT_CLICK,
     MOVE,
-    DRAG
+	DRAG_START,
+    DRAG,
+	DRAG_END
 }
 
 /**

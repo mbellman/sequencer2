@@ -19,7 +19,7 @@ function globalListener (e: Event): void {
  * This API is leveraged by Query, and should not be used manually.
  */
 export default class EventListenerManager implements DOMListenerManager {
-    /* A table of DOMListenerTables for each Element, where each key is the Element's unique data ID. */
+    /* A Hash of DOMListenerTables for each Element, where each key is the Element's unique data ID. */
     private listeners: Hash<DOMListenerTable> = {};
 
     /**
